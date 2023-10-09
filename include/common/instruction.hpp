@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include "common/config.hpp"
 
 namespace pvm {
 
-enum : uint8_t {
+enum : Opcode {
     OPCODE_HALT = 0,
     OPCODE_LOAD_IMM_I,
     OPCODE_LOAD_IMM_F,
@@ -15,13 +16,13 @@ enum : uint8_t {
 };
 
 // Type bit
-enum : uint32_t {
+enum : OperationId {
     OP_TYPE_I = 0,
     OP_TYPE_F = 1
 };
 
 // ALU binary raw operations
-enum : uint32_t {
+enum : OperationId {
     OP_ADD_I = 0,
     OP_ADD_F,
     OP_SUB_I,
@@ -33,7 +34,7 @@ enum : uint32_t {
 };
 
 // ALU binary type independent operations
-enum : uint32_t {
+enum : OperationId {
     OP_ADD = 0,
     OP_SUB = 2,
     OP_MUL = 4,
@@ -41,7 +42,7 @@ enum : uint32_t {
 };
 
 // ALU unary raw operations
-enum : uint32_t {
+enum : OperationId {
     OP_SQRT_I = 0,
     OP_SQRT_F,
     OP_CAST_ITOF,
@@ -51,14 +52,14 @@ enum : uint32_t {
 };
 
 // ALU unary type independent operations
-enum : uint32_t {
+enum : OperationId {
     OP_SQRT = 0,
     OP_CAST = 2,
     OP_ABS = 4,
 };
 
 // IO raw operations
-enum : uint32_t {
+enum : OperationId {
     OP_READ_I = 0,
     OP_READ_F,
     OP_WRITE_I,
@@ -66,13 +67,13 @@ enum : uint32_t {
 };
 
 // IO type independent operations
-enum : uint32_t {
+enum : OperationId {
     OP_READ = 0,
     OP_WRITE = 2
 };
 
 // Branch raw operations
-enum : uint32_t {
+enum : OperationId {
     OP_BEQUAL_I = 0,
     OP_BEQUAL_F,
     OP_BLESS_I,
@@ -80,22 +81,22 @@ enum : uint32_t {
 };
 
 // Branch type independent operations
-enum : uint32_t {
+enum : OperationId {
     OP_BEQUAL = 0,
     OP_BLESS = 2
 };
 
 struct Instruction {
-    uint8_t opcode = 0;
+    Opcode  opcode = 0;
 
-    uint8_t rd = 0;
-    uint8_t rs1 = 0;
-    uint8_t rs2 = 0;
+    RegisterId rd = 0;
+    RegisterId rs1 = 0;
+    RegisterId rs2 = 0;
 
     union {
-        uint32_t op;
-        int32_t immi;
-        float immf;
+        OperationId op;
+        Int immi;
+        Float immf;
     };
 };
 
