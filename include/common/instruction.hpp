@@ -86,11 +86,11 @@ enum : uint32_t {
 };
 
 struct Instruction {
-    uint8_t opcode;
+    uint8_t opcode = 0;
 
-    uint8_t rd;
-    uint8_t rs1;
-    uint8_t rs2;
+    uint8_t rd = 0;
+    uint8_t rs1 = 0;
+    uint8_t rs2 = 0;
 
     union {
         uint32_t op;
