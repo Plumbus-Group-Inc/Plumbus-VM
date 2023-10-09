@@ -11,4 +11,4 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(plumbus-vm)
 target_sources(plumbus-vm PRIVATE ./src/stub.cpp)
-
+target_include_directories(plumbus-vm PRIVATE ./include)
