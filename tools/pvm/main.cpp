@@ -1,6 +1,7 @@
 #include <iostream>
 
 int main() {
-  std::cout << "PVM" << std::endl;
+  int Var = 0;
+  std::cout << "PVM" << Var << std::endl;
   return 0;
 }
