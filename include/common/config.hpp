@@ -14,4 +14,4 @@ using Opcode = uint8_t;
 
 constexpr const size_t kRegistersCount = 1ull << (sizeof(RegisterId) * 8);
 
-}
+} // namespace pvm
