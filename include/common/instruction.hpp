@@ -8,8 +8,8 @@ enum : uint8_t {
     OPCODE_HALT = 0,
     OPCODE_LOAD_IMM_I,
     OPCODE_LOAD_IMM_F,
-    OPCODE_ALU3,
-    OPCODE_ALU2,
+    OPCODE_ALU_BINARY,
+    OPCODE_ALU_UNARY,
     OPCODE_IO,
     OPCODE_BRANCH
 };
@@ -20,7 +20,7 @@ enum : uint32_t {
     OP_TYPE_F = 1
 };
 
-// ALU3 raw operations
+// ALU binary raw operations
 enum : uint32_t {
     OP_ADD_I = 0,
     OP_ADD_F,
@@ -32,7 +32,7 @@ enum : uint32_t {
     OP_DIV_F
 };
 
-// ALU3 type independent operations
+// ALU binary type independent operations
 enum : uint32_t {
     OP_ADD = 0,
     OP_SUB = 2,
@@ -40,7 +40,7 @@ enum : uint32_t {
     OP_DIV = 6
 };
 
-// ALU2 raw operations
+// ALU unary raw operations
 enum : uint32_t {
     OP_SQRT_I = 0,
     OP_SQRT_F,
@@ -50,7 +50,7 @@ enum : uint32_t {
     OP_ABS_F
 };
 
-// ALU2 type independent operations
+// ALU unary type independent operations
 enum : uint32_t {
     OP_SQRT = 0,
     OP_CAST = 2,
