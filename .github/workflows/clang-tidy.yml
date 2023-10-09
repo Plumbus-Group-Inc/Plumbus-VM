@@ -1,5 +1,5 @@
 # Run clang-tidy
-name: Clang-tidy
+name: ClangTidy
 
 on:
   push:
