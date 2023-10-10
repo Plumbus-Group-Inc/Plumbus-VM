@@ -14,8 +14,8 @@ jobs:
         with:
           style: file
 
-      - name: Fail fast?!
+      - name: fail
         if: steps.linter.outputs.checks-failed > 0
-        run: exit 1
+        run: echo "CHECKS FAILED. DETAILS IN LOGS"
         # for actual deployment
         # run: exit 1

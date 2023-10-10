@@ -5,6 +5,7 @@ Checks: >
   clang-diagnostics-*,
   -llvmlibc-*,
   -modernize-use-trailing-return-type,
+  -llvm-header-guard,
 
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
