@@ -9,6 +9,8 @@ message(VERBOSE "Collected unit tests: ${UNIT}")
 
 foreach(TEST ${UNIT})
   target_link_libraries(${TEST} gtest_main)
+  target_include_directories(${TEST} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
   add_test(NAME ${TEST} COMMAND ${TEST} --gtest_color=yes)
   set_property(TEST ${TEST} PROPERTY LABELS unit)
 endforeach()

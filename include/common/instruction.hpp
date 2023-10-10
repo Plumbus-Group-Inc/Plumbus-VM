@@ -13,11 +13,17 @@ enum : Opcode {
   OPCODE_ALU_BINARY,
   OPCODE_ALU_UNARY,
   OPCODE_IO,
-  OPCODE_BRANCH
+  OPCODE_BLESS_F,
+  OPCODE_BLESS_I,
+  OPCODE_BEQ_F,
+  OPCODE_BEQ_I,
 };
 
 // Type bit
-enum : OperationId { OP_TYPE_I = 0, OP_TYPE_F = 1 };
+enum : OperationId {
+  OP_TYPE_I = 0,
+  OP_TYPE_F = 1,
+};
 
 // ALU binary raw operations
 enum : OperationId {
@@ -28,11 +34,16 @@ enum : OperationId {
   OP_MUL_I,
   OP_MUL_F,
   OP_DIV_I,
-  OP_DIV_F
+  OP_DIV_F,
 };
 
 // ALU binary type independent operations
-enum : OperationId { OP_ADD = 0, OP_SUB = 2, OP_MUL = 4, OP_DIV = 6 };
+enum : OperationId {
+  OP_ADD = 0,
+  OP_SUB = 2,
+  OP_MUL = 4,
+  OP_DIV = 6,
+};
 
 // ALU unary raw operations
 enum : OperationId {
@@ -41,7 +52,7 @@ enum : OperationId {
   OP_CAST_ITOF,
   OP_CAST_FTOI,
   OP_ABS_I,
-  OP_ABS_F
+  OP_ABS_F,
 };
 
 // ALU unary type independent operations
@@ -52,16 +63,26 @@ enum : OperationId {
 };
 
 // IO raw operations
-enum : OperationId { OP_READ_I = 0, OP_READ_F, OP_WRITE_I, OP_WRITE_F };
+enum : OperationId {
+  OP_READ_I = 0,
+  OP_READ_F,
+  OP_WRITE_I,
+  OP_WRITE_F,
+};
 
 // IO type independent operations
-enum : OperationId { OP_READ = 0, OP_WRITE = 2 };
+enum : OperationId {
+  OP_READ = 0,
+  OP_WRITE = 2,
+};
 
 // Branch raw operations
-enum : OperationId { OP_BEQUAL_I = 0, OP_BEQUAL_F, OP_BLESS_I, OP_BLESS_F };
-
-// Branch type independent operations
-enum : OperationId { OP_BEQUAL = 0, OP_BLESS = 2 };
+enum : OperationId {
+  OP_BEQUAL_I = 0,
+  OP_BEQUAL_F,
+  OP_BLESS_I,
+  OP_BLESS_F,
+};
 
 struct Instruction {
   Opcode opcode = 0;
