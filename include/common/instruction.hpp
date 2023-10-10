@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/config.hpp"
 #include <cstdint>
+
+#include "common/config.hpp"
 
 namespace pvm {
 
