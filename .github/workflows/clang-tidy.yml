@@ -1,4 +1,4 @@
-name: cpp-linter
+name: "[ClangTidy]"
 
 on: pull_request
 

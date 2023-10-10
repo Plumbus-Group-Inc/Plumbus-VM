@@ -1,4 +1,4 @@
-name: ClangFormat
+name: "[ClangFormat]"
 
 on:
   push:
