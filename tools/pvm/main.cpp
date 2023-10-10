@@ -1,7 +1,9 @@
 #include <iostream>
 
-int main() {
-  int Var = 0;
-  std::cout << "PVM" << Var << std::endl;
+#include <CLI/CLI.hpp>
+
+int main(int argc, char **argv) {
+  CLI::App app{"PlumbusVM"};
+  CLI11_PARSE(app, argc, argv);
   return 0;
 }

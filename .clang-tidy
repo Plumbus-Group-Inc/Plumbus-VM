@@ -6,6 +6,7 @@ Checks: >
   -llvmlibc-*,
   -modernize-use-trailing-return-type,
   -llvm-header-guard,
+  -fuchsia-default-arguments-calls,
 
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
