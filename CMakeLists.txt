@@ -33,10 +33,10 @@ endif()
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(test)
-# add_subdirectory(thirdparty)
+add_subdirectory(thirdparty)
 
-message("Collected libs: ${LIBLIST}")
-message("Collected tools: ${TOOLLIST}")
+message(VERBOSE "Collected libs: ${LIBLIST}")
+message(VERBOSE "Collected tools: ${TOOLLIST}")
 
 set(TARGETS)
 list(APPEND TARGETS ${LIBLIST} ${TOOLLIST})
