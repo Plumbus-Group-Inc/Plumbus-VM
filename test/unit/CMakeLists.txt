@@ -1,16 +1,16 @@
+add_library(pvm-utest-settings INTERFACE)
+target_link_libraries(pvm-utest-settings INTERFACE pvm-lib-settings gtest_main)
+
+macro(pvm_add_test TEST SOURCES)
+  add_executable(${TEST} ${SOURCES})
+  target_link_libraries(${TEST} PRIVATE pvm-utest-settings)
+  add_test(NAME ${TEST} COMMAND ${TEST} --gtest_color=yes)
+  set_property(TEST ${TEST} PROPERTY LABELS unit)
+endmacro()
+
 list_dirs(DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(DIR ${DIRS})
   add_subdirectory(${DIR})
   message(STATUS "Included subdirectory: ${DIR}")
-endforeach()
-
-message(VERBOSE "Collected unit tests: ${UNIT}")
-
-foreach(TEST ${UNIT})
-  target_link_libraries(${TEST} gtest_main)
-  target_include_directories(${TEST} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
-  add_test(NAME ${TEST} COMMAND ${TEST} --gtest_color=yes)
-  set_property(TEST ${TEST} PROPERTY LABELS unit)
 endforeach()

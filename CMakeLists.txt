@@ -30,23 +30,15 @@ if(BUILD_TESTS)
   enable_testing()
 endif()
 
+add_library(pvm-lib-settings INTERFACE)
+target_include_directories(pvm-lib-settings INTERFACE ${CMAKE_SOURCE_DIR}/include)
+target_compile_features(pvm-lib-settings INTERFACE cxx_std_20)
+apply_compiler_flags(pvm-lib-settings INTERFACE)
+if(ENABLE_WERROR)
+  target_compile_options(pvm-lib-settings INTERFACE -Werror)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(test)
 add_subdirectory(thirdparty)
-
-message(VERBOSE "Collected libs: ${LIBLIST}")
-message(VERBOSE "Collected tools: ${TOOLLIST}")
-
-set(TARGETS)
-list(APPEND TARGETS ${LIBLIST} ${TOOLLIST})
-
-foreach(TARGET ${TARGETS})
-  target_include_directories(${TARGET} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-  target_compile_features(${TARGET} PRIVATE cxx_std_20)
-  apply_compiler_flags(${TARGET} PUBLIC)
-  if(ENABLE_WERROR)
-    target_compile_options(${TARGET} PRIVATE -Werror)
-  endif()
-endforeach()
-

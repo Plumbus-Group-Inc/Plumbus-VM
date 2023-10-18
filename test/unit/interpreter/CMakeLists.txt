@@ -1,5 +1,2 @@
-add_executable(test-example example.cpp)
-upd_tar_list(test-example UNIT)
-
-add_executable(test-square-eq square-eq.cpp)
-upd_tar_list(test-square-eq UNIT)
+pvm_add_test(test-example example.cpp)
+pvm_add_test(test-square-eq square-eq.cpp)
