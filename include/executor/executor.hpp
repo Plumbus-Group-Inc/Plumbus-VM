@@ -9,6 +9,7 @@ class Executor {
 public:
   explicit Executor(/* Memory */);
   void exec(Instruction instr);
+  [[nodiscard]] RegFile const &getState() const;
 
 private:
   void nextPC();

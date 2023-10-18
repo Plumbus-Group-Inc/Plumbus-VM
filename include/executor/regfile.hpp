@@ -9,8 +9,6 @@
 namespace pvm {
 
 class RegFile final {
-  using Addr = std::uint64_t;
-
 public:
   void writeF(RegisterId regId, Float val);
   void writeI(RegisterId regId, Int val);

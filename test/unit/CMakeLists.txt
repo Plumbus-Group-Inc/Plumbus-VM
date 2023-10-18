@@ -1,5 +1,5 @@
 add_library(pvm-utest-settings INTERFACE)
-target_link_libraries(pvm-utest-settings INTERFACE pvm-lib-settings gtest_main)
+target_link_libraries(pvm-utest-settings INTERFACE pvm-settings gtest_main)
 
 macro(pvm_add_test TEST SOURCES)
   add_executable(${TEST} ${SOURCES})

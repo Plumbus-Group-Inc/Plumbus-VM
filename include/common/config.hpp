@@ -5,12 +5,13 @@
 
 namespace pvm {
 
-using Int = int32_t;
+using Addr = std::uint64_t;
+using Int = std::int32_t;
 using Float = float;
 
-using RegisterId = uint8_t;
-using OperationId = uint32_t;
-using Opcode = uint8_t;
+using RegisterId = std::uint8_t;
+using OperationId = std::uint32_t;
+using Opcode = std::uint8_t;
 
 constexpr const size_t kRegistersCount = 1ull << (sizeof(RegisterId) * 8);
 

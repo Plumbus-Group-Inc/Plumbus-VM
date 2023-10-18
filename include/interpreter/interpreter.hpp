@@ -2,6 +2,7 @@
 
 #include "decoder/decoder.hpp"
 #include "executor/executor.hpp"
+#include "memory/memory.hpp"
 
 namespace pvm {
 
@@ -10,10 +11,12 @@ public:
   void run();
 
 private:
+  Memory m_mem;
   Decoder m_dec;
   Executor m_exec;
-  // memory
-  // pc
+
+  void runIter();
+  bool finished();
 };
 
 } // namespace pvm

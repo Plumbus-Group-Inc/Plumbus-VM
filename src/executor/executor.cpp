@@ -45,6 +45,8 @@ void Executor::exec(Instruction instr) {
   }
 }
 
+RegFile const &Executor::getState() const { return m_regFile; }
+
 void Executor::nextPC() {
   auto newPC = m_regFile.readPC() + 1;
   m_regFile.writePC(newPC);
