@@ -8,8 +8,7 @@ macro(pvm_add_test TEST SOURCES)
   set_property(TEST ${TEST} PROPERTY LABELS unit)
 endmacro()
 
-list_dirs(DIRS ${CMAKE_CURRENT_SOURCE_DIR})
-
+set(DIRS interpreter)
 foreach(DIR ${DIRS})
   add_subdirectory(${DIR})
   message(STATUS "Included subdirectory: ${DIR}")
