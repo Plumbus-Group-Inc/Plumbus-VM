@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "common/config.hpp"
 #include "common/instruction.hpp"
 #include "executor/executor.hpp"
 #include "executor/regfile.hpp"
@@ -67,28 +68,28 @@ void Executor::execLoadImmF(Instruction instr) {
 void Executor::execALUBinary(Instruction instr) {
   switch (instr.op) {
   case OP_ADD_I:
-    execALUBinaryAddI(instr);
+    handleALUBinaryI(instr, std::plus<Int>{});
     break;
   case OP_ADD_F:
-    execALUBinaryAddF(instr);
+    handleALUBinaryF(instr, std::plus<Float>{});
     break;
   case OP_SUB_I:
-    execALUBinarySubI(instr);
+    handleALUBinaryI(instr, std::minus<Int>{});
     break;
   case OP_SUB_F:
-    execALUBinarySubF(instr);
+    handleALUBinaryF(instr, std::minus<Float>{});
     break;
   case OP_MUL_I:
-    execALUBinaryMulI(instr);
+    handleALUBinaryI(instr, std::multiplies<Int>{});
     break;
   case OP_MUL_F:
-    execALUBinaryMulF(instr);
+    handleALUBinaryF(instr, std::multiplies<Float>{});
     break;
   case OP_DIV_I:
-    execALUBinaryDivI(instr);
+    handleALUBinaryI(instr, std::divides<Int>{});
     break;
   case OP_DIV_F:
-    execALUBinaryDivF(instr);
+    handleALUBinaryF(instr, std::divides<Float>{});
     break;
   default:
     throw std::runtime_error{"Unknown binary operation"};
@@ -97,61 +98,18 @@ void Executor::execALUBinary(Instruction instr) {
   nextPC();
 }
 
-void Executor::execALUBinaryAddI(Instruction instr) {
-  auto lhs = m_regFile.readI(instr.rs1);
-  auto rhs = m_regFile.readI(instr.rs2);
-  m_regFile.writeI(instr.rd, lhs + rhs);
-}
-
-void Executor::execALUBinaryAddF(Instruction instr) {
-  auto lhs = m_regFile.readF(instr.rs1);
-  auto rhs = m_regFile.readF(instr.rs2);
-  m_regFile.writeF(instr.rd, lhs + rhs);
-}
-
-void Executor::execALUBinarySubI(Instruction instr) {
-  auto lhs = m_regFile.readI(instr.rs1);
-  auto rhs = m_regFile.readI(instr.rs2);
-  m_regFile.writeI(instr.rd, lhs - rhs);
-}
-
-void Executor::execALUBinarySubF(Instruction instr) {
-  auto lhs = m_regFile.readF(instr.rs1);
-  auto rhs = m_regFile.readF(instr.rs2);
-  m_regFile.writeF(instr.rd, lhs - rhs);
-}
-
-void Executor::execALUBinaryMulI(Instruction instr) {
-  auto lhs = m_regFile.readI(instr.rs1);
-  auto rhs = m_regFile.readI(instr.rs2);
-  m_regFile.writeI(instr.rd, lhs * rhs);
-}
-
-void Executor::execALUBinaryMulF(Instruction instr) {
-  auto lhs = m_regFile.readF(instr.rs1);
-  auto rhs = m_regFile.readF(instr.rs2);
-  m_regFile.writeF(instr.rd, lhs * rhs);
-}
-
-void Executor::execALUBinaryDivI(Instruction instr) {
-  auto lhs = m_regFile.readI(instr.rs1);
-  auto rhs = m_regFile.readI(instr.rs2);
-  m_regFile.writeI(instr.rd, lhs / rhs);
-}
-
-void Executor::execALUBinaryDivF(Instruction instr) {
-  auto lhs = m_regFile.readF(instr.rs1);
-  auto rhs = m_regFile.readF(instr.rs2);
-  m_regFile.writeF(instr.rd, lhs / rhs);
-}
+static Float sqrtF(Float val) { return std::sqrt(val); }
+static Int sqrtI(Int val) { return std::sqrt(val); }
+static Float absF(Float val) { return std::fabs(val); }
+static Int absI(Int val) { return std::abs(val); }
 
 void Executor::execALUUnary(Instruction instr) {
   switch (instr.op) {
   case OP_SQRT_I:
-    execALUUnarySqrtI(instr);
+    handleALUUnaryI(instr, sqrtI);
     break;
   case OP_SQRT_F:
-    execALUUnarySqrtF(instr);
+    handleALUUnaryF(instr, sqrtF);
     break;
   case OP_CAST_ITOF:
     execALUUnaryCastItoF(instr);
@@ -160,26 +118,16 @@ void Executor::execALUUnary(Instruction instr) {
     execALUUnaryCastFtoI(instr);
     break;
   case OP_ABS_I:
-    execALUUnaryAbsI(instr);
+    handleALUUnaryI(instr, absI);
     break;
   case OP_ABS_F:
-    execALUUnaryAbsF(instr);
+    handleALUUnaryF(instr, absF);
     break;
   default:
     throw std::runtime_error{"Unknown unary operation"};
   }
 
   nextPC();
-}
-
-void Executor::execALUUnarySqrtI(Instruction instr) {
-  auto arg = m_regFile.readI(instr.rs1);
-  m_regFile.writeI(instr.rd, std::sqrt(arg));
-}
-
-void Executor::execALUUnarySqrtF(Instruction instr) {
-  auto arg = m_regFile.readF(instr.rs1);
-  m_regFile.writeF(instr.rd, std::sqrt(arg));
 }
 
 void Executor::execALUUnaryCastItoF(Instruction instr) {
@@ -190,16 +138,6 @@ void Executor::execALUUnaryCastItoF(Instruction instr) {
 void Executor::execALUUnaryCastFtoI(Instruction instr) {
   auto arg = m_regFile.readF(instr.rs1);
   m_regFile.writeI(instr.rd, arg);
-}
-
-void Executor::execALUUnaryAbsI(Instruction instr) {
-  auto arg = m_regFile.readI(instr.rs1);
-  m_regFile.writeI(instr.rd, std::abs(arg));
-}
-
-void Executor::execALUUnaryAbsF(Instruction instr) {
-  auto arg = m_regFile.readF(instr.rs1);
-  m_regFile.writeF(instr.rd, std::fabs(arg));
 }
 
 void Executor::execIO(Instruction instr) {
@@ -243,12 +181,14 @@ void Executor::execIOWriteF(Instruction instr) {
   std::cout << m_regFile.readF(instr.rs1) << std::endl;
 }
 
-void Executor::execBLessF(Instruction instr) {}
+void Executor::execBLessF(Instruction instr) { handleBranch(instr, std::less<Float>{}); }
 
-void Executor::execBLessI(Instruction instr) {}
+void Executor::execBLessI(Instruction instr) { handleBranch(instr, std::less<Int>{}); }
 
-void Executor::execBEQF(Instruction instr) {}
+void Executor::execBEQF(Instruction instr) {
+  handleBranch(instr, std::equal_to<Float>{});
+}
 
-void Executor::execBEQI(Instruction instr) {}
+void Executor::execBEQI(Instruction instr) { handleBranch(instr, std::equal_to<Int>{}); }
 
 } // namespace pvm

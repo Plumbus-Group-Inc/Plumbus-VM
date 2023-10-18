@@ -5,7 +5,7 @@
 
 namespace pvm {
 
-using Addr = std::uint64_t;
+using Addr = std::uint32_t;
 using Int = std::int32_t;
 using Float = float;
 
