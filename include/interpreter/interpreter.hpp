@@ -16,4 +16,4 @@ private:
   // pc
 };
 
-}
+} // namespace pvm
