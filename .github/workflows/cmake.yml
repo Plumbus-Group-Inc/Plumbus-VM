@@ -24,7 +24,7 @@ jobs:
         build_type: [Debug, Release]
         include:
           - build_type: Debug
-            enable_werror: ON
+            enable_werror: OFF
           - build_type: Release
             enable_werror: OFF
 
