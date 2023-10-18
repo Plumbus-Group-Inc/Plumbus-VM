@@ -2,6 +2,7 @@
 
 #include "common/config.hpp"
 #include <cassert>
+#include <exception>
 #include <stdexcept>
 #include <variant>
 
@@ -11,7 +12,7 @@ template <typename RequetedType>
 concept RequestedValueConcept =
     std::is_same_v<RequetedType, Int> || std::is_same_v<RequetedType, Float>;
 
-class Value {
+class Value final {
 public:
   enum class TypeId {
     UNDEFINED,
@@ -35,16 +36,17 @@ public:
   }
 
 public:
-  class MismatchError {};
+  class MismatchError final : std::exception {};
 
   Value();
   explicit Value(Int value);
   explicit Value(Float value);
   ~Value() = default;
 
-  TypeId getType() const noexcept;
-  bool sameType(TypeId type) const noexcept;
-  template <RequestedValueConcept RequetedType> bool sameType() const noexcept;
+  [[nodiscard]] TypeId getType() const noexcept;
+  [[nodiscard]] bool sameType(TypeId type) const noexcept;
+  template <RequestedValueConcept RequetedType>
+  [[nodiscard]] bool sameType() const noexcept;
 
   template <RequestedValueConcept RequetedType> RequetedType read() const;
 

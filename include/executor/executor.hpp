@@ -1,5 +1,7 @@
 #pragma once
 
+#include "executor/regfile.hpp"
+
 namespace pvm {
 
 class Executor {
@@ -10,7 +12,7 @@ public:
 private:
   void nextPC();
 
-  // Reg file
+  RegFile m_regFile{};
   // Memory
 };
 
