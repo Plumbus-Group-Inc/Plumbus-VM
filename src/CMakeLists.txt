@@ -1,4 +1,4 @@
-set(SUBDIRLIST interpreter decoder)
+set(SUBDIRLIST interpreter decoder executor)
 
 foreach(DIR ${SUBDIRLIST})
   add_subdirectory(${DIR})
