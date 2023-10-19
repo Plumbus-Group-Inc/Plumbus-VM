@@ -10,15 +10,19 @@ namespace pvm {
 
 class RegFile final {
 public:
-  void writeF(RegisterId regId, Float val);
-  void writeI(RegisterId regId, Int val);
   void write(RegisterId regId, Value val);
   void writePC(Addr addr);
+  template <RequestedValueConcept RequestedType>
+  void write(RegisterId regId, RequestedType val) {
+    m_data.at(regId).write(val);
+  }
 
-  [[nodiscard]] Float readF(RegisterId regId) const;
-  [[nodiscard]] Int readI(RegisterId regId) const;
   [[nodiscard]] Value read(RegisterId regId) const;
   [[nodiscard]] Addr readPC() const;
+  template <RequestedValueConcept RequestedType>
+  [[nodiscard]] auto read(RegisterId regId) const {
+    return m_data.at(regId).read<RequestedType>();
+  }
 
 private:
   static constexpr std::size_t kRegNum = 1U << (sizeof(RegisterId) * 8);

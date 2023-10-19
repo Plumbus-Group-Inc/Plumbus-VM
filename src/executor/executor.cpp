@@ -1,4 +1,5 @@
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 
@@ -15,10 +16,10 @@ void Executor::exec(Instruction instr) {
     execHalt(instr);
     break;
   case OPCODE_LOAD_IMM_I:
-    execLoadImmI(instr);
+    execLoadImm<Int>(instr);
     break;
   case OPCODE_LOAD_IMM_F:
-    execLoadImmF(instr);
+    execLoadImm<Float>(instr);
     break;
   case OPCODE_ALU_BINARY:
     execALUBinary(instr);
@@ -53,43 +54,33 @@ void Executor::nextPC() {
   m_regFile.writePC(newPC);
 }
 
-void Executor::execHalt(Instruction instr) {}
-
-void Executor::execLoadImmI(Instruction instr) {
-  m_regFile.writeI(instr.rd, instr.immi);
-  nextPC();
-}
-
-void Executor::execLoadImmF(Instruction instr) {
-  m_regFile.writeF(instr.rd, instr.immf);
-  nextPC();
-}
+void Executor::execHalt(Instruction) {}
 
 void Executor::execALUBinary(Instruction instr) {
   switch (instr.op) {
   case OP_ADD_I:
-    handleALUBinaryI(instr, std::plus<Int>{});
+    handleALUBinary<Int>(instr, std::plus<Int>{});
     break;
   case OP_ADD_F:
-    handleALUBinaryF(instr, std::plus<Float>{});
+    handleALUBinary<Float>(instr, std::plus<Float>{});
     break;
   case OP_SUB_I:
-    handleALUBinaryI(instr, std::minus<Int>{});
+    handleALUBinary<Int>(instr, std::minus<Int>{});
     break;
   case OP_SUB_F:
-    handleALUBinaryF(instr, std::minus<Float>{});
+    handleALUBinary<Float>(instr, std::minus<Float>{});
     break;
   case OP_MUL_I:
-    handleALUBinaryI(instr, std::multiplies<Int>{});
+    handleALUBinary<Int>(instr, std::multiplies<Int>{});
     break;
   case OP_MUL_F:
-    handleALUBinaryF(instr, std::multiplies<Float>{});
+    handleALUBinary<Float>(instr, std::multiplies<Float>{});
     break;
   case OP_DIV_I:
-    handleALUBinaryI(instr, std::divides<Int>{});
+    handleALUBinary<Int>(instr, std::divides<Int>{});
     break;
   case OP_DIV_F:
-    handleALUBinaryF(instr, std::divides<Float>{});
+    handleALUBinary<Float>(instr, std::divides<Float>{});
     break;
   default:
     throw std::runtime_error{"Unknown binary operation"};
@@ -98,30 +89,25 @@ void Executor::execALUBinary(Instruction instr) {
   nextPC();
 }
 
-static Float sqrtF(Float val) { return std::sqrt(val); }
-static Int sqrtI(Int val) { return std::sqrt(val); }
-static Float absF(Float val) { return std::fabs(val); }
-static Int absI(Int val) { return std::abs(val); }
-
 void Executor::execALUUnary(Instruction instr) {
   switch (instr.op) {
   case OP_SQRT_I:
-    handleALUUnaryI(instr, sqrtI);
+    handleALUUnary<Int, Int>(instr, [](Int val) { return std::sqrt(val); });
     break;
   case OP_SQRT_F:
-    handleALUUnaryF(instr, sqrtF);
+    handleALUUnary<Float, Float>(instr, [](Float val) { return std::sqrt(val); });
     break;
   case OP_CAST_ITOF:
-    execALUUnaryCastItoF(instr);
+    handleALUUnary<Int, Float>(instr, std::identity{});
     break;
   case OP_CAST_FTOI:
-    execALUUnaryCastFtoI(instr);
+    handleALUUnary<Float, Int>(instr, std::identity{});
     break;
   case OP_ABS_I:
-    handleALUUnaryI(instr, absI);
+    handleALUUnary<Int, Int>(instr, [](Int val) { return std::abs(val); });
     break;
   case OP_ABS_F:
-    handleALUUnaryF(instr, absF);
+    handleALUUnary<Float, Float>(instr, [](Float val) { return std::fabs(val); });
     break;
   default:
     throw std::runtime_error{"Unknown unary operation"};
@@ -130,55 +116,25 @@ void Executor::execALUUnary(Instruction instr) {
   nextPC();
 }
 
-void Executor::execALUUnaryCastItoF(Instruction instr) {
-  auto arg = m_regFile.readI(instr.rs1);
-  m_regFile.writeF(instr.rd, arg);
-}
-
-void Executor::execALUUnaryCastFtoI(Instruction instr) {
-  auto arg = m_regFile.readF(instr.rs1);
-  m_regFile.writeI(instr.rd, arg);
-}
-
 void Executor::execIO(Instruction instr) {
   switch (instr.op) {
   case OP_READ_I:
-    execIOReadI(instr);
+    execIORead<Int>(instr);
     break;
   case OP_READ_F:
-    execIOReadF(instr);
+    execIORead<Float>(instr);
     break;
   case OP_WRITE_I:
-    execIOWriteI(instr);
+    execIOWrite<Int>(instr);
     break;
   case OP_WRITE_F:
-    execIOWriteF(instr);
+    execIOWrite<Float>(instr);
     break;
   default:
     throw std::runtime_error{"Unknown IO operation"};
   }
 
   nextPC();
-}
-
-void Executor::execIOReadI(Instruction instr) {
-  Int val = 0;
-  std::cin >> val;
-  m_regFile.writeI(instr.rd, val);
-}
-
-void Executor::execIOReadF(Instruction instr) {
-  Float val = 0;
-  std::cin >> val;
-  m_regFile.writeF(instr.rd, val);
-}
-
-void Executor::execIOWriteI(Instruction instr) {
-  std::cout << m_regFile.readI(instr.rs1) << std::endl;
-}
-
-void Executor::execIOWriteF(Instruction instr) {
-  std::cout << m_regFile.readF(instr.rs1) << std::endl;
 }
 
 void Executor::execBLessF(Instruction instr) { handleBranch(instr, std::less<Float>{}); }
