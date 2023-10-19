@@ -2,6 +2,12 @@
 
 namespace pvm {
 
+Value::Value() : m_type(TypeId::UNDEFINED), m_value() {}
+
+Value::Value(Int value) : m_type(TypeId::INT), m_value() { m_value.i = value; }
+
+Value::Value(Float value) : m_type(TypeId::FLOAT), m_value() { m_value.f = value; }
+
 Value::Variant Value::read(TypeId typeId) {
   this->validateType(typeId);
   switch (typeId) {

@@ -1,6 +1,6 @@
 
 add_library(pvm-tool-settings INTERFACE)
-target_link_libraries(pvm-tool-settings INTERFACE CLI11::CLI11)
+target_link_libraries(pvm-tool-settings INTERFACE pvm-settings CLI11::CLI11)
 
 set(TOOLLIST pvm)
 foreach(TOOL ${TOOLLIST})

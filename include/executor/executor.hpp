@@ -11,14 +11,14 @@ namespace pvm {
 
 class Executor {
 public:
-  explicit Executor(/* Memory */);
+  explicit Executor(Memory &mem) : m_mem(mem) {}
   void exec(Instruction instr);
   [[nodiscard]] RegFile const &getState() const;
 
 private:
   void nextPC();
 
-  Memory m_mem{};
+  std::reference_wrapper<Memory> m_mem;
   RegFile m_regFile{};
 
   void execHalt(Instruction instr);
