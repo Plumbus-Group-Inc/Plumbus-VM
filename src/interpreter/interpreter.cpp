@@ -11,12 +11,12 @@ void Interpreter::run() {
 }
 
 void Interpreter::runIter() {
-  m_prevPC = m_exec.getState().readPC();
+  m_prevPC = m_exec.getRegFile().readPC();
   auto instrByteCode = m_code.loadWord(m_prevPC);
   auto instr = m_dec.parse(instrByteCode);
   m_exec.exec(instr);
 }
 
-bool Interpreter::finished() { return m_exec.getState().readPC() == m_prevPC; }
+bool Interpreter::finished() { return m_exec.getRegFile().readPC() == m_prevPC; }
 
 } // namespace pvm

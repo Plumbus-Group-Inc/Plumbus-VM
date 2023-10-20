@@ -12,15 +12,13 @@ class RegFile final {
 public:
   void write(RegisterId regId, Value val);
   void writePC(Addr addr);
-  template <RequestedValueConcept RequestedType>
-  void write(RegisterId regId, RequestedType val) {
+  template <ValuePayload RequestedType> void write(RegisterId regId, RequestedType val) {
     m_data.at(regId).overwrite(val);
   }
 
   [[nodiscard]] Value read(RegisterId regId) const;
   [[nodiscard]] Addr readPC() const;
-  template <RequestedValueConcept RequestedType>
-  [[nodiscard]] auto read(RegisterId regId) const {
+  template <ValuePayload RequestedType> [[nodiscard]] auto read(RegisterId regId) const {
     return m_data.at(regId).read<RequestedType>();
   }
 

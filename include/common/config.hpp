@@ -9,7 +9,7 @@ using Int = std::int32_t;
 using Float = float;
 
 using Addr = std::uint32_t;
-using Word = std::uint64_t;
+using Bytecode = std::uint64_t;
 
 using RegisterId = std::uint8_t;
 using OperationId = std::uint32_t;

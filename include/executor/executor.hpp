@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
 
 #include "common/config.hpp"
@@ -13,7 +14,7 @@ class Executor {
 public:
   explicit Executor(Memory &mem) : m_mem(mem) {}
   void exec(Instruction instr);
-  [[nodiscard]] RegFile const &getState() const;
+  [[nodiscard]] RegFile const &getRegFile() const;
 
 private:
   void nextPC();
@@ -22,7 +23,7 @@ private:
   RegFile m_regFile{};
 
   void execHalt(Instruction instr);
-  template <RequestedValueConcept T> void execLoadImm(Instruction instr) {
+  template <ValuePayload T> void execLoadImm(Instruction instr) {
     if constexpr (std::is_same_v<T, Int>) {
       m_regFile.write<T>(instr.rd, instr.immi);
     } else {
@@ -32,28 +33,28 @@ private:
   }
 
   void execALUBinary(Instruction instr);
-  template <RequestedValueConcept T, typename F>
-  void handleALUBinary(Instruction instr, F func) {
+  template <ValuePayload T>
+  void handleALUBinary(Instruction instr, std::function<T(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);
     m_regFile.write<T>(instr.rd, func(lhs, rhs));
   }
 
   void execALUUnary(Instruction instr);
-  template <RequestedValueConcept T1, RequestedValueConcept T2, typename F>
-  void handleALUUnary(Instruction instr, F func) {
+  template <ValuePayload T1, ValuePayload T2>
+  void handleALUUnary(Instruction instr, std::function<T2(T1)> func) {
     auto arg = m_regFile.read<T1>(instr.rs1);
     m_regFile.write<T2>(instr.rd, func(arg));
   }
 
   void execIO(Instruction instr);
-  template <RequestedValueConcept T> void execIORead(Instruction instr) {
+  template <ValuePayload T> void execIORead(Instruction instr) {
     T val = 0;
     std::cin >> val;
     m_regFile.write(instr.rd, val);
   }
 
-  template <RequestedValueConcept T> void execIOWrite(Instruction instr) {
+  template <ValuePayload T> void execIOWrite(Instruction instr) {
     std::cout << m_regFile.read<T>(instr.rs1) << std::endl;
   }
 
@@ -62,8 +63,8 @@ private:
   void execBEQF(Instruction instr);
   void execBEQI(Instruction instr);
 
-  template <RequestedValueConcept T, typename F>
-  void handleBranch(Instruction instr, F func) {
+  template <ValuePayload T>
+  void handleBranch(Instruction instr, std::function<bool(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);
     if (func(lhs, rhs)) {

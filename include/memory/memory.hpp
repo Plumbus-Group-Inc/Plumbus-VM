@@ -29,13 +29,13 @@ private:
 
 class Code final {
 public:
-  explicit Code(const std::vector<Word> &data);
-  explicit Code(std::vector<Word> &&data);
+  explicit Code(const std::vector<Bytecode> &data);
+  explicit Code(std::vector<Bytecode> &&data);
 
-  Word loadWord(Addr pc);
+  Bytecode loadWord(Addr pc);
 
 private:
-  std::vector<Word> m_data{};
+  std::vector<Bytecode> m_data{};
 };
 
 } // namespace pvm
