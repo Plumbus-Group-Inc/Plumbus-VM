@@ -1,12 +1,12 @@
+#include <sstream>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include "common/instruction.hpp"
+#include "interpreter/interpreter.hpp"
 
 using namespace pvm;
-
-using Instr = Instruction;
 
 TEST(Interpreter, SquareEquation) {
   // clang-format off
@@ -56,6 +56,24 @@ TEST(Interpreter, SquareEquation) {
   };
   // clang-format on
 
-  // TODO: finish test
-  ASSERT_TRUE(true);
+  std::vector<Bytecode> data{};
+  std::transform(instrs.begin(), instrs.end(), std::back_inserter(data),
+                 [](auto instr) { return *reinterpret_cast<Bytecode *>(&instr); });
+
+  Code code{std::move(data)};
+
+  std::stringstream ist{};
+  std::stringstream ost{};
+  Interpreter interp{code, ost, ist};
+
+  ist << "1 3 2" << std::endl;
+  interp.run();
+
+  Float x2 = 0;
+  ost >> x2;
+  ASSERT_FLOAT_EQ(x2, -2);
+
+  Float x1 = 0;
+  ost >> x1;
+  ASSERT_FLOAT_EQ(x1, -1);
 }
