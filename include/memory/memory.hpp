@@ -33,6 +33,7 @@ public:
   explicit Code(std::vector<Word> &&data);
 
   Word loadWord(Addr pc);
+
 private:
   std::vector<Word> m_data{};
 };
