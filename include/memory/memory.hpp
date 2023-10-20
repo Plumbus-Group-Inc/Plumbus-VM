@@ -32,7 +32,7 @@ public:
   explicit Code(const std::vector<Bytecode> &data);
   explicit Code(std::vector<Bytecode> &&data);
 
-  Bytecode loadWord(Addr pc);
+  Bytecode loadInstr(Addr pc);
 
 private:
   std::vector<Bytecode> m_data{};

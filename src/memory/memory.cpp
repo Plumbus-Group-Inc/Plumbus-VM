@@ -13,6 +13,6 @@ void Memory::storeValF(Addr addr, Float val) { m_data[addr].write(val); }
 Code::Code(const std::vector<Bytecode> &data) : m_data(data) {}
 Code::Code(std::vector<Bytecode> &&data) : m_data(std::move(data)) {}
 
-Bytecode Code::loadWord(Addr pc) { return m_data[pc]; }
+Bytecode Code::loadInstr(Addr pc) { return m_data[pc]; }
 
 } // namespace pvm
