@@ -18,9 +18,9 @@ public:
   }
 
   [[nodiscard]] std::uint64_t loadWord(Addr addr) const;
+
   void storeVal(Addr addr, Value val);
-  void storeValI(Addr addr, Int val);
-  void storeValF(Addr addr, Float val);
+  template <ValuePayload T> void storeVal(Addr addr, T val) { m_data[addr].write(val); }
 
 private:
   // TODO: temporary

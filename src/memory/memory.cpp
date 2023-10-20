@@ -7,8 +7,6 @@ namespace pvm {
 }
 
 void Memory::storeVal(Addr addr, Value val) { m_data[addr] = val; }
-void Memory::storeValI(Addr addr, Int val) { m_data[addr].write(val); }
-void Memory::storeValF(Addr addr, Float val) { m_data[addr].write(val); }
 
 Code::Code(const std::vector<Bytecode> &data) : m_data(data) {}
 Code::Code(std::vector<Bytecode> &&data) : m_data(std::move(data)) {}
