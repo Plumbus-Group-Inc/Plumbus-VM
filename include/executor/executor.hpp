@@ -23,7 +23,11 @@ private:
 
   void execHalt(Instruction instr);
   template <RequestedValueConcept T> void execLoadImm(Instruction instr) {
-    m_regFile.write<T>(instr.rd, instr.immi);
+    if constexpr (std::is_same_v<T, Int>) {
+      m_regFile.write<T>(instr.rd, instr.immi);
+    } else {
+      m_regFile.write<T>(instr.rd, instr.immf);
+    }
     nextPC();
   }
 
