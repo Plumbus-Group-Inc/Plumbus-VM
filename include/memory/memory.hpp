@@ -12,6 +12,7 @@ namespace pvm {
 
 class Memory final {
 public:
+  explicit Memory() = default;
   explicit Memory(std::vector<Value> const &data) {
     std::copy(data.begin(), data.end(), m_data.begin());
   }
@@ -24,6 +25,16 @@ public:
 private:
   // TODO: temporary
   std::array<Value, 1024> m_data{};
+};
+
+class Code final {
+public:
+  explicit Code(const std::vector<Word> &data);
+  explicit Code(std::vector<Word> &&data);
+
+  Word loadWord(Addr pc);
+private:
+  std::vector<Word> m_data{};
 };
 
 } // namespace pvm

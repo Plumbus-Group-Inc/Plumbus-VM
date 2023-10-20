@@ -7,9 +7,12 @@ namespace pvm {
 }
 
 void Memory::storeVal(Addr addr, Value val) { m_data.at(addr) = val; }
-
 void Memory::storeValI(Addr addr, Int val) { m_data.at(addr).write(val); }
-
 void Memory::storeValF(Addr addr, Float val) { m_data.at(addr).write(val); }
+
+Code::Code(const std::vector<Word> &data) : m_data(data) {}
+Code::Code(std::vector<Word> &&data) : m_data(std::move(data)) {}
+
+Word Code::loadWord(Addr pc) { return m_data.at(pc); }
 
 } // namespace pvm

@@ -58,9 +58,10 @@ private:
   void execBEQF(Instruction instr);
   void execBEQI(Instruction instr);
 
-  template <typename F> void handleBranch(Instruction instr, F func) {
-    auto lhs = m_regFile.read<Int>(instr.rs1);
-    auto rhs = m_regFile.read<Int>(instr.rs2);
+  template <RequestedValueConcept T, typename F>
+  void handleBranch(Instruction instr, F func) {
+    auto lhs = m_regFile.read<T>(instr.rs1);
+    auto rhs = m_regFile.read<T>(instr.rs2);
     if (func(lhs, rhs)) {
       auto pc = m_regFile.readPC();
       m_regFile.writePC(pc + instr.immi);

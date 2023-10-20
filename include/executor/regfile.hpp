@@ -14,7 +14,7 @@ public:
   void writePC(Addr addr);
   template <RequestedValueConcept RequestedType>
   void write(RegisterId regId, RequestedType val) {
-    m_data.at(regId).write(val);
+    m_data.at(regId).overwrite(val);
   }
 
   [[nodiscard]] Value read(RegisterId regId) const;

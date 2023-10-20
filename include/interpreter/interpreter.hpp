@@ -10,13 +10,14 @@ namespace pvm {
 
 class Interpreter final {
 public:
-  explicit Interpreter(const Memory &mem);
+  explicit Interpreter(Code code);
 
   void run();
 
 private:
   Addr m_prevPC{std::numeric_limits<Addr>::max()};
 
+  Code m_code;
   Memory m_mem;
   Decoder m_dec{};
   Executor m_exec;

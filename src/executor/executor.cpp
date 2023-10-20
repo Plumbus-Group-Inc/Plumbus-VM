@@ -137,14 +137,20 @@ void Executor::execIO(Instruction instr) {
   nextPC();
 }
 
-void Executor::execBLessF(Instruction instr) { handleBranch(instr, std::less<Float>{}); }
-
-void Executor::execBLessI(Instruction instr) { handleBranch(instr, std::less<Int>{}); }
-
-void Executor::execBEQF(Instruction instr) {
-  handleBranch(instr, std::equal_to<Float>{});
+void Executor::execBLessF(Instruction instr) {
+  handleBranch<Float>(instr, std::less<Float>{});
 }
 
-void Executor::execBEQI(Instruction instr) { handleBranch(instr, std::equal_to<Int>{}); }
+void Executor::execBLessI(Instruction instr) {
+  handleBranch<Int>(instr, std::less<Int>{});
+}
+
+void Executor::execBEQF(Instruction instr) {
+  handleBranch<Float>(instr, std::equal_to<Float>{});
+}
+
+void Executor::execBEQI(Instruction instr) {
+  handleBranch<Int>(instr, std::equal_to<Int>{});
+}
 
 } // namespace pvm
