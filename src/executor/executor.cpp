@@ -21,7 +21,7 @@ Executor::Executor(std::shared_ptr<Memory> mem, std::istream &ist)
 Executor::Executor(std::shared_ptr<Memory> mem, std::ostream &ost, std::istream &ist)
     : m_mem(std::move(mem)), m_ist(ist), m_ost(ost) {}
 
-void Executor::exec(Instruction instr) {
+void Executor::exec(Instr instr) {
   switch (instr.opcode) {
   case OPCODE_HALT:
     execHalt(instr);
@@ -67,9 +67,9 @@ void Executor::updatePC() {
   m_regFile.writePC(newPC);
 }
 
-void Executor::execHalt(Instruction) { m_halted = true; }
+void Executor::execHalt(Instr) { m_halted = true; }
 
-void Executor::execALUBinary(Instruction instr) {
+void Executor::execALUBinary(Instr instr) {
   switch (instr.op) {
   case OP_ADD_I:
     handleALUBinary<Int>(instr, std::plus<Int>{});
@@ -102,7 +102,7 @@ void Executor::execALUBinary(Instruction instr) {
   updatePC();
 }
 
-void Executor::execALUUnary(Instruction instr) {
+void Executor::execALUUnary(Instr instr) {
   switch (instr.op) {
   case OP_SQRT_I:
     handleALUUnary<Int, Int>(instr, [](Int val) { return std::sqrt(val); });
@@ -129,7 +129,7 @@ void Executor::execALUUnary(Instruction instr) {
   updatePC();
 }
 
-void Executor::execIO(Instruction instr) {
+void Executor::execIO(Instr instr) {
   switch (instr.op) {
   case OP_READ_I:
     execIORead<Int>(instr);

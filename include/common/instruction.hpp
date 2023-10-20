@@ -89,7 +89,7 @@ template <typename T>
 concept ImmT =
     std::is_same_v<T, Int> || std::is_same_v<T, Float> || std::is_same_v<T, OpId>;
 
-struct Instruction {
+struct Instr {
   Opcode opcode = 0;
 
   RegId rd = 0;

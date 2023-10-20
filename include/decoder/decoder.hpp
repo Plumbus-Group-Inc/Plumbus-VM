@@ -8,7 +8,7 @@ namespace pvm {
 
 class Decoder final {
 public:
-  [[nodiscard]] Instruction decode(std::uint64_t bytecode) const;
+  [[nodiscard]] Instr decode(std::uint64_t bytecode) const;
 };
 
 } // namespace pvm
