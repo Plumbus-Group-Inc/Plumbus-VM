@@ -3,7 +3,7 @@
 
 namespace pvm {
 
-Instruction Decoder::parse(std::uint64_t bytecode) const {
+Instruction Decoder::decode(std::uint64_t bytecode) const {
   return *reinterpret_cast<Instruction *>(&bytecode);
 }
 

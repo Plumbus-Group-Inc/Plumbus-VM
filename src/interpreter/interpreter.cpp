@@ -13,7 +13,7 @@ void Interpreter::run() {
 void Interpreter::runIter() {
   m_prevPC = m_exec.getRegFile().readPC();
   auto instrByteCode = m_code.loadWord(m_prevPC);
-  auto instr = m_dec.parse(instrByteCode);
+  auto instr = m_dec.decode(instrByteCode);
   m_exec.exec(instr);
 }
 
