@@ -45,8 +45,7 @@ public:
 
   [[nodiscard]] TypeId getType() const noexcept;
   [[nodiscard]] bool sameType(TypeId type) const noexcept;
-  template <ValuePayload RequetedType>
-  [[nodiscard]] bool sameType() const noexcept;
+  template <ValuePayload RequetedType> [[nodiscard]] bool sameType() const noexcept;
 
   template <ValuePayload RequetedType> RequetedType read() const;
 
@@ -81,8 +80,7 @@ template <> struct Value::TypeIdGetter<Float> {
 inline Value::TypeId Value::getType() const noexcept { return m_type; }
 inline bool Value::sameType(TypeId type) const noexcept { return type == m_type; }
 
-template <ValuePayload RequetedType>
-inline bool Value::sameType() const noexcept {
+template <ValuePayload RequetedType> inline bool Value::sameType() const noexcept {
   return GetTypeId<RequetedType>() == m_type;
 }
 
