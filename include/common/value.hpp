@@ -8,9 +8,8 @@
 
 namespace pvm {
 
-template <typename RequetedType>
-concept ValuePayload =
-    std::is_same_v<RequetedType, Int> || std::is_same_v<RequetedType, Float>;
+template <typename T>
+concept ValueT = std::is_same_v<T, Int> || std::is_same_v<T, Float>;
 
 class Value final {
 public:
@@ -28,11 +27,11 @@ public:
   using Variant = std::variant<Int, Float>;
 
 private:
-  template <ValuePayload RequestedType> struct TypeIdGetter;
+  template <ValueT T> struct TypeIdGetter;
 
 public:
-  template <ValuePayload RequetedType> static constexpr TypeId GetTypeId() {
-    return TypeIdGetter<RequetedType>::id;
+  template <ValueT T> static constexpr TypeId GetTypeId() {
+    return TypeIdGetter<T>::id;
   }
 
 public:
@@ -45,26 +44,26 @@ public:
 
   [[nodiscard]] TypeId getType() const noexcept;
   [[nodiscard]] bool sameType(TypeId type) const noexcept;
-  template <ValuePayload RequetedType> [[nodiscard]] bool sameType() const noexcept;
+  template <ValueT T> [[nodiscard]] bool sameType() const noexcept;
 
-  template <ValuePayload RequetedType> RequetedType read() const;
+  template <ValueT T> T read() const;
 
-  template <ValuePayload RequetedType> void write(RequetedType value);
+  template <ValueT T> void write(T value);
 
-  template <ValuePayload RequetedType> void overwrite(RequetedType value);
+  template <ValueT T> void overwrite(T value);
 
   Variant read(TypeId typeId);
   void write(TypeId typeId, Variant value);
   void overwrite(TypeId typeId, Variant value);
 
 private:
-  template <ValuePayload RequetedType> void validateType() const;
+  template <ValueT T> void validateType() const;
 
   void validateType(TypeId typeId) const;
 
-  template <ValuePayload RequetedType> RequetedType &getValueRef();
+  template <ValueT T> T &getValueRef();
 
-  template <ValuePayload RequetedType> RequetedType const &getValueRef() const;
+  template <ValueT T> T const &getValueRef() const;
 
   TypeId m_type;
   Union m_value;
@@ -80,26 +79,26 @@ template <> struct Value::TypeIdGetter<Float> {
 inline Value::TypeId Value::getType() const noexcept { return m_type; }
 inline bool Value::sameType(TypeId type) const noexcept { return type == m_type; }
 
-template <ValuePayload RequetedType> inline bool Value::sameType() const noexcept {
-  return GetTypeId<RequetedType>() == m_type;
+template <ValueT T> inline bool Value::sameType() const noexcept {
+  return GetTypeId<T>() == m_type;
 }
 
-template <ValuePayload RequetedType> RequetedType Value::read() const {
-  this->validateType<RequetedType>();
-  return this->getValueRef<RequetedType>();
+template <ValueT T> T Value::read() const {
+  this->validateType<T>();
+  return this->getValueRef<T>();
 }
 
-template <ValuePayload RequetedType> void Value::write(RequetedType value) {
-  this->validateType<RequetedType>();
-  this->getValueRef<RequetedType>() = value;
+template <ValueT T> void Value::write(T value) {
+  this->validateType<T>();
+  this->getValueRef<T>() = value;
 }
 
-template <ValuePayload RequetedType> void Value::overwrite(RequetedType value) {
-  this->m_type = GetTypeId<RequetedType>();
-  this->getValueRef<RequetedType>() = value;
+template <ValueT T> void Value::overwrite(T value) {
+  this->m_type = GetTypeId<T>();
+  this->getValueRef<T>() = value;
 }
-template <ValuePayload RequetedType> void Value::validateType() const {
-  if (!this->sameType<RequetedType>()) {
+template <ValueT T> void Value::validateType() const {
+  if (!this->sameType<T>()) {
     throw MismatchError();
   }
 }

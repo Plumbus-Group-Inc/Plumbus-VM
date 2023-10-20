@@ -21,13 +21,13 @@ enum : Opcode {
 };
 
 // Type bit
-enum : OperationId {
+enum : OpId {
   OP_TYPE_I = 0,
   OP_TYPE_F = 1,
 };
 
 // ALU binary raw operations
-enum : OperationId {
+enum : OpId {
   OP_ADD_I = 0,
   OP_ADD_F,
   OP_SUB_I,
@@ -39,7 +39,7 @@ enum : OperationId {
 };
 
 // ALU binary type independent operations
-enum : OperationId {
+enum : OpId {
   OP_ADD = 0,
   OP_SUB = 2,
   OP_MUL = 4,
@@ -47,7 +47,7 @@ enum : OperationId {
 };
 
 // ALU unary raw operations
-enum : OperationId {
+enum : OpId {
   OP_SQRT_I = 0,
   OP_SQRT_F,
   OP_CAST_ITOF,
@@ -57,14 +57,14 @@ enum : OperationId {
 };
 
 // ALU unary type independent operations
-enum : OperationId {
+enum : OpId {
   OP_SQRT = 0,
   OP_CAST = 2,
   OP_ABS = 4,
 };
 
 // IO raw operations
-enum : OperationId {
+enum : OpId {
   OP_READ_I = 0,
   OP_READ_F,
   OP_WRITE_I,
@@ -72,13 +72,13 @@ enum : OperationId {
 };
 
 // IO type independent operations
-enum : OperationId {
+enum : OpId {
   OP_READ = 0,
   OP_WRITE = 2,
 };
 
 // Branch raw operations
-enum : OperationId {
+enum : OpId {
   OP_BEQUAL_I = 0,
   OP_BEQUAL_F,
   OP_BLESS_I,
@@ -87,17 +87,17 @@ enum : OperationId {
 
 template <typename T>
 concept ImmT =
-    std::is_same_v<T, Int> || std::is_same_v<T, Float> || std::is_same_v<T, OperationId>;
+    std::is_same_v<T, Int> || std::is_same_v<T, Float> || std::is_same_v<T, OpId>;
 
 struct Instruction {
   Opcode opcode = 0;
 
-  RegisterId rd = 0;
-  RegisterId rs1 = 0;
-  RegisterId rs2 = 0;
+  RegId rd = 0;
+  RegId rs1 = 0;
+  RegId rs2 = 0;
 
   union {
-    OperationId op;
+    OpId op;
     Int immi;
     Float immf;
   };

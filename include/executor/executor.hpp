@@ -29,13 +29,13 @@ private:
 
   void execHalt(Instruction instr);
 
-  template <ValuePayload T> void execLoadImm(Instruction instr) {
+  template <ValueT T> void execLoadImm(Instruction instr) {
     m_regFile.write<T>(instr.rd, instr.getImm<T>());
     updatePC();
   }
 
   void execALUBinary(Instruction instr);
-  template <ValuePayload T>
+  template <ValueT T>
   void handleALUBinary(Instruction instr, std::function<T(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);
@@ -43,24 +43,24 @@ private:
   }
 
   void execALUUnary(Instruction instr);
-  template <ValuePayload T1, ValuePayload T2>
+  template <ValueT T1, ValueT T2>
   void handleALUUnary(Instruction instr, std::function<T2(T1)> func) {
     auto arg = m_regFile.read<T1>(instr.rs1);
     m_regFile.write<T2>(instr.rd, func(arg));
   }
 
   void execIO(Instruction instr);
-  template <ValuePayload T> void execIORead(Instruction instr) {
+  template <ValueT T> void execIORead(Instruction instr) {
     T val = 0;
     std::cin >> val;
     m_regFile.write(instr.rd, val);
   }
 
-  template <ValuePayload T> void execIOWrite(Instruction instr) {
+  template <ValueT T> void execIOWrite(Instruction instr) {
     std::cout << m_regFile.read<T>(instr.rs1) << std::endl;
   }
 
-  template <ValuePayload T>
+  template <ValueT T>
   void handleBranch(Instruction instr, std::function<bool(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);

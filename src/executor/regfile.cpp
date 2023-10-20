@@ -2,9 +2,9 @@
 
 namespace pvm {
 
-void RegFile::write(RegisterId regId, Value val) { m_data[regId] = val; }
+void RegFile::write(RegId regId, Value val) { m_data[regId] = val; }
 
-[[nodiscard]] Value RegFile::read(RegisterId regId) const { return m_data[regId]; }
+[[nodiscard]] Value RegFile::read(RegId regId) const { return m_data[regId]; }
 
 void RegFile::writePC(Addr addr) { m_pc = addr; }
 

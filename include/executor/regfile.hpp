@@ -10,20 +10,20 @@ namespace pvm {
 
 class RegFile final {
 public:
-  void write(RegisterId regId, Value val);
+  void write(RegId regId, Value val);
   void writePC(Addr addr);
-  template <ValuePayload RequestedType> void write(RegisterId regId, RequestedType val) {
+  template <ValueT T> void write(RegId regId, T val) {
     m_data[regId].overwrite(val);
   }
 
-  [[nodiscard]] Value read(RegisterId regId) const;
+  [[nodiscard]] Value read(RegId regId) const;
   [[nodiscard]] Addr readPC() const;
-  template <ValuePayload RequestedType> [[nodiscard]] auto read(RegisterId regId) const {
-    return m_data[regId].read<RequestedType>();
+  template <ValueT T> [[nodiscard]] auto read(RegId regId) const {
+    return m_data[regId].read<T>();
   }
 
 private:
-  static constexpr std::size_t kRegNum = 1U << (sizeof(RegisterId) * 8);
+  static constexpr std::size_t kRegNum = 1U << (sizeof(RegId) * 8);
   std::array<Value, kRegNum> m_data{};
   Addr m_pc{};
 };
