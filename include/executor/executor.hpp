@@ -30,11 +30,7 @@ private:
   void execHalt(Instruction instr);
 
   template <ValuePayload T> void execLoadImm(Instruction instr) {
-    if constexpr (std::is_same_v<T, Int>) {
-      m_regFile.write<T>(instr.rd, instr.immi);
-    } else {
-      m_regFile.write<T>(instr.rd, instr.immf);
-    }
+    m_regFile.write<T>(instr.rd, instr.getImm<T>());
     updatePC();
   }
 
@@ -64,18 +60,13 @@ private:
     std::cout << m_regFile.read<T>(instr.rs1) << std::endl;
   }
 
-  void execBLessF(Instruction instr);
-  void execBLessI(Instruction instr);
-  void execBEQF(Instruction instr);
-  void execBEQI(Instruction instr);
-
   template <ValuePayload T>
   void handleBranch(Instruction instr, std::function<bool(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);
     if (func(lhs, rhs)) {
       auto pc = m_regFile.readPC();
-      m_regFile.writePC(pc + instr.immi);
+      m_regFile.writePC(pc + instr.getImm<Int>());
     } else {
       updatePC();
     }

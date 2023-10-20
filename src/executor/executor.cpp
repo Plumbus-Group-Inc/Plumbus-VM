@@ -35,16 +35,16 @@ void Executor::exec(Instruction instr) {
     execIO(instr);
     break;
   case OPCODE_BLESS_F:
-    execBLessF(instr);
+    handleBranch<Float>(instr, std::less<Float>{});
     break;
   case OPCODE_BLESS_I:
-    execBLessI(instr);
+    handleBranch<Int>(instr, std::less<Int>{});
     break;
   case OPCODE_BEQ_F:
-    execBEQF(instr);
+    handleBranch<Float>(instr, std::equal_to<Float>{});
     break;
   case OPCODE_BEQ_I:
-    execBEQI(instr);
+    handleBranch<Int>(instr, std::equal_to<Int>{});
     break;
   default:
     throw std::runtime_error{"Unknown opcode"};
@@ -139,22 +139,6 @@ void Executor::execIO(Instruction instr) {
   }
 
   updatePC();
-}
-
-void Executor::execBLessF(Instruction instr) {
-  handleBranch<Float>(instr, std::less<Float>{});
-}
-
-void Executor::execBLessI(Instruction instr) {
-  handleBranch<Int>(instr, std::less<Int>{});
-}
-
-void Executor::execBEQF(Instruction instr) {
-  handleBranch<Float>(instr, std::equal_to<Float>{});
-}
-
-void Executor::execBEQI(Instruction instr) {
-  handleBranch<Int>(instr, std::equal_to<Int>{});
 }
 
 } // namespace pvm

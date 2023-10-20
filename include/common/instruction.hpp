@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #include "common/config.hpp"
 
@@ -84,6 +85,10 @@ enum : OperationId {
   OP_BLESS_F,
 };
 
+template <typename T>
+concept ImmT =
+    std::is_same_v<T, Int> || std::is_same_v<T, Float> || std::is_same_v<T, OperationId>;
+
 struct Instruction {
   Opcode opcode = 0;
 
@@ -96,6 +101,15 @@ struct Instruction {
     Int immi;
     Float immf;
   };
+
+  template <ImmT T> T getImm() {
+    if constexpr (std::is_same_v<T, Int>) {
+      return immi;
+    } else if constexpr (std::is_same_v<T, Float>) {
+      return immf;
+    }
+    return op;
+  }
 };
 
 } // namespace pvm

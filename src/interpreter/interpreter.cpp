@@ -2,7 +2,7 @@
 
 namespace pvm {
 
-Interpreter::Interpreter(Code code) : m_code(std::move(code)), m_exec(m_mem) {}
+Interpreter::Interpreter(Code code) : m_exec(m_mem), m_code(std::move(code)) {}
 
 void Interpreter::run() {
   while (!finished()) {
