@@ -12,9 +12,7 @@ class RegFile final {
 public:
   void write(RegId regId, Value val);
   void writePC(Addr addr);
-  template <ValueT T> void write(RegId regId, T val) {
-    m_data[regId].overwrite(val);
-  }
+  template <ValueT T> void write(RegId regId, T val) { m_data[regId].overwrite(val); }
 
   [[nodiscard]] Value read(RegId regId) const;
   [[nodiscard]] Addr readPC() const;

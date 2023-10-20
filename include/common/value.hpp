@@ -30,9 +30,7 @@ private:
   template <ValueT T> struct TypeIdGetter;
 
 public:
-  template <ValueT T> static constexpr TypeId GetTypeId() {
-    return TypeIdGetter<T>::id;
-  }
+  template <ValueT T> static constexpr TypeId GetTypeId() { return TypeIdGetter<T>::id; }
 
 public:
   class MismatchError final : std::exception {};
