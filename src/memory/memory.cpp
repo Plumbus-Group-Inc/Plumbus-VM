@@ -3,16 +3,16 @@
 namespace pvm {
 
 [[nodiscard]] std::uint64_t Memory::loadWord(Addr addr) const {
-  return static_cast<std::uint64_t>(m_data.at(addr).read<Int>());
+  return static_cast<std::uint64_t>(m_data[addr].read<Int>());
 }
 
-void Memory::storeVal(Addr addr, Value val) { m_data.at(addr) = val; }
-void Memory::storeValI(Addr addr, Int val) { m_data.at(addr).write(val); }
-void Memory::storeValF(Addr addr, Float val) { m_data.at(addr).write(val); }
+void Memory::storeVal(Addr addr, Value val) { m_data[addr] = val; }
+void Memory::storeValI(Addr addr, Int val) { m_data[addr].write(val); }
+void Memory::storeValF(Addr addr, Float val) { m_data[addr].write(val); }
 
 Code::Code(const std::vector<Bytecode> &data) : m_data(data) {}
 Code::Code(std::vector<Bytecode> &&data) : m_data(std::move(data)) {}
 
-Bytecode Code::loadWord(Addr pc) { return m_data.at(pc); }
+Bytecode Code::loadWord(Addr pc) { return m_data[pc]; }
 
 } // namespace pvm
