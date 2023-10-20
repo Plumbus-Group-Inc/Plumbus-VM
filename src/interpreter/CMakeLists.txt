@@ -1,9 +1,4 @@
-
 add_library(pvm-interpreter STATIC)
-target_sources(pvm-interpreter PRIVATE
-    ./value.cpp
-)
-target_include_directories(pvm-interpreter PRIVATE
-    ${CMAKE_SOURCE_DIR}/include)
-target_compile_features(pvm-interpreter PRIVATE cxx_std_20)
-
+target_sources(pvm-interpreter PRIVATE interpreter.cpp)
+target_link_libraries(pvm-interpreter PRIVATE pvm-lib-settings)
+target_link_libraries(pvm-interpreter PUBLIC pvm-decoder pvm-executor pvm-memory)

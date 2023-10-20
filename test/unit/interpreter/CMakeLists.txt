@@ -1,5 +1,4 @@
-add_executable(test-example example.cpp)
-upd_tar_list(test-example UNIT)
+pvm_add_test(test-example example.cpp)
 
-add_executable(test-square-eq square-eq.cpp)
-upd_tar_list(test-square-eq UNIT)
+pvm_add_test(test-square-eq square-eq.cpp)
+target_link_libraries(test-square-eq PRIVATE pvm-interpreter)

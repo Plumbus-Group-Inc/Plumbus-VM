@@ -17,8 +17,6 @@ project(Plumbus-VM
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(cmake/list-dirs.cmake)
-include(cmake/upd-tar-list.cmake)
 include(cmake/comp-flags.cmake)
 
 # indicate the tests build
@@ -30,23 +28,15 @@ if(BUILD_TESTS)
   enable_testing()
 endif()
 
+add_library(pvm-settings INTERFACE)
+target_include_directories(pvm-settings INTERFACE ${CMAKE_SOURCE_DIR}/include)
+target_compile_features(pvm-settings INTERFACE cxx_std_20)
+apply_compiler_flags(pvm-settings INTERFACE)
+if(ENABLE_WERROR)
+  target_compile_options(pvm-settings INTERFACE -Werror)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(test)
 add_subdirectory(thirdparty)
-
-message(VERBOSE "Collected libs: ${LIBLIST}")
-message(VERBOSE "Collected tools: ${TOOLLIST}")
-
-set(TARGETS)
-list(APPEND TARGETS ${LIBLIST} ${TOOLLIST})
-
-foreach(TARGET ${TARGETS})
-  target_include_directories(${TARGET} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-  target_compile_features(${TARGET} PRIVATE cxx_std_20)
-  apply_compiler_flags(${TARGET} PUBLIC)
-  if(ENABLE_WERROR)
-    target_compile_options(${TARGET} PRIVATE -Werror)
-  endif()
-endforeach()
-

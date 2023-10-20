@@ -1,17 +1,10 @@
-list_dirs(DIRS ${CMAKE_CURRENT_SOURCE_DIR})
-set(TOOLLIST ${DIRS})
 
-foreach(DIR ${DIRS})
-  add_subdirectory(${DIR})
-  message(STATUS "Included subdirectory: ${DIR}")
-endforeach()
+add_library(pvm-tool-settings INTERFACE)
+target_link_libraries(pvm-tool-settings INTERFACE pvm-settings CLI11::CLI11)
 
+set(TOOLLIST pvm)
 foreach(TOOL ${TOOLLIST})
-  set_target_properties(${TOOL} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                           "${CMAKE_BINARY_DIR}/bin/")
-  target_link_libraries(${TOOL} PRIVATE CLI11::CLI11)
+  add_subdirectory(${TOOL})
+  message(STATUS "Included subdirectory: ${DIR}")
+  set_target_properties(${TOOL} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 endforeach()
-
-set(TOOLLIST
-    "${TOOLLIST}"
-    PARENT_SCOPE)
