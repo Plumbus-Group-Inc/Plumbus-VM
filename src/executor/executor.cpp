@@ -10,6 +10,10 @@
 
 namespace pvm {
 
+Executor::Executor(std::shared_ptr<Memory> mem) : m_mem(std::move(mem)) {}
+
+bool Executor::isHalted() const { return m_halted; }
+
 void Executor::exec(Instruction instr) {
   switch (instr.opcode) {
   case OPCODE_HALT:
@@ -49,12 +53,12 @@ void Executor::exec(Instruction instr) {
 
 RegFile const &Executor::getRegFile() const { return m_regFile; }
 
-void Executor::nextPC() {
+void Executor::updatePC() {
   auto newPC = m_regFile.readPC() + 1;
   m_regFile.writePC(newPC);
 }
 
-void Executor::execHalt(Instruction) {}
+void Executor::execHalt(Instruction) { m_halted = true; }
 
 void Executor::execALUBinary(Instruction instr) {
   switch (instr.op) {
@@ -86,7 +90,7 @@ void Executor::execALUBinary(Instruction instr) {
     throw std::runtime_error{"Unknown binary operation"};
   }
 
-  nextPC();
+  updatePC();
 }
 
 void Executor::execALUUnary(Instruction instr) {
@@ -113,7 +117,7 @@ void Executor::execALUUnary(Instruction instr) {
     throw std::runtime_error{"Unknown unary operation"};
   }
 
-  nextPC();
+  updatePC();
 }
 
 void Executor::execIO(Instruction instr) {
@@ -134,7 +138,7 @@ void Executor::execIO(Instruction instr) {
     throw std::runtime_error{"Unknown IO operation"};
   }
 
-  nextPC();
+  updatePC();
 }
 
 void Executor::execBLessF(Instruction instr) {

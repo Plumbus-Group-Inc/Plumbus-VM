@@ -15,12 +15,10 @@ public:
   void run();
 
 private:
-  Addr m_prevPC{std::numeric_limits<Addr>::max()};
-
-  Code m_code;
-  Memory m_mem;
-  Decoder m_dec{};
+  std::shared_ptr<Memory> m_mem;
   Executor m_exec;
+  Decoder m_dec;
+  Code m_code;
 
   void runIter();
   bool finished();

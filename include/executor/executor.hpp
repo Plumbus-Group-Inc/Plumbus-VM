@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <iostream>
+#include <memory>
 
 #include "common/config.hpp"
 #include "common/instruction.hpp"
@@ -11,25 +12,30 @@
 namespace pvm {
 
 class Executor {
+private:
+  RegFile m_regFile{};
+  bool m_halted{false};
+  std::shared_ptr<Memory> m_mem;
+
 public:
-  explicit Executor(Memory &mem) : m_mem(mem) {}
+  explicit Executor(std::shared_ptr<Memory> mem);
+
+  bool isHalted() const;
   void exec(Instruction instr);
   [[nodiscard]] RegFile const &getRegFile() const;
 
 private:
-  void nextPC();
-
-  std::reference_wrapper<Memory> m_mem;
-  RegFile m_regFile{};
+  void updatePC();
 
   void execHalt(Instruction instr);
+
   template <ValuePayload T> void execLoadImm(Instruction instr) {
     if constexpr (std::is_same_v<T, Int>) {
       m_regFile.write<T>(instr.rd, instr.immi);
     } else {
       m_regFile.write<T>(instr.rd, instr.immf);
     }
-    nextPC();
+    updatePC();
   }
 
   void execALUBinary(Instruction instr);
@@ -71,7 +77,7 @@ private:
       auto pc = m_regFile.readPC();
       m_regFile.writePC(pc + instr.immi);
     } else {
-      nextPC();
+      updatePC();
     }
   }
 };
