@@ -11,6 +11,9 @@ namespace pvm {
 class Interpreter final {
 public:
   explicit Interpreter(Code code);
+  Interpreter(Code code, std::ostream &ost);
+  Interpreter(Code code, std::istream &ist);
+  Interpreter(Code code, std::ostream &ost, std::istream &ist);
 
   void run();
 

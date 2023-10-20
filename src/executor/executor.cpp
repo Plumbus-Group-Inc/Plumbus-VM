@@ -12,7 +12,14 @@ namespace pvm {
 
 Executor::Executor(std::shared_ptr<Memory> mem) : m_mem(std::move(mem)) {}
 
-bool Executor::isHalted() const { return m_halted; }
+Executor::Executor(std::shared_ptr<Memory> mem, std::ostream &ost)
+    : m_mem(std::move(mem)), m_ost(ost) {}
+
+Executor::Executor(std::shared_ptr<Memory> mem, std::istream &ist)
+    : m_mem(std::move(mem)), m_ist(ist) {}
+
+Executor::Executor(std::shared_ptr<Memory> mem, std::ostream &ost, std::istream &ist)
+    : m_mem(std::move(mem)), m_ist(ist), m_ost(ost) {}
 
 void Executor::exec(Instruction instr) {
   switch (instr.opcode) {
@@ -50,6 +57,8 @@ void Executor::exec(Instruction instr) {
     throw std::runtime_error{"Unknown opcode"};
   }
 }
+
+bool Executor::isHalted() const { return m_halted; }
 
 RegFile const &Executor::getRegFile() const { return m_regFile; }
 

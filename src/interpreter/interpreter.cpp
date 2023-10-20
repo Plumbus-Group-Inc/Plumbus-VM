@@ -4,6 +4,15 @@ namespace pvm {
 
 Interpreter::Interpreter(Code code) : m_exec(m_mem), m_code(std::move(code)) {}
 
+Interpreter::Interpreter(Code code, std::ostream &ost)
+    : m_exec(m_mem, ost), m_code(std::move(code)) {}
+
+Interpreter::Interpreter(Code code, std::istream &ist)
+    : m_exec(m_mem, ist), m_code(std::move(code)) {}
+
+Interpreter::Interpreter(Code code, std::ostream &ost, std::istream &ist)
+    : m_exec(m_mem, ost, ist), m_code(std::move(code)) {}
+
 void Interpreter::run() {
   while (!finished()) {
     runIter();

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <functional>
-#include <iostream>
 #include <memory>
+#include <ostream>
 
 #include "common/config.hpp"
 #include "common/instruction.hpp"
@@ -11,17 +11,24 @@
 
 namespace pvm {
 
-class Executor {
+class Executor final {
 private:
-  RegFile m_regFile{};
   bool m_halted{false};
+
+  RegFile m_regFile{};
   std::shared_ptr<Memory> m_mem;
+
+  std::reference_wrapper<std::istream> m_ist{std::cin};
+  std::reference_wrapper<std::ostream> m_ost{std::cout};
 
 public:
   explicit Executor(std::shared_ptr<Memory> mem);
+  Executor(std::shared_ptr<Memory> mem, std::ostream &ost);
+  Executor(std::shared_ptr<Memory> mem, std::istream &ist);
+  Executor(std::shared_ptr<Memory> mem, std::ostream &ost, std::istream &ist);
 
-  bool isHalted() const;
   void exec(Instruction instr);
+  [[nodiscard]] bool isHalted() const;
   [[nodiscard]] RegFile const &getRegFile() const;
 
 private:
