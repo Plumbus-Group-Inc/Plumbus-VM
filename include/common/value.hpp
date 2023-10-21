@@ -42,7 +42,7 @@ public:
     template<typename Type>
     requires ListedType<Type, Types...>
     void write(Type value) {
-        if(!std::holds_alternative<Type>(m_data)) {
+        if(!this->holds<Type>()) {
             throw ValueMismatchError(typeid(Type), this->currentTypeinfo());
         }
 
@@ -53,6 +53,12 @@ public:
     requires ListedType<Type, Types...>
     void overwrite(Type value) {
         m_data = value;
+    }
+
+    template<typename Type>
+    requires ListedType<Type, Types...>
+    [[nodiscard]] bool holds() const noexcept {
+        return std::holds_alternative<Type>(m_data);
     }
 
 private:
