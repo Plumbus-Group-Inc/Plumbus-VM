@@ -73,7 +73,7 @@ enum : OpId {
   OP_READ_F,
   OP_WRITE_I,
   OP_WRITE_F,
-  OP_IO_NUM
+  OP_IO_NUM,
 };
 
 // IO type independent operations
@@ -88,7 +88,7 @@ enum : OpId {
   OP_BEQUAL_F,
   OP_BLESS_I,
   OP_BLESS_F,
-  OP_BRANCH_NUM
+  OP_BRANCH_NUM,
 };
 
 template <typename T>
