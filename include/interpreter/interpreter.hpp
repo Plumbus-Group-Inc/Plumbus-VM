@@ -18,7 +18,7 @@ public:
   void run();
 
 private:
-  std::shared_ptr<Memory> m_mem;
+  Memory m_mem;
   Code m_code;
 
   Executor m_exec;

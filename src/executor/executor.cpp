@@ -12,16 +12,16 @@
 
 namespace pvm {
 
-Executor::Executor(/*Memory &mem,*/ Code &code) : /*m_mem(mem),*/ m_code(code) {}
+Executor::Executor(Memory &mem, Code &code) : m_mem(mem), m_code(code) {}
 
-Executor::Executor(/*Memory &mem,*/ Code &code, std::ostream &ost)
-    : /*m_mem(mem),*/ m_code(code), m_ost(ost) {}
+Executor::Executor(Memory &mem, Code &code, std::ostream &ost)
+    : m_mem(mem), m_code(code), m_ost(ost) {}
 
-Executor::Executor(/*Memory &mem,*/ Code &code, std::istream &ist)
-    : /*m_mem(mem),*/ m_code(code), m_ist(ist) {}
+Executor::Executor(Memory &mem, Code &code, std::istream &ist)
+    : m_mem(mem), m_code(code), m_ist(ist) {}
 
-Executor::Executor(/*Memory &mem,*/ Code &code, std::ostream &ost, std::istream &ist)
-    : /*m_mem(mem),*/ m_code(code), m_ist(ist), m_ost(ost) {}
+Executor::Executor(Memory &mem, Code &code, std::ostream &ost, std::istream &ist)
+    : m_mem(mem), m_code(code), m_ist(ist), m_ost(ost) {}
 
 void Executor::exec() {
   auto instr = getInstr();
