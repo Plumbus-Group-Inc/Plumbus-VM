@@ -18,12 +18,14 @@ enum : Opcode {
   OPCODE_BLESS_I,
   OPCODE_BEQ_F,
   OPCODE_BEQ_I,
+  OPCODE_NUM,
 };
 
 // Type bit
 enum : OpId {
   OP_TYPE_I = 0,
   OP_TYPE_F = 1,
+  OP_TYPE_NUM,
 };
 
 // ALU binary raw operations
@@ -36,6 +38,7 @@ enum : OpId {
   OP_MUL_F,
   OP_DIV_I,
   OP_DIV_F,
+  OP_BINARY_NUM
 };
 
 // ALU binary type independent operations
@@ -54,6 +57,7 @@ enum : OpId {
   OP_CAST_FTOI,
   OP_ABS_I,
   OP_ABS_F,
+  OP_UNARY_NUM,
 };
 
 // ALU unary type independent operations
@@ -69,6 +73,7 @@ enum : OpId {
   OP_READ_F,
   OP_WRITE_I,
   OP_WRITE_F,
+  OP_IO_NUM
 };
 
 // IO type independent operations
@@ -83,6 +88,7 @@ enum : OpId {
   OP_BEQUAL_F,
   OP_BLESS_I,
   OP_BLESS_F,
+  OP_BRANCH_NUM
 };
 
 template <typename T>
