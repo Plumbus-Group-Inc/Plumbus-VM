@@ -26,7 +26,7 @@ Executor::Executor(/*Memory &mem,*/ Code &code, std::ostream &ost, std::istream 
 void Executor::exec() {
   auto instr = getInstr();
   auto opcode = instr.opcode;
-  (this->*dispatchTable[opcode])(instr);
+  (this->*opcodeDispatchTable[opcode])(instr);
 }
 
 Instr Executor::getInstr() {
@@ -37,150 +37,189 @@ Instr Executor::getInstr() {
   return instr;
 }
 
-bool Executor::execHalt(Instr instr) { return true; }
+bool Executor::exec_ALU_BINARY(Instr instr) {
+  auto opcode = instr.getImm<OpId>();
+  return (this->*binOpDispatchTable[opcode])(instr);
+}
 
-bool Executor::execLoadImmInt(Instr instr) {
+bool Executor::exec_ALU_UNARY(Instr instr) {
+  auto opcode = instr.getImm<OpId>();
+  return (this->*unOpDispatchTable[opcode])(instr);
+}
+
+bool Executor::exec_IO(Instr instr) {
+  auto opcode = instr.getImm<OpId>();
+  return (this->*ioOpDispatchTable[opcode])(instr);
+}
+
+bool Executor::exec_HALT(Instr instr) { return true; }
+
+bool Executor::exec_LOAD_IMM_I(Instr instr) {
   handleLoadImm<Int>(instr);
   auto nextInstr = getInstr();
   auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-bool Executor::execLoadImmFloat(Instr instr) {
+bool Executor::exec_LOAD_IMM_F(Instr instr) {
   handleLoadImm<Float>(instr);
   auto nextInstr = getInstr();
   auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-bool Executor::execALUBinary(Instr instr) {
-  handleALUBinary(instr);
-  auto nextInstr = getInstr();
-  auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
-}
-
-bool Executor::execALUUnary(Instr instr) {
-  handleALUUnary(instr);
-  auto nextInstr = getInstr();
-  auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
-}
-
-bool Executor::execIO(Instr instr) {
-  handleIO(instr);
-  auto nextInstr = getInstr();
-  auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
-}
-
-bool Executor::execBLessFloat(Instr instr) {
+bool Executor::exec_BLESS_F(Instr instr) {
   handleBranch<Float>(instr, std::less<Float>{});
   auto nextInstr = getInstr();
   auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-bool Executor::execBLessInt(Instr instr) {
+bool Executor::exec_BLESS_I(Instr instr) {
   handleBranch<Int>(instr, std::less<Int>{});
   auto nextInstr = getInstr();
   auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-bool Executor::execBEqualFloat(Instr instr) {
+bool Executor::exec_BEQ_F(Instr instr) {
   handleBranch<Float>(instr, std::equal_to<Float>{});
   auto nextInstr = getInstr();
   auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-bool Executor::execBEqualInt(Instr instr) {
+bool Executor::exec_BEQ_I(Instr instr) {
   handleBranch<Int>(instr, std::equal_to<Int>{});
   auto nextInstr = getInstr();
   auto opcode = nextInstr.opcode;
-  return (this->*dispatchTable[opcode])(nextInstr);
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-void Executor::handleALUBinary(Instr instr) {
-  switch (instr.op) {
-  case OP_ADD_I:
-    handleALUBinary<Int>(instr, std::plus<Int>{});
-    break;
-  case OP_ADD_F:
-    handleALUBinary<Float>(instr, std::plus<Float>{});
-    break;
-  case OP_SUB_I:
-    handleALUBinary<Int>(instr, std::minus<Int>{});
-    break;
-  case OP_SUB_F:
-    handleALUBinary<Float>(instr, std::minus<Float>{});
-    break;
-  case OP_MUL_I:
-    handleALUBinary<Int>(instr, std::multiplies<Int>{});
-    break;
-  case OP_MUL_F:
-    handleALUBinary<Float>(instr, std::multiplies<Float>{});
-    break;
-  case OP_DIV_I:
-    handleALUBinary<Int>(instr, std::divides<Int>{});
-    break;
-  case OP_DIV_F:
-    handleALUBinary<Float>(instr, std::divides<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"Unknown binary operation"};
-  }
-
-  updatePC();
+bool Executor::exec_ADD_I(Instr instr) {
+  handleALUBinary<Int>(instr, std::plus<Int>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-void Executor::handleALUUnary(Instr instr) {
-  switch (instr.op) {
-  case OP_SQRT_I:
-    handleALUUnary<Int, Int>(instr, [](Int val) { return std::sqrt(val); });
-    break;
-  case OP_SQRT_F:
-    handleALUUnary<Float, Float>(instr, [](Float val) { return std::sqrt(val); });
-    break;
-  case OP_CAST_ITOF:
-    handleALUUnary<Int, Float>(instr, std::identity{});
-    break;
-  case OP_CAST_FTOI:
-    handleALUUnary<Float, Int>(instr, std::identity{});
-    break;
-  case OP_ABS_I:
-    handleALUUnary<Int, Int>(instr, [](Int val) { return std::abs(val); });
-    break;
-  case OP_ABS_F:
-    handleALUUnary<Float, Float>(instr, [](Float val) { return std::fabs(val); });
-    break;
-  default:
-    throw std::runtime_error{"Unknown unary operation"};
-  }
-
-  updatePC();
+bool Executor::exec_ADD_F(Instr instr) {
+  handleALUBinary<Float>(instr, std::plus<Float>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
-void Executor::handleIO(Instr instr) {
-  switch (instr.op) {
-  case OP_READ_I:
-    handleIORead<Int>(instr);
-    break;
-  case OP_READ_F:
-    handleIORead<Float>(instr);
-    break;
-  case OP_WRITE_I:
-    handleIOWrite<Int>(instr);
-    break;
-  case OP_WRITE_F:
-    handleIOWrite<Float>(instr);
-    break;
-  default:
-    throw std::runtime_error{"Unknown IO operation"};
-  }
+bool Executor::exec_SUB_I(Instr instr) {
+  handleALUBinary<Int>(instr, std::minus<Int>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
 
-  updatePC();
+bool Executor::exec_SUB_F(Instr instr) {
+  handleALUBinary<Float>(instr, std::minus<Float>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_MUL_I(Instr instr) {
+  handleALUBinary<Int>(instr, std::multiplies<Int>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_MUL_F(Instr instr) {
+  handleALUBinary<Float>(instr, std::multiplies<Float>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_DIV_I(Instr instr) {
+  handleALUBinary<Int>(instr, std::divides<Int>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_DIV_F(Instr instr) {
+  handleALUBinary<Float>(instr, std::divides<Float>{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_SQRT_I(Instr instr) {
+  handleALUUnary<Int, Int>(instr, [](Int val) { return std::sqrt(val); });
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_SQRT_F(Instr instr) {
+  handleALUUnary<Float, Float>(instr, [](Float val) { return std::sqrt(val); });
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_CAST_ITOF(Instr instr) {
+  handleALUUnary<Int, Float>(instr, std::identity{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_CAST_FTOI(Instr instr) {
+  handleALUUnary<Float, Int>(instr, std::identity{});
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_ABS_I(Instr instr) {
+  handleALUUnary<Int, Int>(instr, [](Int val) { return std::abs(val); });
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_ABS_F(Instr instr) {
+  handleALUUnary<Float, Float>(instr, [](Float val) { return std::fabs(val); });
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_READ_I(Instr instr) {
+  handleIORead<Int>(instr);
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_READ_F(Instr instr) {
+  handleIORead<Float>(instr);
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_WRITE_I(Instr instr) {
+  handleIORead<Int>(instr);
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
+}
+
+bool Executor::exec_WRITE_F(Instr instr) {
+  handleIOWrite<Float>(instr);
+  auto nextInstr = getInstr();
+  auto opcode = nextInstr.opcode;
+  return (this->*opcodeDispatchTable[opcode])(nextInstr);
 }
 
 } // namespace pvm
