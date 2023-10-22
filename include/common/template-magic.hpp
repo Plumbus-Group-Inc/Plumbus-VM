@@ -5,33 +5,46 @@
 #include <type_traits>
 #include <typeinfo>
 
-namespace pvm {
+namespace pvm::variadic {
 
 template<typename TheType, typename... Types>
-constexpr auto VariadicHasType = (std::is_same_v<TheType, Types> || ...);
+constexpr auto Contains = (std::is_same_v<TheType, Types> || ...);
 
 template<typename TheType>
-constexpr auto VariadicHasType<TheType> = false;
-
-template<typename FirstType, typename... OtherTypes>
-inline constexpr auto VariadicUniqImpl = 
-    !VariadicHasType<FirstType, OtherTypes...> &&
-    VariadicUniqImpl<OtherTypes...>;
-
-template<typename FirstType>
-inline constexpr auto VariadicUniqImpl<FirstType> = true;
+constexpr auto Contains<TheType> = false;
 
 template<typename... Types>
-inline constexpr auto VariadicUniq = VariadicUniqImpl<Types...>;
+inline constexpr auto HasDuplicates = false;
+
+template<typename Head, typename... Tail>
+inline constexpr auto HasDuplicates<Head, Tail...> = 
+    Contains<Head, Tail...> || HasDuplicates<Tail...>;
 
 template<typename... Types>
-concept UniqTypesList = VariadicUniq<Types...>;
+concept Unique = !HasDuplicates<Types...>;
 
 template<typename TheType, typename... Types>
-concept ListedType = VariadicHasType<TheType, Types...>;
+concept PresentIn = Contains<TheType, Types...>;
+
+template<size_t N, typename... Types>
+struct NthImpl {
+    static_assert(N < sizeof...(Types));
+};
+
+template<size_t N, typename Head, typename... Tail>
+struct NthImpl<N, Head, Tail...> {
+    using T = NthImpl<N - 1, Tail...>;
+};
+template<typename Head, typename... Tail>
+struct NthImpl<0, Head, Tail...> {
+    using T = Head;
+};
+
+template<size_t N, typename... Types>
+using Nth = NthImpl<N, Types...>::T;
 
 template<typename FirstType, typename... Types>
-std::type_info const& VariadicNthInfoImpl(std::size_t n) {
+std::type_info const& NthTypeInfoImpl(std::size_t n) {
     if constexpr(sizeof...(Types) == 0) {
         if (n == 0) {
             return typeid(FirstType);
@@ -43,7 +56,7 @@ std::type_info const& VariadicNthInfoImpl(std::size_t n) {
 }
 
 template<typename... Types>
-std::type_info const& VariadicNthInfo(std::size_t n) {
+std::type_info const& NthTypeInfoImpl(std::size_t n) {
     static_assert(sizeof...(Types) != 0);
     if(n >= sizeof...(Types)) {
         throw std::out_of_range("out of variadic arguments list");
@@ -52,5 +65,4 @@ std::type_info const& VariadicNthInfo(std::size_t n) {
     return VariadicNthInfoImpl<Types...>(n);
 }
 
-} // namespace pvm
-
+} // namespace pvm::variadic
