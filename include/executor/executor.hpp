@@ -74,7 +74,8 @@ private:
 #undef PVM_TRANSFORM
   };
 
-  template <ValueAlt T> void handleLoadImm(Instr instr) {
+  template <ValueAlt T>
+  void handleLoadImm(Instr instr) {
     m_regFile.write(instr.rd, Value(instr.getImm<T>()));
     m_regFile.incrementPC();
   }
@@ -94,14 +95,16 @@ private:
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T> void handleIORead(Instr instr) {
+  template <ValueAlt T>
+  void handleIORead(Instr instr) {
     T val = 0;
     m_ist >> val;
     m_regFile.write(instr.rd, Value(val));
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T> void handleIOWrite(Instr instr) {
+  template <ValueAlt T>
+  void handleIOWrite(Instr instr) {
     m_ost << m_regFile.read(instr.rs1).read<T>() << std::endl;
     m_regFile.incrementPC();
   }

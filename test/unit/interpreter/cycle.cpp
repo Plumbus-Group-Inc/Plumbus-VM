@@ -33,14 +33,11 @@ TEST(Interpreter, Cycle) {
   // clang-format on
 
   std::vector<Bytecode> data{};
-  std::transform(
-      instrs.begin(), instrs.end(), std::back_inserter(data),
-      [](auto instr) { return *reinterpret_cast<Bytecode *>(&instr); });
+  std::transform(instrs.begin(), instrs.end(), std::back_inserter(data),
+                 [](auto instr) { return *reinterpret_cast<Bytecode *>(&instr); });
 
   Code code{std::move(data)};
 
   Interpreter interp{code, std::cout, std::cin};
   interp.run();
-
-  ASSERT_TRUE(true);
 }

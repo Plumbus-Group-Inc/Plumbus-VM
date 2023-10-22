@@ -12,9 +12,9 @@
 
 namespace pvm {
 
-Executor::Executor(const Code &code, Memory &mem, std::ostream &ost,
-                   std::istream &ist)
-    : m_mem(mem), m_code(code), m_ist(ist), m_ost(ost) {}
+Executor::Executor(const Code &code, Memory &mem, std::ostream &ost, std::istream &ist)
+    : m_mem(mem), m_code(code), m_ist(ist), m_ost(ost) {
+}
 
 void Executor::exec() {
   auto instr = getInstr();
@@ -45,7 +45,9 @@ bool Executor::exec_IO(Instr instr) {
   return (this->*ioOpDispatchTable[opcode])(instr);
 }
 
-bool Executor::exec_HALT(Instr instr) { return true; }
+bool Executor::exec_HALT(Instr instr) {
+  return true;
+}
 
 bool Executor::exec_LOAD_IMM_I(Instr instr) {
   handleLoadImm<Int>(instr);
