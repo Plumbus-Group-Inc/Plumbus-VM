@@ -7,7 +7,7 @@ TEST(Value, ReadAfterOverwrite) {
 
     v.overwrite<int>(1);
 
-    EXPECT_EQ(v.read<int>(), 1);
+    EXPECT_EQ(v.get<int>(), 1);
 }
 
 TEST(Value, ReadWrongType) {
@@ -15,7 +15,7 @@ TEST(Value, ReadWrongType) {
 
     v.overwrite<int>(1);
 
-    EXPECT_THROW(auto val = v.read<float>(), pvm::ValueMismatchError);
+    EXPECT_THROW(auto val = v.get<float>(), pvm::ValueMismatchError);
 }
 
 TEST(Value, WriteWrongType) {
