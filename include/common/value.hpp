@@ -103,4 +103,34 @@ template<ValueType Type>
 Value::Value(Type&& value)
     noexcept(std::is_nothrow_move_constructible_v<Type>) : m_data(std::forward(value)) {}
 
+template<ValueType Type>
+[[nodiscard]] Type Value::get() const {
+    std::add_pointer_t<std::add_const_t<Type>> pvalue =
+        std::get_if<Type>(&m_data);
+    if(pvalue == nullptr) {
+        throw ValueMismatchError(typeid(Type), typeid(Type));
+    }
+
+    return *pvalue;
+}
+
+template<ValueType Type>
+void Value::set(Type value) {
+    if(!this->holds<Type>()) {
+        throw ValueMismatchError(typeid(Type), typeid(Type));
+    }
+
+    m_data = value;
+}
+
+template<ValueType Type>
+void Value::reset(Type value) {
+    m_data = value;
+}
+
+template<ValueType Type>
+[[nodiscard]] bool Value::holds() const noexcept {
+    return std::holds_alternative<Type>(m_data);
+}
+
 } // namespace pvm
