@@ -15,17 +15,15 @@ namespace pvm {
 class Executor final {
 private:
   RegFile m_regFile;
-  Memory &m_mem;
-  Code &m_code;
 
-  std::reference_wrapper<std::istream> m_ist{std::cin};
-  std::reference_wrapper<std::ostream> m_ost{std::cout};
+  const Code &m_code;
+  Memory &m_mem;
+
+  std::istream &m_ist;
+  std::ostream &m_ost;
 
 public:
-  explicit Executor(Memory &mem, Code &code);
-  Executor(Memory &mem, Code &code, std::ostream &ost);
-  Executor(Memory &mem, Code &code, std::istream &ist);
-  Executor(Memory &mem, Code &code, std::ostream &ost, std::istream &ist);
+  Executor(const Code &code, Memory &mem, std::ostream &ost, std::istream &ist);
 
   void exec();
 
@@ -97,13 +95,13 @@ private:
 
   template <ValueT T> void handleIORead(Instr instr) {
     T val = 0;
-    m_ist.get() >> val;
+    m_ist >> val;
     m_regFile.write(instr.rd, val);
     updatePC();
   }
 
   template <ValueT T> void handleIOWrite(Instr instr) {
-    m_ost.get() << m_regFile.read<T>(instr.rs1) << std::endl;
+    m_ost << m_regFile.read<T>(instr.rs1) << std::endl;
     updatePC();
   }
 
