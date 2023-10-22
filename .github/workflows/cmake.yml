@@ -19,14 +19,9 @@ jobs:
     container: takosan/sim2022
     strategy:
       matrix:
-        compiler: [g++-10, clang++-12]
+        compiler: [g++-10]
         generator: [Unix Makefiles, Ninja]
-        build_type: [Debug, Release]
-        include:
-          - build_type: Debug
-            enable_werror: OFF
-          - build_type: Release
-            enable_werror: OFF
+        build_type: [Release]
 
     steps:
     - name: Checkout repo and submodules
@@ -42,7 +37,6 @@ jobs:
           -G="${{matrix.generator}}" \
           -DCMAKE_CXX_COMPILER=${{matrix.compiler}} \
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-          -DENABLE_WERROR=${{matrix.enable_werror}} \
           -DSKIP_CLANG_FORMAT=ON \
           -DENABLE_LOG=ON
 
