@@ -9,7 +9,7 @@
 namespace pvm {
 
 template <typename T>
-concept ValueT = std::is_same_v<T, Int> || std::is_same_v<T, Float>;
+concept ValueAlt = std::is_same_v<T, Int> || std::is_same_v<T, Float>;
 
 class Value final {
 public:
@@ -27,10 +27,10 @@ public:
   using Variant = std::variant<Int, Float>;
 
 private:
-  template <ValueT T> struct TypeIdGetter;
+  template <ValueAlt T> struct TypeIdGetter;
 
 public:
-  template <ValueT T> static constexpr TypeId GetTypeId() {
+  template <ValueAlt T> static constexpr TypeId GetTypeId() {
     return TypeIdGetter<T>::id;
   }
 
@@ -44,26 +44,26 @@ public:
 
   [[nodiscard]] TypeId getType() const noexcept;
   [[nodiscard]] bool sameType(TypeId type) const noexcept;
-  template <ValueT T> [[nodiscard]] bool sameType() const noexcept;
+  template <ValueAlt T> [[nodiscard]] bool sameType() const noexcept;
 
-  template <ValueT T> T read() const;
+  template <ValueAlt T> T read() const;
 
-  template <ValueT T> void write(T value);
+  template <ValueAlt T> void write(T value);
 
-  template <ValueT T> void overwrite(T value);
+  template <ValueAlt T> void overwrite(T value);
 
   Variant read(TypeId typeId);
   void write(TypeId typeId, Variant value);
   void overwrite(TypeId typeId, Variant value);
 
 private:
-  template <ValueT T> void validateType() const;
+  template <ValueAlt T> void validateType() const;
 
   void validateType(TypeId typeId) const;
 
-  template <ValueT T> T &getValueRef();
+  template <ValueAlt T> T &getValueRef();
 
-  template <ValueT T> T const &getValueRef() const;
+  template <ValueAlt T> T const &getValueRef() const;
 
   TypeId m_type;
   Union m_value;
@@ -81,25 +81,25 @@ inline bool Value::sameType(TypeId type) const noexcept {
   return type == m_type;
 }
 
-template <ValueT T> inline bool Value::sameType() const noexcept {
+template <ValueAlt T> inline bool Value::sameType() const noexcept {
   return GetTypeId<T>() == m_type;
 }
 
-template <ValueT T> T Value::read() const {
+template <ValueAlt T> T Value::read() const {
   this->validateType<T>();
   return this->getValueRef<T>();
 }
 
-template <ValueT T> void Value::write(T value) {
+template <ValueAlt T> void Value::write(T value) {
   this->validateType<T>();
   this->getValueRef<T>() = value;
 }
 
-template <ValueT T> void Value::overwrite(T value) {
+template <ValueAlt T> void Value::overwrite(T value) {
   this->m_type = GetTypeId<T>();
   this->getValueRef<T>() = value;
 }
-template <ValueT T> void Value::validateType() const {
+template <ValueAlt T> void Value::validateType() const {
   if (!this->sameType<T>()) {
     throw MismatchError();
   }
