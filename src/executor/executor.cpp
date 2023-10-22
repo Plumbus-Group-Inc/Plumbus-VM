@@ -12,7 +12,8 @@
 
 namespace pvm {
 
-Executor::Executor(const Code &code, Memory &mem, std::ostream &ost, std::istream &ist)
+Executor::Executor(const Code &code, Memory &mem, std::ostream &ost,
+                   std::istream &ist)
     : m_mem(mem), m_code(code), m_ist(ist), m_ost(ost) {}
 
 void Executor::exec() {

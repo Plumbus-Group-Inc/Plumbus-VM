@@ -30,7 +30,9 @@ private:
   template <ValueT T> struct TypeIdGetter;
 
 public:
-  template <ValueT T> static constexpr TypeId GetTypeId() { return TypeIdGetter<T>::id; }
+  template <ValueT T> static constexpr TypeId GetTypeId() {
+    return TypeIdGetter<T>::id;
+  }
 
 public:
   class MismatchError final : std::exception {};
@@ -75,7 +77,9 @@ template <> struct Value::TypeIdGetter<Float> {
 };
 
 inline Value::TypeId Value::getType() const noexcept { return m_type; }
-inline bool Value::sameType(TypeId type) const noexcept { return type == m_type; }
+inline bool Value::sameType(TypeId type) const noexcept {
+  return type == m_type;
+}
 
 template <ValueT T> inline bool Value::sameType() const noexcept {
   return GetTypeId<T>() == m_type;
@@ -111,8 +115,12 @@ template <> inline Int &Value::getValueRef<Int>() { return m_value.i; }
 
 template <> inline Float &Value::getValueRef<Float>() { return m_value.f; }
 
-template <> inline Int const &Value::getValueRef<Int>() const { return m_value.i; }
+template <> inline Int const &Value::getValueRef<Int>() const {
+  return m_value.i;
+}
 
-template <> inline Float const &Value::getValueRef<Float>() const { return m_value.f; }
+template <> inline Float const &Value::getValueRef<Float>() const {
+  return m_value.f;
+}
 
 } // namespace pvm

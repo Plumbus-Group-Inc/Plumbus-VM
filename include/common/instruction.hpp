@@ -7,16 +7,16 @@
 
 namespace pvm {
 
-#define PVM_LIST_OPCODES()                                                               \
-  PVM_TRANSFORM(HALT)                                                                    \
-  PVM_TRANSFORM(LOAD_IMM_I)                                                              \
-  PVM_TRANSFORM(LOAD_IMM_F)                                                              \
-  PVM_TRANSFORM(ALU_BINARY)                                                              \
-  PVM_TRANSFORM(ALU_UNARY)                                                               \
-  PVM_TRANSFORM(IO)                                                                      \
-  PVM_TRANSFORM(BLESS_F)                                                                 \
-  PVM_TRANSFORM(BLESS_I)                                                                 \
-  PVM_TRANSFORM(BEQ_F)                                                                   \
+#define PVM_LIST_OPCODES()                                                     \
+  PVM_TRANSFORM(HALT)                                                          \
+  PVM_TRANSFORM(LOAD_IMM_I)                                                    \
+  PVM_TRANSFORM(LOAD_IMM_F)                                                    \
+  PVM_TRANSFORM(ALU_BINARY)                                                    \
+  PVM_TRANSFORM(ALU_UNARY)                                                     \
+  PVM_TRANSFORM(IO)                                                            \
+  PVM_TRANSFORM(BLESS_F)                                                       \
+  PVM_TRANSFORM(BLESS_I)                                                       \
+  PVM_TRANSFORM(BEQ_F)                                                         \
   PVM_TRANSFORM(BEQ_I)
 
 enum : Opcode {
@@ -34,14 +34,14 @@ enum : OpId {
   OP_TYPE_NUM,
 };
 
-#define PVM_LIST_BINARY_OPS()                                                            \
-  PVM_TRANSFORM(ADD_I)                                                                   \
-  PVM_TRANSFORM(ADD_F)                                                                   \
-  PVM_TRANSFORM(SUB_I)                                                                   \
-  PVM_TRANSFORM(SUB_F)                                                                   \
-  PVM_TRANSFORM(MUL_I)                                                                   \
-  PVM_TRANSFORM(MUL_F)                                                                   \
-  PVM_TRANSFORM(DIV_I)                                                                   \
+#define PVM_LIST_BINARY_OPS()                                                  \
+  PVM_TRANSFORM(ADD_I)                                                         \
+  PVM_TRANSFORM(ADD_F)                                                         \
+  PVM_TRANSFORM(SUB_I)                                                         \
+  PVM_TRANSFORM(SUB_F)                                                         \
+  PVM_TRANSFORM(MUL_I)                                                         \
+  PVM_TRANSFORM(MUL_F)                                                         \
+  PVM_TRANSFORM(DIV_I)                                                         \
   PVM_TRANSFORM(DIV_F)
 
 // ALU binary raw operations
@@ -61,12 +61,12 @@ enum : OpId {
   OP_DIV = 6,
 };
 
-#define PVM_LIST_UNARY_OPS()                                                             \
-  PVM_TRANSFORM(SQRT_I)                                                                  \
-  PVM_TRANSFORM(SQRT_F)                                                                  \
-  PVM_TRANSFORM(CAST_ITOF)                                                               \
-  PVM_TRANSFORM(CAST_FTOI)                                                               \
-  PVM_TRANSFORM(ABS_I)                                                                   \
+#define PVM_LIST_UNARY_OPS()                                                   \
+  PVM_TRANSFORM(SQRT_I)                                                        \
+  PVM_TRANSFORM(SQRT_F)                                                        \
+  PVM_TRANSFORM(CAST_ITOF)                                                     \
+  PVM_TRANSFORM(CAST_FTOI)                                                     \
+  PVM_TRANSFORM(ABS_I)                                                         \
   PVM_TRANSFORM(ABS_F)
 
 // ALU unary raw operations
@@ -85,10 +85,10 @@ enum : OpId {
   OP_ABS = 4,
 };
 
-#define PVM_LIST_IO_OPS()                                                                \
-  PVM_TRANSFORM(READ_I)                                                                  \
-  PVM_TRANSFORM(READ_F)                                                                  \
-  PVM_TRANSFORM(WRITE_I)                                                                 \
+#define PVM_LIST_IO_OPS()                                                      \
+  PVM_TRANSFORM(READ_I)                                                        \
+  PVM_TRANSFORM(READ_F)                                                        \
+  PVM_TRANSFORM(WRITE_I)                                                       \
   PVM_TRANSFORM(WRITE_F)
 
 // IO raw operations
@@ -105,10 +105,10 @@ enum : OpId {
   OP_WRITE = 2,
 };
 
-#define PVM_LIST_BRANCH_OPS()                                                            \
-  PVM_TRANSFORM(BEQUAL_I)                                                                \
-  PVM_TRANSFORM(BEQUAL_F)                                                                \
-  PVM_TRANSFORM(BLESS_I)                                                                 \
+#define PVM_LIST_BRANCH_OPS()                                                  \
+  PVM_TRANSFORM(BEQUAL_I)                                                      \
+  PVM_TRANSFORM(BEQUAL_F)                                                      \
+  PVM_TRANSFORM(BLESS_I)                                                       \
   PVM_TRANSFORM(BLESS_F)
 
 // Branch raw operations
@@ -120,8 +120,8 @@ enum : OpId {
 };
 
 template <typename T>
-concept ImmT =
-    std::is_same_v<T, Int> || std::is_same_v<T, Float> || std::is_same_v<T, OpId>;
+concept ImmT = std::is_same_v<T, Int> || std::is_same_v<T, Float> ||
+               std::is_same_v<T, OpId>;
 
 struct Instr {
   Opcode opcode = 0;

@@ -20,7 +20,9 @@ public:
   [[nodiscard]] std::uint64_t loadWord(Addr addr) const;
 
   void storeVal(Addr addr, Value val);
-  template <ValueT T> void storeVal(Addr addr, T val) { m_data[addr].write(val); }
+  template <ValueT T> void storeVal(Addr addr, T val) {
+    m_data[addr].write(val);
+  }
 
 private:
   // TODO: temporary
