@@ -4,102 +4,103 @@
 #include <type_traits>
 #include <typeinfo>
 #include <variant>
+#include <vector>
 
+#include "common/config.hpp"
 #include "common/template-magic.hpp"
 
 namespace pvm {
+
+class Null;
+class Value;
+class Array;
+class Function;
+class Object;
+
+class Null {};
+
+class Array {
+public:
+    Array();
+    ~Array() = default;
+
+    explicit Array(Int size);
+
+    Array(Array const& other) = default;
+    Array(Array&& other) noexcept;
+
+    Array& operator=(Array const& other);
+    Array& operator=(Array&& other) noexcept;
+
+    [[nodiscard]] Int size() const noexcept;
+    [[nodiscard]] Value at(Int pos) const &&;
+    [[nodiscard]] Value const& at(Int pos) const &;
+    [[nodiscard]] Value& at(Int pos) &;
+
+    [[nodiscard]] Value operator[](Int pos) const &&;
+    [[nodiscard]] Value const& operator[](Int pos) const &;
+    [[nodiscard]] Value& operator[](Int pos) &;
+
+    void resize(Int newSize);
+    void clear();
+private:
+};
+
+template<typename Type>
+concept ValueType = pvm::variadic::Contains<Type, Null, Bool, Float, Int, Array>;
 
 class ValueMismatchError : public std::runtime_error {
 public:
     ValueMismatchError(std::type_info const& requestedType, 
         std::type_info const& currentType);
 
-    std::type_info const& requestedType;
-    std::type_info const& currentType;
-
-private:
-    static std::string formatMessage(std::type_info const& requetedType,
-        std::type_info const& currentType);
+    std::type_info const& m_currentType;
+    std::type_info const& m_requestedType;
 };
 
-template<typename... Types>
-requires UniqTypesList<Types...>
-class ValueImpl final {
+class Value {
 public:
-    using ValueVariant = std::variant<Types...>;
+    using Variant = std::variant<Null, Bool, Float, Int, Array>;
 
-    template<typename Type>
-    requires ListedType<Type, Types...>
-    [[nodiscard]] Type read() const;
+    Value() noexcept;
+    ~Value() = default; 
 
-    template<typename Type>
-    requires ListedType<Type, Types...>
-    void write(Type value);
+    template<ValueType Type>
+    explicit Value(Type const& value) 
+        noexcept(std::is_nothrow_copy_constructible_v<Type>);
 
-    template<typename Type>
-    requires ListedType<Type, Types...>
-    void overwrite(Type value);
+    template<ValueType Type>
+    explicit Value(Type&& value)
+        noexcept(std::is_nothrow_move_constructible_v<Type>);
 
-    template<typename Type>
-    requires ListedType<Type, Types...>
+    Value(Value const& other);
+    Value(Value&& other) noexcept;
+
+    Value& operator=(Value const& other);
+    Value& operator=(Value&& other) noexcept;
+
+    template<ValueType Type>
+    [[nodiscard]] Type get() const;
+
+    template<ValueType Type>
+    void set(Type value);
+
+    template<ValueType Type>
+    void reset(Type value);
+
+    template<ValueType Type>
     [[nodiscard]] bool holds() const noexcept;
 
 private:
-    [[nodiscard]] std::type_info const& currentTypeinfo() const noexcept;
-
-    ValueVariant m_data;
+    Variant m_data;
 };
 
-template<typename... Types>
-requires UniqTypesList<Types...>
-template<typename Type>
-requires ListedType<Type, Types...>
-[[nodiscard]] Type ValueImpl<Types...>::read() const {
-    auto pvalue = std::get_if<Type>(&m_data);
-    if(pvalue == nullptr) {
-        throw ValueMismatchError(typeid(Type), this->currentTypeinfo());
-    }
+template<ValueType Type>
+Value::Value(Type const& value) 
+    noexcept(std::is_nothrow_copy_constructible_v<Type>) : m_data(value) {}
 
-    return *pvalue;
-}
-
-template<typename... Types>
-requires UniqTypesList<Types...>
-template<typename Type>
-requires ListedType<Type, Types...>
-void ValueImpl<Types...>::write(Type value) {
-    if(!this->holds<Type>()) {
-        throw ValueMismatchError(typeid(Type), this->currentTypeinfo());
-    }
-
-    m_data = value;
-}
-
-template<typename... Types>
-requires UniqTypesList<Types...>
-template<typename Type>
-requires ListedType<Type, Types...>
-void ValueImpl<Types...>::overwrite(Type value) {
-    m_data = value;
-}
-
-template<typename... Types>
-requires UniqTypesList<Types...>
-template<typename Type>
-requires ListedType<Type, Types...>
-[[nodiscard]] bool ValueImpl<Types...>::holds() const noexcept {
-    return std::holds_alternative<Type>(m_data);
-}
-
-template<typename... Types>
-requires UniqTypesList<Types...>
-[[nodiscard]] std::type_info const& ValueImpl<Types...>::currentTypeinfo() const noexcept {
-    return VariadicNthInfo<Types...>(m_data.index());
-}
-
-template<typename Type>
-concept ValueT = VariadicHasType<Type, int, float>;
-
-using Value = ValueImpl<int, float>;
+template<ValueType Type>
+Value::Value(Type&& value)
+    noexcept(std::is_nothrow_move_constructible_v<Type>) : m_data(std::forward(value)) {}
 
 } // namespace pvm
