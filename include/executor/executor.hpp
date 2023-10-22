@@ -76,43 +76,45 @@ private:
 
   template <ValueT T> void handleLoadImm(Instr instr) {
     m_regFile.write<T>(instr.rd, instr.getImm<T>());
-    updatePC();
+    m_regFile.incrementPC();
   }
 
-  template <ValueT T> void handleALUBinary(Instr instr, std::function<T(T, T)> func) {
+  template <ValueT T>
+  void handleALUBinary(Instr instr, std::function<T(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);
     m_regFile.write<T>(instr.rd, func(lhs, rhs));
-    updatePC();
+    m_regFile.incrementPC();
   }
 
   template <ValueT T1, ValueT T2>
   void handleALUUnary(Instr instr, std::function<T2(T1)> func) {
     auto arg = m_regFile.read<T1>(instr.rs1);
     m_regFile.write<T2>(instr.rd, func(arg));
-    updatePC();
+    m_regFile.incrementPC();
   }
 
   template <ValueT T> void handleIORead(Instr instr) {
     T val = 0;
     m_ist >> val;
     m_regFile.write(instr.rd, val);
-    updatePC();
+    m_regFile.incrementPC();
   }
 
   template <ValueT T> void handleIOWrite(Instr instr) {
     m_ost << m_regFile.read<T>(instr.rs1) << std::endl;
-    updatePC();
+    m_regFile.incrementPC();
   }
 
-  template <ValueT T> void handleBranch(Instr instr, std::function<bool(T, T)> func) {
+  template <ValueT T>
+  void handleBranch(Instr instr, std::function<bool(T, T)> func) {
     auto lhs = m_regFile.read<T>(instr.rs1);
     auto rhs = m_regFile.read<T>(instr.rs2);
-    if (func(lhs, rhs)) {
+    if (!func(lhs, rhs)) {
+      m_regFile.incrementPC();
+    } else {
       auto pc = m_regFile.readPC();
       m_regFile.writePC(pc + instr.getImm<Int>());
-    } else {
-      updatePC();
     }
   }
 };

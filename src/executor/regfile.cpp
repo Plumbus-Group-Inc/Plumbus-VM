@@ -10,4 +10,6 @@ void RegFile::writePC(Addr addr) { m_pc = addr; }
 
 [[nodiscard]] Addr RegFile::readPC() const { return m_pc; }
 
+void RegFile::incrementPC() { ++m_pc; }
+
 } // namespace pvm

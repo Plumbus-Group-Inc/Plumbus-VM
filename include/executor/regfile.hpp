@@ -20,6 +20,8 @@ public:
     return m_data[regId].read<T>();
   }
 
+  void incrementPC();
+
 private:
   static constexpr std::size_t kRegNum = 1U << (sizeof(RegId) * 8);
   std::array<Value, kRegNum> m_data{};
