@@ -74,28 +74,28 @@ private:
 #undef PVM_TRANSFORM
   };
 
-  template <ValueAlt T>
+  template <ValueType T>
   void handleLoadImm(Instr instr) {
     m_regFile.write(instr.rd, Value(instr.getImm<T>()));
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T>
+  template <ValueType T>
   void handleALUBinary(Instr instr, std::function<T(T, T)> func) {
-    auto lhs = m_regFile.read(instr.rs1).read<T>();
-    auto rhs = m_regFile.read(instr.rs2).read<T>();
+    auto lhs = m_regFile.read(instr.rs1).get<T>();
+    auto rhs = m_regFile.read(instr.rs2).get<T>();
     m_regFile.write(instr.rd, Value(func(lhs, rhs)));
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T1, ValueAlt T2>
+  template <ValueType T1, ValueType T2>
   void handleALUUnary(Instr instr, std::function<T2(T1)> func) {
-    auto arg = m_regFile.read(instr.rs1).read<T1>();
+    auto arg = m_regFile.read(instr.rs1).get<T1>();
     m_regFile.write(instr.rd, Value(func(arg)));
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T>
+  template <ValueType T>
   void handleIORead(Instr instr) {
     T val = 0;
     m_ist >> val;
@@ -103,16 +103,16 @@ private:
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T>
+  template <ValueType T>
   void handleIOWrite(Instr instr) {
-    m_ost << m_regFile.read(instr.rs1).read<T>() << std::endl;
+    m_ost << m_regFile.read(instr.rs1).get<T>() << std::endl;
     m_regFile.incrementPC();
   }
 
-  template <ValueAlt T>
+  template <ValueType T>
   void handleBranch(Instr instr, std::function<bool(T, T)> func) {
-    auto lhs = m_regFile.read(instr.rs1).read<T>();
-    auto rhs = m_regFile.read(instr.rs2).read<T>();
+    auto lhs = m_regFile.read(instr.rs1).get<T>();
+    auto rhs = m_regFile.read(instr.rs2).get<T>();
     if (!func(lhs, rhs)) {
       m_regFile.incrementPC();
     } else {
