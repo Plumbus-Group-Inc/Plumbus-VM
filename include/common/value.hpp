@@ -21,7 +21,7 @@ class Null {};
 
 class Array {
 public:
-    Array();
+    Array() = default;
     ~Array() = default;
 
     explicit Array(Int size);
@@ -37,13 +37,11 @@ public:
     [[nodiscard]] Value const& at(Int pos) const &;
     [[nodiscard]] Value& at(Int pos) &;
 
-    [[nodiscard]] Value operator[](Int pos) const &&;
-    [[nodiscard]] Value const& operator[](Int pos) const &;
-    [[nodiscard]] Value& operator[](Int pos) &;
-
     void resize(Int newSize);
     void clear();
+
 private:
+    std::vector<Value> m_data;
 };
 
 template<typename Type>
@@ -73,10 +71,10 @@ public:
     explicit Value(Type&& value)
         noexcept(std::is_nothrow_move_constructible_v<Type>);
 
-    Value(Value const& other);
+    Value(Value const& other) = default;
     Value(Value&& other) noexcept;
 
-    Value& operator=(Value const& other);
+    Value& operator=(Value const& other) = default;
     Value& operator=(Value&& other) noexcept;
 
     template<ValueType Type>
@@ -101,7 +99,7 @@ Value::Value(Type const& value)
 
 template<ValueType Type>
 Value::Value(Type&& value)
-    noexcept(std::is_nothrow_move_constructible_v<Type>) : m_data(std::forward(value)) {}
+    noexcept(std::is_nothrow_move_constructible_v<Type>) : m_data(std::move(value)) {}
 
 template<ValueType Type>
 [[nodiscard]] Type Value::get() const {
