@@ -1,9 +1,25 @@
 #include <sstream>
+#include <stdexcept>
 #include <variant>
 
 #include "common/value.hpp"
 
 namespace pvm {
+
+
+ValueMismatchError::ValueMismatchError(std::type_info const& requestedType, 
+    std::type_info const& currentType) :
+    std::runtime_error(formatMessage(requestedType, currentType)),
+    currentType(currentType), requestedType(requestedType) {}
+
+std::string ValueMismatchError::formatMessage(std::type_info const& requestedType,
+    std::type_info const& currentType) {
+    std::stringstream s;
+    s << "requested " << requestedType.name() << ", but current is " <<
+        currentType.name();
+
+    return s.str();
+}
 
 Value::Value() noexcept : Value(Null()) {}
 Value::Value(Value&& other) noexcept : m_data(std::move(other.m_data)) {}

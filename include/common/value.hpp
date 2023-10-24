@@ -52,8 +52,12 @@ public:
     ValueMismatchError(std::type_info const& requestedType, 
         std::type_info const& currentType);
 
-    std::type_info const& m_currentType;
-    std::type_info const& m_requestedType;
+    std::type_info const& currentType;
+    std::type_info const& requestedType;
+
+private:
+    static std::string formatMessage(std::type_info const& requestedType,
+        std::type_info const& currentType);
 };
 
 class Value {
