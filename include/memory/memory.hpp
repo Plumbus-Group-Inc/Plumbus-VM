@@ -18,9 +18,7 @@ public:
   }
 
   [[nodiscard]] std::uint64_t loadWord(Addr addr) const;
-
   void storeVal(Addr addr, Value val);
-  template <ValueT T> void storeVal(Addr addr, T val) { m_data[addr].write(val); }
 
 private:
   // TODO: temporary
@@ -32,7 +30,7 @@ public:
   explicit Code(const std::vector<Bytecode> &data);
   explicit Code(std::vector<Bytecode> &&data);
 
-  Bytecode loadInstr(Addr pc);
+  [[nodiscard]] Bytecode loadInstr(Addr pc) const;
 
 private:
   std::vector<Bytecode> m_data{};

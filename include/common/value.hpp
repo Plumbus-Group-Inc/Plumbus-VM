@@ -86,7 +86,7 @@ public:
     template<ValueType Type>
     void reset(Type value);
 
-    template<ValueType Type>
+  template<ValueType Type>
     [[nodiscard]] bool holds() const noexcept;
 
 private:
@@ -117,7 +117,6 @@ void Value::set(Type value) {
     if(!this->holds<Type>()) {
         throw ValueMismatchError(typeid(Type), typeid(Type));
     }
-
     m_data = value;
 }
 

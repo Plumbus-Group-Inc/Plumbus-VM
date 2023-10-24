@@ -18,13 +18,11 @@ public:
   void run();
 
 private:
-  std::shared_ptr<Memory> m_mem;
-  Executor m_exec;
-  Decoder m_dec;
+  Memory m_mem;
   Code m_code;
 
-  void runIter();
-  bool finished();
+  Executor m_exec;
+  Decoder m_dec;
 };
 
 } // namespace pvm
