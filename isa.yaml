@@ -1,0 +1,55 @@
+# [from, to]
+
+types:
+- &halt
+  mnemonic: halt
+  fields:
+    zero: {from: 5, to: 31}
+- &unary
+  mnemonic: unary
+  fields:
+    ttypeid: {from: 5, to: 9}
+    opid: {from: 10, to: 14}
+    regid: {from: 15, to: 20}
+- &binary
+  mnemonic: binary
+  fields:
+    ttypeid: {from: 5, to: 9}
+    opid: {from: 10, to: 14}
+    regid1: {from: 15, to: 20}
+    regid2: {from: 21, to: 26}
+- &array
+  mnemonic: array
+  fields:
+    opid: {from: 5, to: 9}
+    aregid: {from: 10, to: 15}
+    regid: {from: 16, to: 21}
+- &branch
+  mnemonic: branch
+  fields:
+    regid: {from: 5, to: 10}
+    bbid: {from: 11, to: 31}
+- &mem
+  mnemonic: mem
+  fields:
+    opid: {from: 5, to: 9}
+    regid: {from: 10, to: 15}
+# - &frame
+#   mnemonic: frame
+#   fields:
+#     opid: {from: 5, to: 9}
+#     fregid: {from: 10, to: 14}
+#     regid: {from: 15, to: 19}
+#     unused: {from: 20, to: 23}
+
+
+instructions:
+- &i1
+  mnemonic: sqrt
+  format: *unary
+- &i2
+  mnemonic: add
+  format: *binary
+
+
+
