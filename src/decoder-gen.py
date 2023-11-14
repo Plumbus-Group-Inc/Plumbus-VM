@@ -34,17 +34,16 @@ def getArgs():
 def main():
   args = getArgs()
 
-  file = open(args.yaml)
-  yml = yaml.safe_load(file)
-  types = yml["types"]
-  file.close()
+  yml = None
+  with open(args.yaml) as file:
+    yml = yaml.safe_load(file)
 
   env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(args.jinja.parent)))
-  env.trim_blocks = True
   env.lstrip_blocks = True
-  template = env.get_template(str(args.jinja.name))
+  env.trim_blocks = True
 
-  content = template.render(types=types)
+  template = env.get_template(str(args.jinja.name))
+  content = template.render(types=yml["types"])
   with open(args.output, "w") as file:
     file.write(content)
 

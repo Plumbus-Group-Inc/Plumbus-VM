@@ -1,9 +1,9 @@
-set(TEMPLATE_FILE_CPP ${CMAKE_CURRENT_SOURCE_DIR}/executor-generated.cpp.j2)
-set(GENERATED_FILE_CPP ${CMAKE_CURRENT_BINARY_DIR}/executor-generated.cpp)
+set(TEMPLATE_FILE_CPP ${CMAKE_CURRENT_SOURCE_DIR}/executor.cpp.j2)
+set(GENERATED_FILE_CPP ${CMAKE_CURRENT_BINARY_DIR}/executor.cpp)
 pvm_add_generated(pvm-executor-generated ${TEMPLATE_FILE_CPP} ${GENERATED_FILE_CPP})
 
-set(TEMPLATE_FILE_HPP ${CMAKE_SOURCE_DIR}/include/executor/handlers-generated.hpp.j2)
-set(GENERATED_FILE_HPP ${CMAKE_BINARY_DIR}/include/generated/handlers-generated.hpp)
+set(TEMPLATE_FILE_HPP ${CMAKE_SOURCE_DIR}/include/executor/handlers.hpp.j2)
+set(GENERATED_FILE_HPP ${CMAKE_BINARY_DIR}/include/generated/handlers.hpp)
 pvm_add_generated(pvm-handlers-generated ${TEMPLATE_FILE_HPP} ${GENERATED_FILE_HPP})
 
 add_library(pvm-executor regfile.cpp executor.cpp ${GENERATED_FILE_CPP})

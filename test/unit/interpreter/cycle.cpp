@@ -4,14 +4,23 @@
 #include <gtest/gtest.h>
 
 #include "common/instruction.hpp"
+#include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 
 using namespace pvm;
 
 TEST(Interpreter, Cycle) {
+
+  std::vector<Instr> instrs{
+      Instr{.opType = eBINARY,
+            .opID = eBINARY_ADD,
+            .instrVar = InstrBINARY::Builder().ttypeid(0).regid1(1).regid2(2).get()},
+      Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).get()},
+  };
+
   // constexpr Int kIterNum = 100'000;
 
-  // // clang-format off
+  // clang-format off
   // std::vector<Instr> instrs{
   //     /* init */
   //     Instr{.opcode = OPCODE_LOAD_IMM_I, .rd = 0x1, .rs1 = 0x0, .rs2 = 0x0, .immi = 0},        // loadImmI 0, r1         # r1 <- 0
@@ -30,7 +39,7 @@ TEST(Interpreter, Cycle) {
   //     /* halt */
   //     Instr{.opcode = OPCODE_HALT, .rd = 0x0, .rs1 = 0x0, .rs2 = 0x0, .immi = 0x0}, // halt
   // };
-  // // clang-format on
+  // clang-format on
 
   // std::vector<Bytecode> data{};
   // std::transform(instrs.begin(), instrs.end(), std::back_inserter(data),

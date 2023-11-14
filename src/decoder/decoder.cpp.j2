@@ -2,6 +2,7 @@
 // Do not modify it manually!
 
 #include <functional>
+#include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
 
@@ -9,27 +10,27 @@
 #include "common/instruction.hpp"
 #include "decoder/decoder.hpp"
 
-
 namespace pvm {
 
 {% for type in types +%}
-Instr decode{{ type.mnemonic | upper }}(std::uint32_t bytecode) {
-  {% set name = type.mnemonic %}
-  Instr{{name | upper}} concreteInstr{
+{% set name = type.mnemonic %}
+Instr decode{{ name | upper }}(std::uint32_t bytecode) {
+  auto opID = getBits<5, 9>(bytecode);
+  Instr{{ name | upper }} concreteInstr{
   {% for key, val in type.fields.items() %}
     .{{ key }} = getBits<{{ val.from }}, {{ val.to }}>(bytecode),
   {% endfor %}
   };
 
-  Instr resultInstr{
+  return Instr{
     .opType = e{{ name | upper }},
-    .instrVar = concreteInstr
+    .opID = static_cast<std::uint8_t>(opID),
+    .instrVar = concreteInstr,
   };
-  return resultInstr;
 }
 {% endfor %}
 
-std::array<std::function<Instr(std::uint32_t)>, eOPCODENUM> map{
+std::array<std::function<Instr(std::uint32_t)>, eOPCODE_NUM> decodeDispatchTable{
   {% for type in types %}
   &decode{{ type.mnemonic | upper }},
   {% endfor %}
@@ -37,7 +38,13 @@ std::array<std::function<Instr(std::uint32_t)>, eOPCODENUM> map{
 
 Instr Decoder::decode(std::uint32_t bytecode) {
   auto opType = getBits<0, 4>(bytecode);
-  return map[opType](bytecode);
+  if (opType >= eOPCODE_NUM) {
+    throw std::runtime_error{"Unknown operation type"};
+  }
+
+  auto instr = decodeDispatchTable[opType](bytecode);
+  instr.opID = getBits<5, 9>(bytecode);
+  return instr;
 }
 
 }

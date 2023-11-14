@@ -6,7 +6,9 @@
 namespace pvm {
 
 {% for type in types %}
-void exec{{ type.mnemonic | upper }}(Instr instr);
+{% for instr in type.instrs %}
+void exec_{{ type.mnemonic | upper }}_{{ instr | upper }}(Instr instr);
+{% endfor %}
 {% endfor %}
 
 }

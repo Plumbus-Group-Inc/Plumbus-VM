@@ -1,3 +1,3 @@
 #pragma once
 
-#include "generated/instruction-generated.hpp"
+#include "generated/instruction.hpp"

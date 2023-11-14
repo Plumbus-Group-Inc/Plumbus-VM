@@ -29,7 +29,7 @@ public:
 
 private:
   Instr getInstr();
-    void updatePC() {
+  void updatePC() {
     auto newPC = m_regFile.readPC() + 1;
     m_regFile.writePC(newPC);
   }

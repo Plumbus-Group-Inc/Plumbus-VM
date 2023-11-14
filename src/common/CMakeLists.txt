@@ -1,5 +1,5 @@
-set(TEMPLATE_FILE ${CMAKE_SOURCE_DIR}/include/common/instruction-generated.hpp.j2)
-set(GENERATED_FILE ${CMAKE_BINARY_DIR}/include/generated/instruction-generated.hpp)
+set(TEMPLATE_FILE ${CMAKE_SOURCE_DIR}/include/common/instruction.hpp.j2)
+set(GENERATED_FILE ${CMAKE_BINARY_DIR}/include/generated/instruction.hpp)
 pvm_add_generated(pvm-instruction-generated ${TEMPLATE_FILE} ${GENERATED_FILE})
 
 add_library(pvm-common STATIC)
