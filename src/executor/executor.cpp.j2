@@ -24,7 +24,7 @@ void execType{{ type.mnemonic | upper }}(Instr instr) {
     throw std::runtime_error{"Unknown operation ID for type {{type.mnemonic}}"};
   }
 
-  {{ type.mnemonic  }}DispatchTable[opID](instr);
+  {{ type.mnemonic }}DispatchTable[opID](instr);
 }
 {% endfor %}
 
