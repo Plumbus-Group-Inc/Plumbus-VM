@@ -45,7 +45,7 @@ struct Instr{{ type.mnemonic | upper }} {
     }
     {% endfor %}
 
-    [[nodiscard]] Instr{{ type.mnemonic | upper }} get() const {
+    [[nodiscard]] Instr{{ type.mnemonic | upper }} build() const {
       return Instr{{ type.mnemonic | upper }} {
         {% for field in type.fields.keys() %}
         m_{{ field }},

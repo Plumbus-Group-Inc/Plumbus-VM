@@ -14,8 +14,8 @@ TEST(Interpreter, Cycle) {
   std::vector<Instr> instrs{
       Instr{.opType = eBINARY,
             .opID = eBINARY_ADD,
-            .instrVar = InstrBINARY::Builder().ttypeid(0).regid1(1).regid2(2).get()},
-      Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).get()},
+            .instrVar = InstrBINARY::Builder().ttypeid(0).regid1(1).regid2(2).build()},
+      Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).build()},
   };
 
   // constexpr Int kIterNum = 100'000;

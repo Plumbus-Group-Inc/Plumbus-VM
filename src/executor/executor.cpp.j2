@@ -5,32 +5,28 @@
 #include <functional>
 
 #include "executor/executor.hpp"
-#include "generated/handlers-generated.hpp"
+#include "generated/handlers.hpp"
 
 namespace pvm {
 
 {% for type in types +%}
-std::array<std::function<void(Instr)>, e{{ type.mnemonic | upper }}_OP_NUM> {{ type.mnemonic  }}DispatchTable{
+const std::array<std::function<void(Instr)>, e{{ type.mnemonic | upper }}_OP_NUM> {{ type.mnemonic  }}DispatchTable{
   {% for instr in type.instrs %}
-  &exec_{{ type.mnemonic | upper }}_{{ instr | upper }},
+  &exec_{{ type.mnemonic }}_{{ instr }},
   {% endfor %}
 };
 {% endfor %}
 
 {% for type in types +%}
-void execType{{ type.mnemonic | upper }}(Instr instr) {
+void exec_{{ type.mnemonic | upper }}(Instr instr) {
   auto opID = instr.opID;
-  if (opID >= e{{ type.mnemonic | upper }}_OP_NUM) {
-    throw std::runtime_error{"Unknown operation ID for type {{type.mnemonic}}"};
-  }
-
   {{ type.mnemonic }}DispatchTable[opID](instr);
 }
 {% endfor %}
 
 std::array<std::function<void(Instr)>, eOPCODE_NUM> opcodeDispatchTable{
   {% for type in types %}
-  &execType{{ type.mnemonic | upper }},
+  &exec_{{ type.mnemonic | upper }},
   {% endfor %}
 };
 
