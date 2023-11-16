@@ -9,6 +9,7 @@ RUN apt-get update  &&  \
     git                 \
     ninja-build         \
     make                \
-    cmake
+    cmake &&            \
+    pip install Jinja
 
 WORKDIR /tmp
