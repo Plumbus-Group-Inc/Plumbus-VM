@@ -3,8 +3,8 @@
 #include <limits>
 
 #include "decoder/decoder.hpp"
-#include "interpreter/regfile.hpp"
 #include "memory/memory.hpp"
+#include "memory/regfile.hpp"
 
 namespace pvm {
 
