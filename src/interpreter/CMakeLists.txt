@@ -7,7 +7,7 @@ set(GENERATED_FILE_HPP ${CMAKE_BINARY_DIR}/include/generated/handlers.hpp)
 pvm_add_generated(pvm-handlers-generated ${TEMPLATE_FILE_HPP} ${GENERATED_FILE_HPP})
 
 add_library(pvm-interpreter STATIC)
-target_sources(pvm-interpreter PRIVATE interpreter.cpp ${GENERATED_FILE_CPP})
+target_sources(pvm-interpreter PRIVATE interpreter.cpp handlers.cpp ${GENERATED_FILE_CPP})
 add_dependencies(pvm-interpreter pvm-interpreter-generated pvm-handlers-generated)
 
 target_link_libraries(pvm-interpreter PRIVATE pvm-lib-settings)
