@@ -2,20 +2,19 @@
 
 namespace pvm {
 
-Interpreter::Interpreter(Code code)
-    : m_code(std::move(code)), m_exec(m_code, m_mem, std::cout, std::cin) {
+Interpreter::Interpreter(const Code &code) : Interpreter(code, std::cout, std::cin) {
 }
 
-Interpreter::Interpreter(Code code, std::ostream &ost)
-    : m_code(std::move(code)), m_exec(m_code, m_mem, ost, std::cin) {
+Interpreter::Interpreter(const Code &code, std::ostream &ost)
+    : Interpreter(code, ost, std::cin) {
 }
 
-Interpreter::Interpreter(Code code, std::istream &ist)
-    : m_code(std::move(code)), m_exec(m_code, m_mem, std::cout, ist) {
+Interpreter::Interpreter(const Code &code, std::istream &ist)
+    : Interpreter(code, std::cout, ist) {
 }
 
-Interpreter::Interpreter(Code code, std::ostream &ost, std::istream &ist)
-    : m_code(std::move(code)), m_exec(m_code, m_mem, ost, ist) {
+Interpreter::Interpreter(const Code &code, std::ostream &ost, std::istream &ist)
+    : m_code(code), m_exec(m_code, m_mem, ost, ist) {
 }
 
 void Interpreter::run() {
