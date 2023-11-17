@@ -12,7 +12,7 @@ endif()
 add_library(pvm-lib-settings INTERFACE)
 target_link_libraries(pvm-lib-settings INTERFACE pvm-common)
 
-set(SUBDIRLIST common decoder executor interpreter memory)
+set(SUBDIRLIST common decoder interpreter memory)
 foreach(DIR ${SUBDIRLIST})
   add_subdirectory(${DIR})
 endforeach()

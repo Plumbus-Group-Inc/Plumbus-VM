@@ -2,12 +2,13 @@
 // Do not modify it manually!
 
 #include "common/instruction.hpp"
+#include "interpreter/interpreter.hpp"
 
 namespace pvm {
 
 {% for type in types %}
 {% for instr in type.instrs %}
-void exec_{{ type.mnemonic }}_{{ instr }}(Instr instr);
+void exec_{{ type.mnemonic }}_{{ instr }}(Interpreter::State &state, Instr instr);
 {% endfor %}
 {% endfor %}
 

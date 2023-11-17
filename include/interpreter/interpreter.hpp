@@ -3,12 +3,25 @@
 #include <limits>
 
 #include "decoder/decoder.hpp"
-#include "executor/executor.hpp"
+#include "interpreter/regfile.hpp"
 #include "memory/memory.hpp"
 
 namespace pvm {
 
 class Interpreter final {
+public:
+  struct State final {
+    Decoder dec;
+    RegFile rf;
+    Memory mem;
+    Code code;
+  };
+
+private:
+  State m_state;
+  std::ostream &m_ost;
+  std::istream &m_ist;
+
 public:
   explicit Interpreter(const Code &code);
   Interpreter(const Code &code, std::ostream &ost);
@@ -18,11 +31,7 @@ public:
   void run();
 
 private:
-  Memory m_mem;
-  Code m_code;
-
-  Executor m_exec;
-  Decoder m_dec;
+  Instr getInstr();
 };
 
 } // namespace pvm

@@ -14,11 +14,14 @@ Interpreter::Interpreter(const Code &code, std::istream &ist)
 }
 
 Interpreter::Interpreter(const Code &code, std::ostream &ost, std::istream &ist)
-    : m_code(code), m_exec(m_code, m_mem, ost, ist) {
+    : m_state{Decoder{}, RegFile{}, Memory{}, Code{code}}, m_ost(ost), m_ist(ist) {
 }
 
-void Interpreter::run() {
-  m_exec.exec();
+Instr Interpreter::getInstr() {
+  auto pc = m_state.rf.readPC();
+  auto bytecode = m_state.code.loadInstr(pc);
+  auto instr = m_state.dec.decode(bytecode);
+  return instr;
 }
 
 } // namespace pvm
