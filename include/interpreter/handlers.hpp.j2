@@ -7,7 +7,11 @@
 namespace pvm {
 
 {% for type in types %}
-{% for instr in type.instrs %}
+{% for instr in type.instrs +%}
+// Args:
+{% for field in type.fields.keys() %}
+//  * {{ field }}
+{% endfor %}
 void exec_{{ type.mnemonic }}_{{ instr }}(Interpreter::State &state, Instr instr);
 {% endfor %}
 {% endfor %}
