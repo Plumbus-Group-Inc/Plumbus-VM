@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "common/config.hpp"
+#include "common/instruction.hpp"
 #include "common/value.hpp"
 
 namespace pvm {
@@ -27,13 +28,13 @@ private:
 
 class Code final {
 public:
-  explicit Code(const std::vector<Bytecode> &data);
-  explicit Code(std::vector<Bytecode> &&data);
+  explicit Code(const std::vector<Instr> &data);
+  explicit Code(std::vector<Instr> &&data);
 
-  [[nodiscard]] Bytecode loadInstr(Addr pc) const;
+  [[nodiscard]] Instr loadInstr(Addr pc) const;
 
 private:
-  std::vector<Bytecode> m_data{};
+  std::vector<Instr> m_data{};
 };
 
 } // namespace pvm

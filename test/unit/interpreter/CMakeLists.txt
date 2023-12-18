@@ -5,3 +5,6 @@ target_link_libraries(test-square-eq PRIVATE pvm-interpreter)
 
 pvm_add_test(test-cycle cycle.cpp)
 target_link_libraries(test-cycle PRIVATE pvm-interpreter)
+
+pvm_add_test(test-handlers handlers.cpp)
+target_link_libraries(test-handlers PRIVATE pvm-interpreter)

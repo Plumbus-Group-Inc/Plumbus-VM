@@ -15,12 +15,13 @@ public:
     RegFile rf;
     Memory mem;
     Code code;
+    std::ostream &ost;
+    std::istream &ist;
+    bool halted = false;
   };
 
 private:
   State m_state;
-  std::ostream &m_ost;
-  std::istream &m_ist;
 
 public:
   explicit Interpreter(const Code &code);
@@ -29,6 +30,7 @@ public:
   Interpreter(const Code &code, std::ostream &ost, std::istream &ist);
 
   void run();
+  [[nodiscard]] const State &getState() const;
 
 private:
   Instr getInstr();

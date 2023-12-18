@@ -5,33 +5,75 @@ types:
   - mnemonic: halt
     instrs: [halt]
     fields:
-      zero: {from: 10, to: 31}
+      zero: { from: 10, to: 31 }
   - mnemonic: unary
-    instrs: [read, write, cast, not, sqrt, sin, cos]
+    instrs: [
+        read,
+        write,
+        # cast,
+        # not,
+        # sqrt,
+        # sin,
+        # cos,
+      ]
     fields:
-      ttypeid: {from: 10, to: 14}
-      regid: {from: 15, to: 20}
+      ttypeid: { from: 10, to: 14 }
+      regid: { from: 15, to: 20 }
   - mnemonic: binary
-    instrs: [add, sub, mul, div, pow, less, greater,
-             lequal, gequal, equal, or, and, xor, min, max]
+    instrs: [
+        add,
+        # sub,
+        mul,
+        # div,
+        # pow,
+        less,
+        # greater,
+        # lequal,
+        # gequal,
+        # equal,
+        # or,
+        # and,
+        # xor,
+        # min,
+        # max,
+      ]
     fields:
-      ttypeid: {from: 10, to: 14}
-      regid1: {from: 15, to: 20}
-      regid2: {from: 21, to: 26}
+      ttypeid: { from: 10, to: 14 }
+      regid1: { from: 15, to: 20 }
+      regid2: { from: 21, to: 26 }
   - mnemonic: array
-    instrs: [push, pop, insert, remove, resize, create]
+    instrs: []
+    # push,
+    # pop,
+    # insert,
+    # remove,
+    # resize,
+    # create,
     fields:
-      aregid: {from: 10, to: 15}
-      regid: {from: 16, to: 21}
+      aregid: { from: 10, to: 15 }
+      regid: { from: 16, to: 21 }
   - mnemonic: branch
     instrs: [branch]
     fields:
-      regid: {from: 10, to: 15}
-      bbid: {from: 16, to: 31}
+      regid: { from: 10, to: 15 }
+      offset: { from: 16, to: 31 }
   - mnemonic: mem
-    instrs: [load, store]
+    instrs: []
+    # load,
+    # store
     fields:
-      regid: {from: 10, to: 15}
+      regid: { from: 10, to: 15 }
+  - mnemonic: imm
+    instrs: [
+        integer,
+        # floating
+      ]
+    fields:
+      data: { from: 10, to: 26 }
+  - mnemonic: reg
+    instrs: [mov]
+    fields:
+      regid: { from: 10, to: 15 }
 # - &frame
 #   mnemonic: frame
 #   fields:

@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <sstream>
 #include <vector>
 
@@ -10,43 +11,50 @@
 using namespace pvm;
 
 TEST(Interpreter, Cycle) {
-
-  std::vector<Instr> instrs{
-      Instr{.opType = eBINARY,
-            .opID = eBINARY_ADD,
-            .instrVar = InstrBINARY::Builder().ttypeid(0).regid1(1).regid2(2).build()},
-      Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).build()},
-  };
-
-  // constexpr Int kIterNum = 100'000;
+  constexpr Int kIterNum = 10;
+  constexpr std::size_t kInt = 1;
 
   // clang-format off
-  // std::vector<Instr> instrs{
-  //     /* init */
-  //     Instr{.opcode = OPCODE_LOAD_IMM_I, .rd = 0x1, .rs1 = 0x0, .rs2 = 0x0, .immi = 0},        // loadImmI 0, r1         # r1 <- 0
-  //     Instr{.opcode = OPCODE_LOAD_IMM_I, .rd = 0x2, .rs1 = 0x0, .rs2 = 0x0, .immi = 1},        // loadImmI 1, r2         # r2 <- 1
-  //     Instr{.opcode = OPCODE_LOAD_IMM_I, .rd = 0x3, .rs1 = 0x0, .rs2 = 0x0, .immi = kIterNum}, // loadImmI kIterNum, r3  # r3 <- kIterNum
-  //     Instr{.opcode = OPCODE_LOAD_IMM_I, .rd = 0x4, .rs1 = 0x0, .rs2 = 0x0, .immi = 1},        // loadImmI 1, r4         # r4 <- 1
-  //     Instr{.opcode = OPCODE_LOAD_IMM_I, .rd = 0x5, .rs1 = 0x0, .rs2 = 0x0, .immi = 1},        // loadImmI 1, r5         # r5 <- 1
+  std::vector<Instr> instrs{
+      Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(0).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(1).build()},
 
-  //     /* cycle_body */
-  //     Instr{.opcode = OPCODE_ALU_BINARY, .rd = 0x4, .rs1 = 0x4, .rs2 = 0x1, .op = OP_ADD_I},   // addI r4, r4, r1        # r4 <- r4 + r1
-  //     Instr{.opcode = OPCODE_ALU_BINARY, .rd = 0x5, .rs1 = 0x4, .rs2 = 0x4, .op = OP_MUL_I},   // addI r5, r4, r4        # r5 <- r4 + r4
-  //     Instr{.opcode = OPCODE_ALU_BINARY, .rd = 0x1, .rs1 = 0x1, .rs2 = 0x2, .op = OP_ADD_I},   // addI r1, r1, r2        # r1 <- r1 + 1
-  //     // Instr{.opcode = OPCODE_IO,         .rd = 0x0, .rs1 = 0x1, .rs2 = 0x0, .op = OP_WRITE_I}, // writeI r1              # print r1
-  //     Instr{.opcode = OPCODE_BLESS_I,    .rd = 0x0, .rs1 = 0x1, .rs2 = 0x3, .immi = -3},       // branchLessI -2, r1, r3 # cycle_body
+      Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(1).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(2).build()},
 
-  //     /* halt */
-  //     Instr{.opcode = OPCODE_HALT, .rd = 0x0, .rs1 = 0x0, .rs2 = 0x0, .immi = 0x0}, // halt
-  // };
+      Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(kIterNum).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(3).build()},
+
+      Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(1).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(4).build()},
+
+      Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(1).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(5).build()},
+
+      Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(4).regid2(1).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(4).build()},
+
+      Instr{.opType = eBINARY, .opID = eBINARY_MUL, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(4).regid2(4).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(5).build()},
+
+      Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(1).regid2(2).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(1).build()},
+
+      Instr{.opType = eBINARY, .opID = eBINARY_LESS, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(1).regid2(3).build()},
+      Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(6).build()},
+
+      Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar = InstrBRANCH::Builder().regid(6).offset(-8).build()},
+
+      Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).build()},
+  };
   // clang-format on
 
-  // std::vector<Bytecode> data{};
-  // std::transform(instrs.begin(), instrs.end(), std::back_inserter(data),
-  //                [](auto instr) { return *reinterpret_cast<Bytecode *>(&instr); });
+  Code code{std::move(instrs)};
+  Interpreter interp{code};
+  interp.run();
+  const auto &rf = interp.getState().rf;
 
-  // Code code{std::move(data)};
-
-  // Interpreter interp{code, std::cout, std::cin};
-  // interp.run();
+  ASSERT_EQ(rf.readReg(1).get<Int>(), kIterNum);
+  ASSERT_EQ(rf.readReg(4).get<Int>(), 46);
+  ASSERT_EQ(rf.readReg(5).get<Int>(), 2116);
 }

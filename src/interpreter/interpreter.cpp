@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "interpreter/interpreter.hpp"
 
 namespace pvm {
@@ -14,14 +16,17 @@ Interpreter::Interpreter(const Code &code, std::istream &ist)
 }
 
 Interpreter::Interpreter(const Code &code, std::ostream &ost, std::istream &ist)
-    : m_state{Decoder{}, RegFile{}, Memory{}, Code{code}}, m_ost(ost), m_ist(ist) {
+    : m_state{Decoder{}, RegFile{}, Memory{}, Code{code}, ost, ist} {
 }
 
 Instr Interpreter::getInstr() {
   auto pc = m_state.rf.readPC();
-  auto bytecode = m_state.code.loadInstr(pc);
-  auto instr = m_state.dec.decode(bytecode);
+  auto instr = m_state.code.loadInstr(pc);
   return instr;
+}
+
+const Interpreter::State &Interpreter::getState() const {
+  return m_state;
 }
 
 } // namespace pvm
