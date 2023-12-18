@@ -30,11 +30,14 @@ endif()
 
 add_library(pvm-settings INTERFACE)
 target_include_directories(pvm-settings INTERFACE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(pvm-settings INTERFACE ${CMAKE_BINARY_DIR}/include)
 target_compile_features(pvm-settings INTERFACE cxx_std_20)
 apply_compiler_flags(pvm-settings INTERFACE)
 if(ENABLE_WERROR)
   target_compile_options(pvm-settings INTERFACE -Werror)
 endif()
+
+include(cmake/jinja-gen.cmake)
 
 add_subdirectory(src)
 add_subdirectory(tools)
