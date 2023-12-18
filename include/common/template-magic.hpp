@@ -41,7 +41,7 @@ struct NthImpl<0, Head, Tail...> {
 };
 
 template <size_t N, typename... Types>
-using Nth = NthImpl<N, Types...>::T;
+using Nth = typename NthImpl<N, Types...>::T;
 
 template <typename FirstType, typename... Types>
 std::type_info const &NthTypeInfoImpl(std::size_t n) {
