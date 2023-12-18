@@ -7,8 +7,9 @@
 namespace pvm {
 
 {% for type in types %}
+{% set mnem = type.mnemonic %}
 {% for instr in type.instrs %}
-void exec_{{ type.mnemonic }}_{{ instr }}(Interpreter::State &state, Instr instr);
+void exec_{{ mnem }}_{{ instr }}(Interpreter::State &state, Instr{{ mnem | upper }} instr);
 {% endfor %}
 {% endfor %}
 

@@ -10,7 +10,7 @@ using namespace pvm;
 
 TEST(Interpreter, SquareEquation) {
   // clang-format off
-  // std::vector<Instr> instrs{
+  std::vector<Instr> instrs{
   //     Instr{.opcode = OPCODE_IO, .rd = 0x1, .rs1 = 0x0, .rs2 = 0x0, .op = OP_READ_F}, // readF r1 # r1 <- a
   //     Instr{.opcode = OPCODE_IO, .rd = 0x2, .rs1 = 0x0, .rs2 = 0x0, .op = OP_READ_F}, // readF r2 # r2 <- b
   //     Instr{.opcode = OPCODE_IO, .rd = 0x3, .rs1 = 0x0, .rs2 = 0x0, .op = OP_READ_F}, // readF r3 # r3 <- c
@@ -53,7 +53,7 @@ TEST(Interpreter, SquareEquation) {
 
   //     /* halt */
   //     Instr{.opcode = OPCODE_HALT, .rd = 0x0, .rs1 = 0x0, .rs2 = 0x0, .immi = 0x0}, // halt
-  // };
+  };
   // clang-format on
 
   // std::vector<Bytecode> data{};

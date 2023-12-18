@@ -1,5 +1,5 @@
-set(TEMPLATE_FILE_CPP ${CMAKE_CURRENT_SOURCE_DIR}/interpreter.cpp.j2)
-set(GENERATED_FILE_CPP ${CMAKE_CURRENT_BINARY_DIR}/interpreter.cpp)
+set(TEMPLATE_FILE_CPP ${CMAKE_CURRENT_SOURCE_DIR}/run.cpp.j2)
+set(GENERATED_FILE_CPP ${CMAKE_CURRENT_BINARY_DIR}/run.cpp)
 pvm_add_generated(pvm-interpreter-generated ${TEMPLATE_FILE_CPP} ${GENERATED_FILE_CPP})
 
 set(TEMPLATE_FILE_HPP ${CMAKE_SOURCE_DIR}/include/interpreter/handlers.hpp.j2)

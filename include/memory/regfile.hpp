@@ -17,12 +17,12 @@ private:
   Addr m_pc{};
 
 public:
-  void writeAcc(Value val);
   void writeAcc(Value &&val);
+  void writeAcc(const Value &val);
   [[nodiscard]] Value readAcc() const;
 
-  void writeReg(RegId regId, Value val);
   void writeReg(RegId regId, Value &&val);
+  void writeReg(RegId regId, const Value &val);
   [[nodiscard]] Value readReg(RegId regId) const;
 
   void incrementPC();
