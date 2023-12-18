@@ -1,152 +1,136 @@
 #pragma once
 
-#include "common/config.hpp"
-#include <cassert>
-#include <exception>
 #include <stdexcept>
+#include <type_traits>
+#include <typeinfo>
 #include <variant>
+#include <vector>
+
+#include "common/config.hpp"
+#include "common/template-magic.hpp"
 
 namespace pvm {
 
-template <typename T>
-concept ValueAlt = std::is_same_v<T, Int> || std::is_same_v<T, Float>;
+class Null;
+class Value;
+class Array;
+class Function;
+class Object;
 
-class Value final {
+class Null {};
+
+class Array {
 public:
-  enum class TypeId {
-    UNDEFINED,
-    INT,
-    FLOAT,
-  };
+  Array() = default;
+  ~Array() = default;
 
-  union Union {
-    Int i;
-    Float f;
-  };
+  explicit Array(Int size);
 
-  using Variant = std::variant<Int, Float>;
+  Array(Array const &other) = default;
+  Array(Array &&other) noexcept;
+
+  Array &operator=(Array const &other);
+  Array &operator=(Array &&other) noexcept;
+
+  [[nodiscard]] Int size() const noexcept;
+  [[nodiscard]] Value at(Int pos) const &&;
+  [[nodiscard]] Value const &at(Int pos) const &;
+  [[nodiscard]] Value &at(Int pos) &;
+
+  void resize(Int newSize);
+  void clear();
 
 private:
-  template <ValueAlt T>
-  struct TypeIdGetter;
+  std::vector<Value> m_data;
+};
 
+template <typename Type>
+concept ValueType = pvm::variadic::Contains<Type, Null, Bool, Float, Int, Array>;
+
+class ValueMismatchError : public std::runtime_error {
 public:
-  template <ValueAlt T>
-  static constexpr TypeId GetTypeId() {
-    return TypeIdGetter<T>::id;
-  }
+  ValueMismatchError(std::type_info const &requestedType,
+                     std::type_info const &currentType);
 
+  std::type_info const &currentType;
+  std::type_info const &requestedType;
+
+private:
+  static std::string formatMessage(std::type_info const &requestedType,
+                                   std::type_info const &currentType);
+};
+
+class Value {
 public:
-  class MismatchError final : std::exception {};
+  using Variant = std::variant<Null, Bool, Float, Int, Array>;
 
-  Value();
-  explicit Value(Int value);
-  explicit Value(Float value);
+  Value() noexcept;
   ~Value() = default;
 
-  [[nodiscard]] TypeId getType() const noexcept;
-  [[nodiscard]] bool sameType(TypeId type) const noexcept;
-  template <ValueAlt T>
-  [[nodiscard]] bool sameType() const noexcept;
+  template <ValueType Type>
+  explicit Value(Type const &value) noexcept(std::is_nothrow_copy_constructible_v<Type>);
 
-  template <ValueAlt T>
-  T read() const;
+  template <ValueType Type>
+  explicit Value(Type &&value) noexcept(std::is_nothrow_move_constructible_v<Type>);
 
-  template <ValueAlt T>
-  void write(T value);
+  Value(Value const &other) = default;
+  Value(Value &&other) noexcept;
 
-  template <ValueAlt T>
-  void overwrite(T value);
+  Value &operator=(Value const &other) = default;
+  Value &operator=(Value &&other) noexcept;
 
-  Variant read(TypeId typeId);
-  void write(TypeId typeId, Variant value);
-  void overwrite(TypeId typeId, Variant value);
+  template <ValueType Type>
+  [[nodiscard]] Type get() const;
+
+  template <ValueType Type>
+  void set(Type value);
+
+  template <ValueType Type>
+  void reset(Type value);
+
+  template <ValueType Type>
+  [[nodiscard]] bool holds() const noexcept;
 
 private:
-  template <ValueAlt T>
-  void validateType() const;
-
-  void validateType(TypeId typeId) const;
-
-  template <ValueAlt T>
-  T &getValueRef();
-
-  template <ValueAlt T>
-  T const &getValueRef() const;
-
-  TypeId m_type;
-  Union m_value;
+  Variant m_data;
 };
 
-template <>
-struct Value::TypeIdGetter<Int> {
-  static constexpr const TypeId id = TypeId::INT;
-};
-template <>
-struct Value::TypeIdGetter<Float> {
-  static constexpr const TypeId id = TypeId::FLOAT;
-};
-
-inline Value::TypeId Value::getType() const noexcept {
-  return m_type;
-}
-inline bool Value::sameType(TypeId type) const noexcept {
-  return type == m_type;
+template <ValueType Type>
+Value::Value(Type const &value) noexcept(std::is_nothrow_copy_constructible_v<Type>)
+    : m_data(value) {
 }
 
-template <ValueAlt T>
-inline bool Value::sameType() const noexcept {
-  return GetTypeId<T>() == m_type;
+template <ValueType Type>
+Value::Value(Type &&value) noexcept(std::is_nothrow_move_constructible_v<Type>)
+    : m_data(std::move(value)) {
 }
 
-template <ValueAlt T>
-T Value::read() const {
-  this->validateType<T>();
-  return this->getValueRef<T>();
-}
-
-template <ValueAlt T>
-void Value::write(T value) {
-  this->validateType<T>();
-  this->getValueRef<T>() = value;
-}
-
-template <ValueAlt T>
-void Value::overwrite(T value) {
-  this->m_type = GetTypeId<T>();
-  this->getValueRef<T>() = value;
-}
-template <ValueAlt T>
-void Value::validateType() const {
-  if (!this->sameType<T>()) {
-    throw MismatchError();
+template <ValueType Type>
+[[nodiscard]] Type Value::get() const {
+  std::add_pointer_t<std::add_const_t<Type>> pvalue = std::get_if<Type>(&m_data);
+  if (pvalue == nullptr) {
+    throw ValueMismatchError(typeid(Type), typeid(Type));
   }
+
+  return *pvalue;
 }
 
-inline void Value::validateType(TypeId typeId) const {
-  if (this->sameType(typeId)) {
-    throw MismatchError();
+template <ValueType Type>
+void Value::set(Type value) {
+  if (!this->holds<Type>()) {
+    throw ValueMismatchError(typeid(Type), typeid(Type));
   }
+  m_data = value;
 }
 
-template <>
-inline Int &Value::getValueRef<Int>() {
-  return m_value.i;
+template <ValueType Type>
+void Value::reset(Type value) {
+  m_data = value;
 }
 
-template <>
-inline Float &Value::getValueRef<Float>() {
-  return m_value.f;
-}
-
-template <>
-inline Int const &Value::getValueRef<Int>() const {
-  return m_value.i;
-}
-
-template <>
-inline Float const &Value::getValueRef<Float>() const {
-  return m_value.f;
+template <ValueType Type>
+[[nodiscard]] bool Value::holds() const noexcept {
+  return std::holds_alternative<Type>(m_data);
 }
 
 } // namespace pvm

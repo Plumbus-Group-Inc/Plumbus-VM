@@ -7,6 +7,7 @@ namespace pvm {
 
 using Int = std::int32_t;
 using Float = float;
+using Bool = bool;
 
 using Addr = std::uint32_t;
 using Bytecode = std::uint64_t;

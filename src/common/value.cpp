@@ -1,58 +1,72 @@
+#include <sstream>
+#include <stdexcept>
+#include <variant>
+
 #include "common/value.hpp"
 
 namespace pvm {
 
-Value::Value() : m_type(TypeId::UNDEFINED), m_value() {
+ValueMismatchError::ValueMismatchError(std::type_info const &requestedType,
+                                       std::type_info const &currentType)
+    : std::runtime_error(formatMessage(requestedType, currentType)),
+      currentType(currentType), requestedType(requestedType) {
 }
 
-Value::Value(Int value) : m_type(TypeId::INT), m_value() {
-  m_value.i = value;
+std::string ValueMismatchError::formatMessage(std::type_info const &requestedType,
+                                              std::type_info const &currentType) {
+  std::stringstream s;
+  s << "requested " << requestedType.name() << ", but current is " << currentType.name();
+
+  return s.str();
 }
 
-Value::Value(Float value) : m_type(TypeId::FLOAT), m_value() {
-  m_value.f = value;
+Value::Value() noexcept : Value(Null()) {
+}
+Value::Value(Value &&other) noexcept : m_data(std::move(other.m_data)) {
 }
 
-Value::Variant Value::read(TypeId typeId) {
-  this->validateType(typeId);
-  switch (typeId) {
-  case TypeId::INT:
-    return Variant(m_value.i);
-  case TypeId::FLOAT:
-    return Variant(m_value.f);
-  default:
-    assert(false);
-    break;
-  }
+Value &Value::operator=(Value &&other) noexcept {
+  m_data = std::move(other.m_data);
+  return *this;
 }
-inline void Value::write(TypeId typeId, Variant value) {
-  this->validateType(typeId);
-  switch (typeId) {
-  case TypeId::INT:
-    m_value.i = std::get<Int>(value);
-    break;
-  case TypeId::FLOAT:
-    m_value.f = std::get<Float>(value);
-    break;
-  default:
-    assert(false);
-    break;
-  }
+
+Array::Array(Int size) : m_data(size) {
 }
-inline void Value::overwrite(TypeId typeId, Variant value) {
-  switch (typeId) {
-  case TypeId::INT:
-    m_type = TypeId::INT;
-    m_value.i = std::get<Int>(value);
-    break;
-  case TypeId::FLOAT:
-    m_type = TypeId::FLOAT;
-    m_value.f = std::get<Float>(value);
-    break;
-  default:
-    assert(false);
-    break;
+
+Array::Array(Array &&other) noexcept : m_data(std::move(other.m_data)) {
+}
+
+Array &Array::operator=(Array const &other) {
+  if (this == &other) {
+    return *this;
   }
+
+  m_data = other.m_data;
+  return *this;
+}
+Array &Array::operator=(Array &&other) noexcept {
+  m_data = std::move(other.m_data);
+  return *this;
+}
+
+[[nodiscard]] Int Array::size() const noexcept {
+  return static_cast<Int>(m_data.size());
+}
+[[nodiscard]] Value Array::at(Int pos) const && {
+  return m_data.at(pos);
+}
+[[nodiscard]] Value const &Array::at(Int pos) const & {
+  return m_data.at(pos);
+}
+[[nodiscard]] Value &Array::at(Int pos) & {
+  return m_data.at(pos);
+}
+
+void Array::resize(Int newSize) {
+  m_data.resize(static_cast<size_t>(newSize), Value(Null()));
+}
+void Array::clear() {
+  m_data.clear();
 }
 
 } // namespace pvm
