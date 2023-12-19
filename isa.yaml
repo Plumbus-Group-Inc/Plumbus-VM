@@ -10,9 +10,10 @@ types:
     instrs: [
         read,
         write,
+        abs,
         # cast,
         # not,
-        # sqrt,
+        sqrt,
         # sin,
         # cos,
       ]
@@ -24,7 +25,7 @@ types:
         add,
         sub,
         mul,
-        # div,
+        div,
         # pow,
         less,
         # greater,

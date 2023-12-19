@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <bit>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -97,6 +98,27 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
   }
 }
 
+void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
+  if (instr.ttypeid == 1) {
+    auto tmp = state.rf.readReg(instr.regid).get<Int>();
+    state.rf.writeAcc(Value{std::abs(tmp)});
+  } else if (instr.ttypeid == 2) {
+    auto tmp = state.rf.readReg(instr.regid).get<Float>();
+    state.rf.writeAcc(Value{std::fabs(tmp)});
+  } else {
+    throw std::runtime_error{"unknown type id in write instruction"};
+  }
+}
+
+void exec_unary_sqrt(Interpreter::State &state, InstrUNARY instr) {
+  if (instr.ttypeid == 2) {
+    auto tmp = state.rf.readReg(instr.regid).get<Float>();
+    state.rf.writeAcc(Value{std::sqrt(tmp)});
+  } else {
+    throw std::runtime_error{"unknown type id in write instruction"};
+  }
+}
+
 template <typename In, typename F>
 void exec_binary_template(Interpreter::State &state, InstrBINARY instr, F f) {
   auto lhs = state.rf.readReg(instr.regid1).get<In>();
@@ -169,5 +191,19 @@ void exec_binary_mul(Interpreter::State &state, InstrBINARY instr) {
     throw std::runtime_error{"unknown ttypeid for bin instr"};
   }
 }
+
+void exec_binary_div(Interpreter::State &state, InstrBINARY instr) {
+  switch (instr.ttypeid) {
+  case 1:
+    exec_binary_template<Int>(state, instr, std::divides<Int>{});
+    break;
+  case 2:
+    exec_binary_template<Float>(state, instr, std::divides<Float>{});
+    break;
+  default:
+    throw std::runtime_error{"unknown ttypeid for bin instr"};
+  }
+}
+
 
 } // namespace pvm
