@@ -30,7 +30,7 @@ types:
         # greater,
         # lequal,
         # gequal,
-        # equal,
+        equal,
         # or,
         # and,
         # xor,
@@ -53,7 +53,7 @@ types:
       aregid: { from: 10, to: 15 }
       regid: { from: 16, to: 21 }
   - mnemonic: branch
-    instrs: [branch]
+    instrs: [branch, call, ret]
     fields:
       regid: { from: 10, to: 15 }
       offset: { from: 16, to: 31 }
