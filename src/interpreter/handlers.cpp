@@ -21,6 +21,22 @@ void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
   state.rf.writeAcc(Value{data});
 }
 
+void exec_imm_array(Interpreter::State &state, InstrIMM instr) {
+    auto a = Array(std::bit_cast<Int>(instr.data));
+    state.rf.writeAcc(Value{a});
+}
+
+void exec_array_set(Interpreter::State &state, InstrARRAY instr) {
+    state.rf.readReg(instr.aregid).get<Array>().at(
+        state.rf.readReg(instr.regid).get<Int>()) = state.rf.readAcc();
+}
+
+void exec_array_get(Interpreter::State &state, InstrARRAY instr) {
+    auto value = state.rf.readReg(instr.aregid).get<Array>().at(
+        state.rf.readReg(instr.regid).get<Int>());
+    state.rf.writeAcc(value);
+}
+
 void exec_reg_mov(Interpreter::State &state, InstrREG instr) {
   state.rf.writeReg(instr.regid, state.rf.readAcc());
 }
