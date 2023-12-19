@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 
+# set(CMAKE_BUILD_TYPE Debug)
+
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   message(
     FATAL_ERROR

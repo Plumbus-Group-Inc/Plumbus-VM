@@ -22,7 +22,7 @@ types:
   - mnemonic: binary
     instrs: [
         add,
-        # sub,
+        sub,
         mul,
         # div,
         # pow,
@@ -64,10 +64,7 @@ types:
     fields:
       regid: { from: 10, to: 15 }
   - mnemonic: imm
-    instrs: [
-        integer,
-        # floating
-      ]
+    instrs: [integer, floating]
     fields:
       data: { from: 10, to: 26 }
   - mnemonic: reg

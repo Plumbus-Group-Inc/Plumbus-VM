@@ -93,6 +93,7 @@ function(apply_compiler_flags TARGET VISIBILIY)
   target_compile_options(
     ${TARGET} ${VISIBILIY}
     "$<$<CXX_COMPILER_ID:GNU>:$<$<CONFIG:Debug>:${GCC_WARNINGS}>>")
+  target_compile_options(${TARGET} ${VISIBILIY} -O0)
 endfunction()
 
 string(REPLACE " " ";" DED_SAN_LST "${SANITIZERS}")

@@ -17,7 +17,12 @@ void exec_halt_halt(Interpreter::State &state, InstrHALT instr) {
 }
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
-  auto data = std::bit_cast<Int>(instr.data);
+  auto data = static_cast<Int>(instr.data);
+  state.rf.writeAcc(Value{data});
+}
+
+void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
+  auto data = static_cast<Float>(instr.data);
   state.rf.writeAcc(Value{data});
 }
 
@@ -124,6 +129,19 @@ void exec_binary_add(Interpreter::State &state, InstrBINARY instr) {
     break;
   case 2:
     exec_binary_template<Float>(state, instr, std::plus<Float>{});
+    break;
+  default:
+    throw std::runtime_error{"unknown ttypeid for bin instr"};
+  }
+}
+
+void exec_binary_sub(Interpreter::State &state, InstrBINARY instr) {
+  switch (instr.ttypeid) {
+  case 1:
+    exec_binary_template<Int>(state, instr, std::minus<Int>{});
+    break;
+  case 2:
+    exec_binary_template<Float>(state, instr, std::minus<Float>{});
     break;
   default:
     throw std::runtime_error{"unknown ttypeid for bin instr"};
