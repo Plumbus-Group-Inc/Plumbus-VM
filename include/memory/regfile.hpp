@@ -13,7 +13,6 @@ private:
   static constexpr std::size_t kRegNum = (1U << (sizeof(RegId) * 8));
 
   std::array<Value, kRegNum> m_data{};
-  Value m_accum{};
   Addr m_pc{};
 
 public:

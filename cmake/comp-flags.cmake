@@ -83,9 +83,9 @@ set(GCC_WARNINGS
 
 function(apply_compiler_flags TARGET VISIBILIY)
   # Add sanitizers
-  target_link_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${SANITIZERS}>")
-  target_compile_options(${TARGET} ${VISIBILIY}
-                         "$<$<CONFIG:Debug>:${SANITIZERS}>")
+  # target_link_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${SANITIZERS}>")
+  # target_compile_options(${TARGET} ${VISIBILIY}
+  #                        "$<$<CONFIG:Debug>:${SANITIZERS}>")
 
   # Compile stuff
   target_compile_options(${TARGET} ${VISIBILIY}

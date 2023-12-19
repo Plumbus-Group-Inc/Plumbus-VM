@@ -10,9 +10,10 @@ types:
     instrs: [
         read,
         write,
+        abs,
         # cast,
         # not,
-        # sqrt,
+        sqrt,
         # sin,
         # cos,
       ]
@@ -22,9 +23,9 @@ types:
   - mnemonic: binary
     instrs: [
         add,
-        # sub,
+        sub,
         mul,
-        # div,
+        div,
         # pow,
         less,
         # greater,
@@ -69,7 +70,7 @@ types:
     instrs: [
         integer,
         array
-        # floating
+        floating
       ]
     fields:
       data: { from: 10, to: 26 }

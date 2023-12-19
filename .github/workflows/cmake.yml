@@ -19,7 +19,7 @@ jobs:
     container: takosan/sim2022
     strategy:
       matrix:
-        compiler: [g++-10]
+        compiler: [g++-11]
         generator: [Unix Makefiles, Ninja]
         build_type: [Release]
 

@@ -3,15 +3,15 @@
 namespace pvm {
 
 void RegFile::writeAcc(Value &&val) {
-  m_accum = std::move(val);
+  writeReg(0, val);
 }
 
 void RegFile::writeAcc(const Value &val) {
-  m_accum = val;
+  writeReg(0, val);
 }
 
 [[nodiscard]] Value RegFile::readAcc() const {
-  return m_accum;
+  return readReg(0);
 }
 
 void RegFile::writeReg(RegId regId, Value &&val) {
