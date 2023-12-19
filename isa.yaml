@@ -43,13 +43,15 @@ types:
       regid1: { from: 15, to: 20 }
       regid2: { from: 21, to: 26 }
   - mnemonic: array
-    instrs: []
-    # push,
+    instrs: [
+      get,
+      set,
     # pop,
     # insert,
     # remove,
     # resize,
     # create,
+    ]
     fields:
       aregid: { from: 10, to: 15 }
       regid: { from: 16, to: 21 }
@@ -65,7 +67,11 @@ types:
     fields:
       regid: { from: 10, to: 15 }
   - mnemonic: imm
-    instrs: [integer, floating]
+    instrs: [
+        integer,
+        array
+        floating
+      ]
     fields:
       data: { from: 10, to: 26 }
   - mnemonic: reg
