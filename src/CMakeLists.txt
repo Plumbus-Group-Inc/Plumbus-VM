@@ -1,4 +1,4 @@
-find_package( Python3 3.10 REQUIRED)
+find_package( Python3 3.9 REQUIRED)
 execute_process(
   COMMAND ${Python3_EXECUTABLE} -m pip show pyyaml jinja2
   RESULT_VARIABLE EXIT_CODE

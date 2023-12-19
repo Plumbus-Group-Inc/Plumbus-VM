@@ -8,3 +8,6 @@ target_link_libraries(test-cycle PRIVATE pvm-interpreter)
 
 pvm_add_test(test-handlers handlers.cpp)
 target_link_libraries(test-handlers PRIVATE pvm-interpreter)
+
+pvm_add_test(test-call call.cpp)
+target_link_libraries(test-call PRIVATE pvm-interpreter)

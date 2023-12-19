@@ -36,6 +36,28 @@ void exec_branch_branch(Interpreter::State &state, InstrBRANCH instr) {
   rf.writePC(rf.readPC() + std::bit_cast<Addr>(instr.offset));
 }
 
+void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
+  state.stack.push_back(state.rf);
+
+  auto &rf = state.rf;
+  if (auto cond = rf.readReg(instr.regid).get<Bool>(); !cond) {
+    state.rf.incrementPC();
+    return;
+  }
+
+  rf.writePC(rf.readPC() + std::bit_cast<Addr>(instr.offset));
+}
+
+void exec_branch_ret(Interpreter::State &state, InstrBRANCH instr) {
+    auto returnValue = state.rf.readReg(instr.regid);
+
+    state.rf = state.stack.back();
+    state.rf.writeAcc(returnValue);
+    state.stack.pop_back();
+
+    state.rf.incrementPC();
+}
+
 void exec_unary_write(Interpreter::State &state, InstrUNARY instr) {
   auto val = state.rf.readReg(instr.regid);
   if (instr.ttypeid == 1) {
@@ -81,6 +103,20 @@ void exec_binary_less(Interpreter::State &state, InstrBINARY instr) {
     throw std::runtime_error{"unknown ttypeid for bin instr"};
   }
 }
+
+void exec_binary_equal(Interpreter::State &state, InstrBINARY instr) {
+  switch (instr.ttypeid) {
+  case 1:
+    exec_binary_template<Int>(state, instr, std::equal_to<Int>{});
+    break;
+  case 2:
+    exec_binary_template<Float>(state, instr, std::equal_to<Float>{});
+    break;
+  default:
+    throw std::runtime_error{"unknown ttypeid for bin instr"};
+  }
+}
+
 
 void exec_binary_add(Interpreter::State &state, InstrBINARY instr) {
   switch (instr.ttypeid) {

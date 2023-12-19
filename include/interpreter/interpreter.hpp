@@ -18,6 +18,8 @@ public:
     std::ostream &ost;
     std::istream &ist;
     bool halted = false;
+
+    std::vector<RegFile> stack;
   };
 
 private:
