@@ -3,6 +3,8 @@
 
 #include <gtest/gtest.h>
 
+#include <float16_t/float16_t.hpp>
+
 #include "common/instruction.hpp"
 #include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
@@ -28,7 +30,7 @@ TEST(Interpreter, SquareEquation) {
     Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(3).build()},
 
     // Instr{.opcode = OPCODE_LOAD_IMM_F, .rd = 0x4, .rs1 = 0x0, .rs2 = 0x0, .immf = 4},      // loadImmF 4, r4  # r4 <- 4
-    Instr{.opType = eIMM, .opID = eIMM_FLOATING, .instrVar = InstrIMM::Builder().data(0).build()},
+    Instr{.opType = eIMM, .opID = eIMM_FLOATING, .instrVar = InstrIMM::Builder().data(static_cast<std::uint16_t>(numeric::float16_t{0.0})).build()},
     Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(1).build()},
 
     // Instr{.opcode = OPCODE_ALU_BINARY, .rd = 0x5, .rs1 = 0x2, .rs2 = 0x2, .op = OP_MUL_F}, // mulF r5, r2, r2 # r5 <- b^2
@@ -48,6 +50,9 @@ TEST(Interpreter, SquareEquation) {
     Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(8).build()},
 
     // Instr{.opcode = OPCODE_LOAD_IMM_F, .rd = 0x9, .rs1 = 0x0, .rs2 = 0x0, .immf = 1e-4F},  // loadImmF 10-e6, r9      # r9 <- 1e-6
+    Instr{.opType = eIMM, .opID = eIMM_FLOATING, .instrVar = InstrIMM::Builder().data(static_cast<std::uint16_t>(numeric::float16_t{1e-4F})).build()},
+    Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(9).build()},
+
     // Instr{.opcode = OPCODE_ALU_UNARY,  .rd = 0xa, .rs1 = 0x8, .rs2 = 0x0, .op = OP_ABS_F}, // absF ra, r8             # ra <- |D|
     // Instr{.opcode = OPCODE_BLESS_F,    .rd = 0x0, .rs1 = 0xa, .rs2 = 0x9, .immi = 0xe},    // branchLessF 0xe, ra, r9 # one_root
 
@@ -87,14 +92,14 @@ TEST(Interpreter, SquareEquation) {
   // std::transform(instrs.begin(), instrs.end(), std::back_inserter(data),
   //                [](auto instr) { return *reinterpret_cast<Bytecode *>(&instr); });
 
-  // Code code{std::move(data)};
+  Code code{std::move(instrs)};
 
-  // std::stringstream ist{};
-  // std::stringstream ost{};
-  // Interpreter interp{code, ost, ist};
+  std::stringstream ist{};
+  std::stringstream ost{};
+  Interpreter interp{code, ost, ist};
 
-  // ist << "1 3 2" << std::endl;
-  // interp.run();
+  ist << "1 3 2" << std::endl;
+  interp.run();
 
   // Float x2 = 0;
   // ost >> x2;

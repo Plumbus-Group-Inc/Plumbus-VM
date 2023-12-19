@@ -42,8 +42,8 @@ TEST(Handlers, ImmInt) {
 }
 
 TEST(Handlers, ImmFloat) {
-  numeric::float16_t data = 0.01;
   auto state = createState();
+  numeric::float16_t data = 0.01;
   auto imm = InstrIMM::Builder().data(static_cast<std::uint16_t>(data)).build();
 
   exec_imm_floating(state, imm);

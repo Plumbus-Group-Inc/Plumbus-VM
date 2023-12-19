@@ -83,9 +83,9 @@ set(GCC_WARNINGS
 
 function(apply_compiler_flags TARGET VISIBILIY)
   # Add sanitizers
-  target_link_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${SANITIZERS}>")
-  target_compile_options(${TARGET} ${VISIBILIY}
-                         "$<$<CONFIG:Debug>:${SANITIZERS}>")
+  # target_link_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${SANITIZERS}>")
+  # target_compile_options(${TARGET} ${VISIBILIY}
+  #                        "$<$<CONFIG:Debug>:${SANITIZERS}>")
 
   # Compile stuff
   target_compile_options(${TARGET} ${VISIBILIY}
@@ -93,7 +93,6 @@ function(apply_compiler_flags TARGET VISIBILIY)
   target_compile_options(
     ${TARGET} ${VISIBILIY}
     "$<$<CXX_COMPILER_ID:GNU>:$<$<CONFIG:Debug>:${GCC_WARNINGS}>>")
-  target_compile_options(${TARGET} ${VISIBILIY} -O0)
 endfunction()
 
 string(REPLACE " " ";" DED_SAN_LST "${SANITIZERS}")
