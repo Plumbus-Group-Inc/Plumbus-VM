@@ -5,6 +5,8 @@
 
 #include <gtest/gtest.h>
 
+#include <float16_t/float16_t.hpp>
+
 #include "common/config.hpp"
 #include "common/instruction.hpp"
 #include "generated/handlers.hpp"
@@ -28,7 +30,7 @@ TEST(Handlers, Halt) {
   ASSERT_NO_FATAL_FAILURE(exec_halt_halt(state, halt));
 }
 
-TEST(Handlers, Imm) {
+TEST(Handlers, ImmInt) {
   auto data = 1;
   auto state = createState();
   auto imm = InstrIMM::Builder().data(data).build();
@@ -37,6 +39,17 @@ TEST(Handlers, Imm) {
   auto val = state.rf.readAcc();
 
   ASSERT_EQ(data, val.get<Int>());
+}
+
+TEST(Handlers, ImmFloat) {
+  numeric::float16_t data = 0.01;
+  auto state = createState();
+  auto imm = InstrIMM::Builder().data(static_cast<std::uint16_t>(data)).build();
+
+  exec_imm_floating(state, imm);
+  auto val = state.rf.readAcc();
+
+  ASSERT_FLOAT_EQ(static_cast<Float>(data), val.get<Float>());
 }
 
 TEST(Handlers, Mov) {

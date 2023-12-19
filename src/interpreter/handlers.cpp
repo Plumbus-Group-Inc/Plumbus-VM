@@ -1,9 +1,13 @@
+#include <algorithm>
 #include <bit>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <istream>
 #include <ostream>
 #include <stdexcept>
+
+#include <float16_t/float16_t.hpp>
 
 #include "common/config.hpp"
 #include "common/value.hpp"
@@ -21,7 +25,13 @@ void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
 }
 
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
-  auto data = static_cast<Float>(instr.data);
+  std::uint16_t raw = 0;
+  auto *rawPtr = reinterpret_cast<std::uint8_t *>(&raw);
+  auto *dataPtr = reinterpret_cast<std::uint8_t *>(&instr.data);
+  std::copy_n(dataPtr, 2, rawPtr);
+
+  numeric::float16_t dataF16{raw};
+  auto data = static_cast<Float>(dataF16);
   state.rf.writeAcc(Value{data});
 }
 
