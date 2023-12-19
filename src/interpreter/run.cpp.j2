@@ -45,7 +45,6 @@ void exec_{{ mnem | upper }}(State &state, Instr instr) {
 
   {% if not mnem == 'halt' %}
   auto pc = state.rf.readPC();
-  std::cout << "PC = " << pc << std::endl;
   auto next = state.code.loadInstr(pc);
   opcodeDispatchTable[next.opType](state, next);
   {% endif %}
