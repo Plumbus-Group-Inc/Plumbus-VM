@@ -49,13 +49,13 @@ void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
 }
 
 void exec_branch_ret(Interpreter::State &state, InstrBRANCH instr) {
-    auto returnValue = state.rf.readReg(instr.regid);
+  auto returnValue = state.rf.readReg(instr.regid);
 
-    state.rf = state.stack.back();
-    state.rf.writeAcc(returnValue);
-    state.stack.pop_back();
+  state.rf = state.stack.back();
+  state.rf.writeAcc(returnValue);
+  state.stack.pop_back();
 
-    state.rf.incrementPC();
+  state.rf.incrementPC();
 }
 
 void exec_unary_write(Interpreter::State &state, InstrUNARY instr) {
@@ -116,7 +116,6 @@ void exec_binary_equal(Interpreter::State &state, InstrBINARY instr) {
     throw std::runtime_error{"unknown ttypeid for bin instr"};
   }
 }
-
 
 void exec_binary_add(Interpreter::State &state, InstrBINARY instr) {
   switch (instr.ttypeid) {
