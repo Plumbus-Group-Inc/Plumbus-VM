@@ -69,8 +69,8 @@ types:
   - mnemonic: imm
     instrs: [
         integer,
-        array
-        floating
+        array,
+        floating,
       ]
     fields:
       data: { from: 10, to: 26 }

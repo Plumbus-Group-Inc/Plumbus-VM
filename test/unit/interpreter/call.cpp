@@ -11,9 +11,9 @@
 using namespace pvm;
 
 TEST(Interpreter, Call) {
-    constexpr std::size_t kInt = 1;
+  constexpr std::size_t kInt = 1;
 
-    // clang-format off
+  // clang-format off
     std::vector<Instr> instrs{
         /* 0 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
             InstrIMM::Builder().data(5).build()},
@@ -84,13 +84,12 @@ TEST(Interpreter, Call) {
         /* 27 */ Instr{.opType = eBRANCH, .opID = eBRANCH_RET,
             .instrVar = InstrBRANCH::Builder().regid(0 + 1).offset(0).build()},
     };
-    // clang-format on
+  // clang-format on
 
-    Code code{std::move(instrs)};
-    Interpreter interp{code};
-    interp.run();
-    const auto &rf = interp.getState().rf;
+  Code code{std::move(instrs)};
+  Interpreter interp{code};
+  interp.run();
+  const auto &rf = interp.getState().rf;
 
-    ASSERT_EQ(rf.readReg(0).get<Int>(), 15);
-
+  ASSERT_EQ(rf.readReg(0).get<Int>(), 15);
 }

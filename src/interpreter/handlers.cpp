@@ -37,19 +37,21 @@ void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
 }
 
 void exec_imm_array(Interpreter::State &state, InstrIMM instr) {
-    auto a = Array(std::bit_cast<Int>(instr.data));
-    state.rf.writeAcc(Value{a});
+  auto a = Array(std::bit_cast<Int>(instr.data));
+  state.rf.writeAcc(Value{a});
 }
 
 void exec_array_set(Interpreter::State &state, InstrARRAY instr) {
-    state.rf.readReg(instr.aregid).get<Array>().at(
-        state.rf.readReg(instr.regid).get<Int>()) = state.rf.readAcc();
+  state.rf.readReg(instr.aregid)
+      .get<Array>()
+      .at(state.rf.readReg(instr.regid).get<Int>()) = state.rf.readAcc();
 }
 
 void exec_array_get(Interpreter::State &state, InstrARRAY instr) {
-    auto value = state.rf.readReg(instr.aregid).get<Array>().at(
-        state.rf.readReg(instr.regid).get<Int>());
-    state.rf.writeAcc(value);
+  auto value = state.rf.readReg(instr.aregid)
+                   .get<Array>()
+                   .at(state.rf.readReg(instr.regid).get<Int>());
+  state.rf.writeAcc(value);
 }
 
 void exec_reg_mov(Interpreter::State &state, InstrREG instr) {
@@ -220,6 +222,5 @@ void exec_binary_div(Interpreter::State &state, InstrBINARY instr) {
     throw std::runtime_error{"unknown ttypeid for bin instr"};
   }
 }
-
 
 } // namespace pvm
