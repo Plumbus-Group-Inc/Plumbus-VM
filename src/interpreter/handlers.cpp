@@ -13,7 +13,6 @@
 namespace pvm {
 
 void exec_halt_halt(Interpreter::State &state, InstrHALT instr) {
-  state.halted = true;
 }
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
