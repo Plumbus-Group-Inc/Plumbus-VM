@@ -1,24 +1,27 @@
 #pragma once
 
-#include <limits>
-
 #include "decoder/decoder.hpp"
 #include "memory/memory.hpp"
 #include "memory/regfile.hpp"
 
 namespace pvm {
 
+struct Frame final {
+  RegFile rf;
+  Addr retPC;
+};
+
 class Interpreter final {
 public:
   struct State final {
     Decoder dec;
-    RegFile rf;
     Memory mem;
     Code code;
     std::ostream &ost;
     std::istream &ist;
 
-    std::vector<RegFile> stack;
+    std::vector<Frame> stack{};
+    Addr pc{};
   };
 
 private:

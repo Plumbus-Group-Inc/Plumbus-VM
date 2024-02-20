@@ -43,7 +43,7 @@ TEST(Interpreter, Cycle) {
       Instr{.opType = eBINARY, .opID = eBINARY_LESS, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(1).regid2(3).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(6).build()},
 
-      Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar = InstrBRANCH::Builder().regid(6).offset(-8).build()},
+      Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar = InstrBRANCH::Builder().regid(6).offset(std::bit_cast<std::uint32_t>(-8)).build()},
 
       Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).build()},
   };
@@ -52,9 +52,9 @@ TEST(Interpreter, Cycle) {
   Code code{std::move(instrs)};
   Interpreter interp{code};
   interp.run();
-  const auto &rf = interp.getState().rf;
+  const auto &rf = interp.getState().stack.back().rf;
 
-  ASSERT_EQ(rf.readReg(1).get<Int>(), kIterNum);
-  ASSERT_EQ(rf.readReg(4).get<Int>(), 46);
-  ASSERT_EQ(rf.readReg(5).get<Int>(), 2116);
+  ASSERT_EQ(std::bit_cast<Int>(rf.readReg(1)), kIterNum);
+  ASSERT_EQ(std::bit_cast<Int>(rf.readReg(4)), 46);
+  ASSERT_EQ(std::bit_cast<Int>(rf.readReg(5)), 2116);
 }

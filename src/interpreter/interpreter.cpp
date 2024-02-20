@@ -16,11 +16,11 @@ Interpreter::Interpreter(const Code &code, std::istream &ist)
 }
 
 Interpreter::Interpreter(const Code &code, std::ostream &ost, std::istream &ist)
-    : m_state{Decoder{}, RegFile{}, Memory{}, Code{code}, ost, ist} {
+    : m_state{Decoder{}, Memory{}, Code{code}, ost, ist, {{}}} {
 }
 
 Instr Interpreter::getInstr() {
-  auto pc = m_state.rf.readPC();
+  auto pc = m_state.pc;
   auto instr = m_state.code.loadInstr(pc);
   return instr;
 }

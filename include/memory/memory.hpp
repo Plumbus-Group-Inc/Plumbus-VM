@@ -2,28 +2,30 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
 #include "common/config.hpp"
 #include "common/instruction.hpp"
-#include "common/value.hpp"
 
 namespace pvm {
 
 class Memory final {
 public:
   explicit Memory() = default;
-  explicit Memory(std::vector<Value> const &data) {
-    std::copy(data.begin(), data.end(), m_data.begin());
-  }
 
-  [[nodiscard]] std::uint64_t loadWord(Addr addr) const;
-  void storeVal(Addr addr, Value val);
+  std::uint8_t *allocate(std::size_t size) {
+    auto *res = m_data.data();
+    m_offset += size;
+    return res;
+  }
 
 private:
   // TODO: temporary
-  std::array<Value, 1024> m_data{};
+  static constexpr std::size_t kArenaSize = 1024;
+  std::array<std::uint8_t, kArenaSize> m_data{};
+  std::size_t m_offset{};
 };
 
 class Code final {

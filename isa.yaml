@@ -44,19 +44,23 @@ types:
       regid2: { from: 21, to: 26 }
   - mnemonic: array
     instrs: [
-      get,
-      set,
-    # pop,
-    # insert,
-    # remove,
-    # resize,
-    # create,
+    #   get,
+    #   set,
+    # # pop,
+    # # insert,
+    # # remove,
+    # # resize,
+    # # create,
     ]
     fields:
       aregid: { from: 10, to: 15 }
       regid: { from: 16, to: 21 }
   - mnemonic: branch
-    instrs: [branch, call, ret]
+    instrs: [
+      branch,
+      # call,
+      # ret
+    ]
     fields:
       regid: { from: 10, to: 15 }
       offset: { from: 16, to: 31 }
@@ -69,7 +73,7 @@ types:
   - mnemonic: imm
     instrs: [
         integer,
-        array,
+        # array,
         floating,
       ]
     fields:
