@@ -22,6 +22,14 @@ public:
 
     std::vector<Frame> stack{};
     Addr pc{};
+
+    auto &topFrame() {
+      return stack.back();
+    }
+
+    [[nodiscard]] const auto &topFrame() const {
+      return stack.back();
+    }
   };
 
 private:

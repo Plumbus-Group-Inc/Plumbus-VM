@@ -50,7 +50,7 @@ TEST(Interpreter, Call) {
 
         // Wanna decrement R0
         /* 14 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
-            InstrIMM::Builder().data(-1).build()},
+            InstrIMM::Builder().data(std::bit_cast<std::uint32_t>(-1)).build()},
         /* 15 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 16 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
@@ -64,7 +64,7 @@ TEST(Interpreter, Call) {
         /* 19 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(3 + 1).build()},
         /* 20 */ Instr{.opType = eBRANCH, .opID = eBRANCH_CALL,
-            .instrVar = InstrBRANCH::Builder().regid(3 + 1).offset(-13).build()},
+            .instrVar = InstrBRANCH::Builder().regid(3 + 1).offset(std::bit_cast<std::uint32_t>(-13)).build()},
 
         // Add R0 input value to result
         /* 21 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
@@ -89,7 +89,7 @@ TEST(Interpreter, Call) {
   Code code{std::move(instrs)};
   Interpreter interp{code};
   interp.run();
-  const auto &rf = interp.getState().rf;
+  const auto &rf = interp.getState().stack.back().rf;
 
-  ASSERT_EQ(rf.readReg(0).get<Int>(), 15);
+  ASSERT_EQ(std::bit_cast<Int>(rf.readAcc()), 15);
 }

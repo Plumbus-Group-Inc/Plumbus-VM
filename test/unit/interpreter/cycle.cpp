@@ -52,7 +52,7 @@ TEST(Interpreter, Cycle) {
   Code code{std::move(instrs)};
   Interpreter interp{code};
   interp.run();
-  const auto &rf = interp.getState().stack.back().rf;
+  const auto &rf = interp.getState().topFrame().rf;
 
   ASSERT_EQ(std::bit_cast<Int>(rf.readReg(1)), kIterNum);
   ASSERT_EQ(std::bit_cast<Int>(rf.readReg(4)), 46);

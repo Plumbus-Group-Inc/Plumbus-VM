@@ -58,8 +58,8 @@ types:
   - mnemonic: branch
     instrs: [
       branch,
-      # call,
-      # ret
+      call,
+      ret
     ]
     fields:
       regid: { from: 10, to: 15 }

@@ -13,6 +13,7 @@
 #include "common/config.hpp"
 #include "generated/handlers.hpp"
 #include "generated/instruction.hpp"
+#include "memory/regfile.hpp"
 
 namespace pvm {
 
@@ -21,7 +22,7 @@ void exec_halt_halt(Interpreter::State &state, InstrHALT instr) {
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
   auto data = std::bit_cast<Reg>(static_cast<Int>(instr.data));
-  state.stack.back().rf.writeAcc(data);
+  state.topFrame().rf.writeAcc(data);
 }
 
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
@@ -32,35 +33,35 @@ void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
 
   numeric::float16_t dataF16{raw};
   auto data = std::bit_cast<Reg>(static_cast<Float>(dataF16));
-  state.stack.back().rf.writeAcc(data);
+  state.topFrame().rf.writeAcc(data);
 }
 
 // void exec_imm_array(Interpreter::State &state, InstrIMM instr) {
 //   auto a = Array(std::bit_cast<Int>(instr.data));
-//   state.stack.back().rf.writeAcc(a);
+//   state.topFrame().rf.writeAcc(a);
 // }
 
 // void exec_array_set(Interpreter::State &state, InstrARRAY instr) {
-//   state.stack.back().rf.readReg(instr.aregid)
+//   state.topFrame().rf.readReg(instr.aregid)
 //       .get<Array>()
-//       .at(state.stack.back().rf.readReg(instr.regid).get<Int>()) =
-//       state.stack.back().rf.readAcc();
+//       .at(state.topFrame().rf.readReg(instr.regid).get<Int>()) =
+//       state.topFrame().rf.readAcc();
 // }
 
 // void exec_array_get(Interpreter::State &state, InstrARRAY instr) {
-//   auto value = state.stack.back().rf.readReg(instr.aregid)
+//   auto value = state.topFrame().rf.readReg(instr.aregid)
 //                    .get<Array>()
-//                    .at(state.stack.back().rf.readReg(instr.regid).get<Int>());
-//   state.stack.back().rf.writeAcc(value);
+//                    .at(state.topFrame().rf.readReg(instr.regid).get<Int>());
+//   state.topFrame().rf.writeAcc(value);
 // }
 
 void exec_reg_mov(Interpreter::State &state, InstrREG instr) {
-  auto val = state.stack.back().rf.readAcc();
-  state.stack.back().rf.writeReg(instr.regid, val);
+  auto val = state.topFrame().rf.readAcc();
+  state.topFrame().rf.writeReg(instr.regid, val);
 }
 
 void exec_branch_branch(Interpreter::State &state, InstrBRANCH instr) {
-  auto &rf = state.stack.back().rf;
+  const auto &rf = state.topFrame().rf;
 
   if (auto cond = static_cast<Bool>(rf.readReg(instr.regid)); !cond) {
     ++state.pc;
@@ -70,30 +71,29 @@ void exec_branch_branch(Interpreter::State &state, InstrBRANCH instr) {
   state.pc += instr.offset;
 }
 
-// void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
-//   state.stack.emplace_back(state.stack.back().rf, state.pc);
+void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
+  state.stack.emplace_back(state.topFrame().rf, state.pc + 1);
 
-//   auto &rf = state.stack.back().rf;
-//   if (auto cond = std::bit_cast<Bool>(rf.readReg(instr.regid)); !cond) {
-//     ++state.pc;
-//     return;
-//   }
+  const auto &rf = state.topFrame().rf;
+  if (auto cond = static_cast<Bool>(rf.readReg(instr.regid)); !cond) {
+    ++state.pc;
+    return;
+  }
 
-//   rf.writePC(rf.readPC() + std::bit_cast<Addr>(instr.offset));
-// }
+  state.pc += instr.offset;
+}
 
-// void exec_branch_ret(Interpreter::State &state, InstrBRANCH instr) {
-//   auto returnValue = state.stack.back().rf.readReg(instr.regid);
+void exec_branch_ret(Interpreter::State &state, InstrBRANCH instr) {
+  auto returnValue = state.topFrame().rf.readReg(instr.regid);
+  auto retPC = state.topFrame().retPC;
 
-//   state.rf = state.stack.back();
-//   state.stack.back().rf.writeAcc(returnValue);
-//   state.stack.pop_back();
-
-//   ++state.pc;
-// }
+  state.stack.pop_back();
+  state.topFrame().rf.writeAcc(returnValue);
+  state.pc = retPC;
+}
 
 void exec_unary_write(Interpreter::State &state, InstrUNARY instr) {
-  auto val = state.stack.back().rf.readReg(instr.regid);
+  auto val = state.topFrame().rf.readReg(instr.regid);
   if (instr.ttypeid == 1) {
     state.ost << std::bit_cast<Int>(val) << std::endl;
   } else if (instr.ttypeid == 2) {
@@ -107,11 +107,11 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 1) {
     Int tmp{};
     state.ist >> tmp;
-    state.stack.back().rf.writeAcc(std::bit_cast<Reg>(tmp));
+    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(tmp));
   } else if (instr.ttypeid == 2) {
     Float tmp{};
     state.ist >> tmp;
-    state.stack.back().rf.writeAcc(std::bit_cast<Reg>(tmp));
+    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(tmp));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -119,11 +119,11 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
 
 void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 1) {
-    auto tmp = std::bit_cast<Int>(state.stack.back().rf.readReg(instr.regid));
-    state.stack.back().rf.writeAcc(std::bit_cast<Reg>(std::abs(tmp)));
+    auto tmp = std::bit_cast<Int>(state.topFrame().rf.readReg(instr.regid));
+    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(std::abs(tmp)));
   } else if (instr.ttypeid == 2) {
-    auto tmp = std::bit_cast<Float>(state.stack.back().rf.readReg(instr.regid));
-    state.stack.back().rf.writeAcc(std::bit_cast<Reg>(std::fabs(tmp)));
+    auto tmp = std::bit_cast<Float>(state.topFrame().rf.readReg(instr.regid));
+    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(std::fabs(tmp)));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -131,8 +131,8 @@ void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
 
 void exec_unary_sqrt(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 2) {
-    auto tmp = std::bit_cast<Float>(state.stack.back().rf.readReg(instr.regid));
-    state.stack.back().rf.writeAcc(std::bit_cast<Reg>(std::sqrt(tmp)));
+    auto tmp = std::bit_cast<Float>(state.topFrame().rf.readReg(instr.regid));
+    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(std::sqrt(tmp)));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -140,14 +140,14 @@ void exec_unary_sqrt(Interpreter::State &state, InstrUNARY instr) {
 
 template <typename In, typename F>
 void exec_binary_template(Interpreter::State &state, InstrBINARY instr, F f) {
-  auto lhs = std::bit_cast<In>(state.stack.back().rf.readReg(instr.regid1));
-  auto rhs = std::bit_cast<In>(state.stack.back().rf.readReg(instr.regid2));
+  auto lhs = std::bit_cast<In>(state.topFrame().rf.readReg(instr.regid1));
+  auto rhs = std::bit_cast<In>(state.topFrame().rf.readReg(instr.regid2));
   auto res = f(lhs, rhs);
 
   if constexpr (sizeof(res) == sizeof(Reg))
-    state.stack.back().rf.writeAcc(std::bit_cast<Reg>(res));
+    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(res));
   else
-    state.stack.back().rf.writeAcc(static_cast<Reg>(res));
+    state.topFrame().rf.writeAcc(static_cast<Reg>(res));
   ;
 }
 

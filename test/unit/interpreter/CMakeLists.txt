@@ -11,5 +11,5 @@ pvm_add_test(test-handlers handlers.cpp)
 target_link_libraries(test-handlers PRIVATE pvm-interpreter)
 target_include_directories(test-handlers SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
 
-# pvm_add_test(test-call call.cpp)
-# target_link_libraries(test-call PRIVATE pvm-interpreter)
+pvm_add_test(test-call call.cpp)
+target_link_libraries(test-call PRIVATE pvm-interpreter)
