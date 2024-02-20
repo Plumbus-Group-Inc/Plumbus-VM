@@ -1,7 +1,5 @@
-#include <algorithm>
 #include <bit>
 #include <cmath>
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <istream>
@@ -10,6 +8,7 @@
 
 #include <float16_t/float16_t.hpp>
 
+#include "common/common.hpp"
 #include "common/config.hpp"
 #include "generated/handlers.hpp"
 #include "generated/instruction.hpp"
@@ -26,14 +25,8 @@ void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
 }
 
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
-  std::uint16_t raw = 0;
-  auto *rawPtr = reinterpret_cast<std::uint8_t *>(&raw);
-  auto *dataPtr = reinterpret_cast<std::uint8_t *>(&instr.data);
-  std::copy_n(dataPtr, 2, rawPtr);
-
-  numeric::float16_t dataF16{raw};
-  auto data = std::bit_cast<Reg>(static_cast<Float>(dataF16));
-  state.topFrame().rf.writeAcc(data);
+  numeric::float16_t dataF16{static_cast<std::uint16_t>(getBits<16, 31>(instr.data))};
+  state.topFrame().rf.writeAcc(static_cast<Float>(dataF16));
 }
 
 // void exec_imm_array(Interpreter::State &state, InstrIMM instr) {
