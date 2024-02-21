@@ -20,13 +20,13 @@ void exec_halt_halt(Interpreter::State &state, InstrHALT instr) {
 }
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
-  auto data = static_cast<Int>(static_cast<std::int16_t>(instr.data));
+  Int data = static_cast<std::int16_t>(instr.data);
   state.topFrame().rf.writeAcc(data);
 }
 
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
-  numeric::float16_t dataF16{instr.data};
-  state.topFrame().rf.writeAcc(static_cast<Float>(dataF16));
+  Float dataF16 = numeric::float16_t{instr.data};
+  state.topFrame().rf.writeAcc(dataF16);
 }
 
 // void exec_imm_array(Interpreter::State &state, InstrIMM instr) {
@@ -61,7 +61,7 @@ void exec_branch_branch(Interpreter::State &state, InstrBRANCH instr) {
     return;
   }
 
-  state.pc += instr.offset;
+  state.pc += static_cast<Addr>(instr.offset);
 }
 
 void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
@@ -77,11 +77,11 @@ void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
 }
 
 void exec_branch_ret(Interpreter::State &state, InstrBRANCH instr) {
-  auto returnValue = state.topFrame().rf.readReg(instr.regid);
+  auto retVal = state.topFrame().rf.readReg(instr.regid);
   auto retPC = state.topFrame().retPC;
 
   state.stack.pop_back();
-  state.topFrame().rf.writeAcc(returnValue);
+  state.topFrame().rf.writeAcc(retVal);
   state.pc = retPC;
 }
 
@@ -100,11 +100,11 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 1) {
     Int tmp{};
     state.ist >> tmp;
-    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(tmp));
+    state.topFrame().rf.writeAcc(tmp);
   } else if (instr.ttypeid == 2) {
     Float tmp{};
     state.ist >> tmp;
-    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(tmp));
+    state.topFrame().rf.writeAcc(tmp);
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -113,10 +113,10 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
 void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 1) {
     auto tmp = std::bit_cast<Int>(state.topFrame().rf.readReg(instr.regid));
-    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(std::abs(tmp)));
+    state.topFrame().rf.writeAcc(std::abs(tmp));
   } else if (instr.ttypeid == 2) {
     auto tmp = std::bit_cast<Float>(state.topFrame().rf.readReg(instr.regid));
-    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(std::fabs(tmp)));
+    state.topFrame().rf.writeAcc(std::fabs(tmp));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -125,7 +125,7 @@ void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
 void exec_unary_sqrt(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 2) {
     auto tmp = std::bit_cast<Float>(state.topFrame().rf.readReg(instr.regid));
-    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(std::sqrt(tmp)));
+    state.topFrame().rf.writeAcc(std::sqrt(tmp));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -135,13 +135,7 @@ template <typename In, typename F>
 void exec_binary_template(Interpreter::State &state, InstrBINARY instr, F f) {
   auto lhs = std::bit_cast<In>(state.topFrame().rf.readReg(instr.regid1));
   auto rhs = std::bit_cast<In>(state.topFrame().rf.readReg(instr.regid2));
-  auto res = f(lhs, rhs);
-
-  if constexpr (sizeof(res) == sizeof(Reg))
-    state.topFrame().rf.writeAcc(std::bit_cast<Reg>(res));
-  else
-    state.topFrame().rf.writeAcc(static_cast<Reg>(res));
-  ;
+  state.topFrame().rf.writeAcc(f(lhs, rhs));
 }
 
 void exec_binary_less(Interpreter::State &state, InstrBINARY instr) {
