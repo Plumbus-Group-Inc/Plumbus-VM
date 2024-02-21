@@ -20,12 +20,12 @@ void exec_halt_halt(Interpreter::State &state, InstrHALT instr) {
 }
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
-  auto data = std::bit_cast<Reg>(static_cast<Int>(instr.data));
+  auto data = static_cast<Int>(static_cast<std::int16_t>(instr.data));
   state.topFrame().rf.writeAcc(data);
 }
 
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
-  numeric::float16_t dataF16{static_cast<std::uint16_t>(getBits<16, 31>(instr.data))};
+  numeric::float16_t dataF16{instr.data};
   state.topFrame().rf.writeAcc(static_cast<Float>(dataF16));
 }
 

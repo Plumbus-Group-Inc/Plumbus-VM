@@ -35,9 +35,9 @@ TEST(Handlers, Halt) {
 }
 
 TEST(Handlers, ImmInt) {
-  auto data = -1;
+  std::int16_t data = -1;
   auto state = createState();
-  auto imm = InstrIMM::Builder().data(std::bit_cast<Reg>(data)).build();
+  auto imm = InstrIMM::Builder().data(data).build();
 
   exec_imm_integer(state, imm);
   auto val = state.topFrame().rf.readAcc();

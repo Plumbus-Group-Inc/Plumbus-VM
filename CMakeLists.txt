@@ -16,7 +16,6 @@ project(Plumbus-VM
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# set(CMAKE_BUILD_TYPE Debug)
 
 include(cmake/comp-flags.cmake)
 include(cmake/link-lib-system.cmake)
