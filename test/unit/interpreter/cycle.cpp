@@ -12,7 +12,7 @@ using namespace pvm;
 
 TEST(Interpreter, Cycle) {
   constexpr Int kIterNum = 10;
-  constexpr std::size_t kInt = 1;
+  constexpr std::size_t kInt = INT_T;
 
   // clang-format off
   std::vector<Instr> instrs{
@@ -43,7 +43,7 @@ TEST(Interpreter, Cycle) {
       Instr{.opType = eBINARY, .opID = eBINARY_LESS, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(1).regid2(3).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(6).build()},
 
-      Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar = InstrBRANCH::Builder().regid(6).offset(std::bit_cast<std::uint32_t>(-8)).build()},
+      Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar = InstrBRANCH::Builder().regid(6).offset(std::bit_cast<unsigned>(-8)).build()},
 
       Instr{.opType = eHALT, .opID = 0, .instrVar = InstrHALT::Builder().zero(0).build()},
   };

@@ -15,7 +15,7 @@ struct Klass final {
 };
 
 using MarkWord = std::uintptr_t;
-using KlassWord = Klass *;
+using KlassWord = std::uintptr_t;
 
 struct ObjectHeader final {
   MarkWord mark{};
@@ -27,7 +27,7 @@ private:
   ObjectHeader *m_header;
 
 public:
-  ObjectHandler(ObjectHeader *header) : m_header(header) {
+  explicit ObjectHandler(ObjectHeader *header) : m_header(header) {
   }
 
   MarkWord mark() {

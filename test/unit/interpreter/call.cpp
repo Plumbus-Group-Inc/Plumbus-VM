@@ -11,7 +11,7 @@
 using namespace pvm;
 
 TEST(Interpreter, Call) {
-  constexpr std::size_t kInt = 1;
+  constexpr std::size_t kInt = INT_T;
 
   // clang-format off
     std::vector<Instr> instrs{
@@ -50,7 +50,7 @@ TEST(Interpreter, Call) {
 
         // Wanna decrement R0
         /* 14 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
-            InstrIMM::Builder().data(std::bit_cast<std::uint32_t>(-1)).build()},
+            InstrIMM::Builder().data(std::bit_cast<unsigned>(-1)).build()},
         /* 15 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 16 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
@@ -64,7 +64,7 @@ TEST(Interpreter, Call) {
         /* 19 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(3 + 1).build()},
         /* 20 */ Instr{.opType = eBRANCH, .opID = eBRANCH_CALL,
-            .instrVar = InstrBRANCH::Builder().regid(3 + 1).offset(std::bit_cast<std::uint32_t>(-13)).build()},
+            .instrVar = InstrBRANCH::Builder().regid(3 + 1).offset(std::bit_cast<unsigned>(-13)).build()},
 
         // Add R0 input value to result
         /* 21 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =

@@ -18,8 +18,8 @@
 
 using namespace pvm;
 
-constexpr std::uint32_t kInt = 1;
-constexpr std::uint32_t kFloat = 2;
+constexpr std::uint64_t kInt = INT_T;
+constexpr std::uint64_t kFloat = FLOAT_T;
 
 auto createState() {
   auto state = Interpreter::State{

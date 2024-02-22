@@ -9,8 +9,6 @@
 
 namespace pvm {
 
-using Reg = std::uint32_t;
-
 template <typename T>
 concept RegSized = requires { sizeof(T) == sizeof(Reg); };
 

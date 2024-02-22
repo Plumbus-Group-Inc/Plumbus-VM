@@ -11,8 +11,8 @@
 
 using namespace pvm;
 
-constexpr std::size_t kInt = 1;
-constexpr std::size_t kFloat = 2;
+constexpr std::size_t kInt = INT_T;
+constexpr std::size_t kFloat = FLOAT_T;
 
 TEST(Interpreter, SquareEquation) {
   // clang-format off

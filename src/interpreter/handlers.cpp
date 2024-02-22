@@ -13,10 +13,12 @@
 #include "generated/handlers.hpp"
 #include "generated/instruction.hpp"
 #include "memory/regfile.hpp"
+#include "objects/objects.hpp"
 
 namespace pvm {
 
-void exec_halt_halt(Interpreter::State &state, InstrHALT instr) {
+void exec_halt_halt([[maybe_unused]] Interpreter::State &state,
+                    [[maybe_unused]] InstrHALT instr) {
 }
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
@@ -27,6 +29,18 @@ void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
   Float dataF16 = numeric::float16_t{instr.data};
   state.topFrame().rf.writeAcc(dataF16);
+}
+
+void exec_new_array(Interpreter::State &state, InstrNEW instr) {
+  auto size = state.topFrame().rf.readReg(instr.regid);
+  auto *ref = reinterpret_cast<ObjectHeader *>(state.mem.allocate(size * sizeof(Reg)));
+
+  ref->klass = instr.ttypeid;
+  state.topFrame().rf.writeAcc(ref);
+}
+
+void exec_new_object(Interpreter::State &state, InstrNEW instr) {
+
 }
 
 // void exec_imm_array(Interpreter::State &state, InstrIMM instr) {

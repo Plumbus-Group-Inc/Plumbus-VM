@@ -70,10 +70,17 @@ types:
     # store
     fields:
       regid: { type: RegId, from: 10, to: 15 }
+  - mnemonic: new
+    instrs: [
+      array,
+      object,
+    ]
+    fields:
+      ttypeid: { type: std::uint8_t, from: 10, to: 14 }
+      regid: {type: RegId, from: 15, to: 20}
   - mnemonic: imm
     instrs: [
         integer,
-        # array,
         floating,
       ]
     fields:
