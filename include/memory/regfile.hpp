@@ -10,7 +10,7 @@
 namespace pvm {
 
 template <typename T>
-concept RegSized = requires { sizeof(T) == sizeof(Reg); };
+concept RegConv = requires { sizeof(T) == sizeof(Reg) || std::is_convertible_v<T, Reg>; };
 
 class RegFile final {
 private:
@@ -27,10 +27,17 @@ public:
   }
 
   [[nodiscard]] Reg readReg(RegId regId) const;
+  template <RegConv T>
+  T readReg(RegId regId) const {
+    if constexpr (sizeof(T) == sizeof(Reg)) {
+      return std::bit_cast<T>(readReg(regId));
+    } else if constexpr (std::is_convertible_v<T, Reg>) {
+      return static_cast<T>(readReg(regId));
+    }
+  }
 
   void writeReg(RegId regId, Reg val);
-  template <typename T>
-  requires(sizeof(T) == sizeof(Reg) || std::is_convertible_v<T, Reg>)
+  template <RegConv T>
   void writeReg(RegId regId, T val) {
     if constexpr (sizeof(T) == sizeof(Reg)) {
       writeReg(regId, std::bit_cast<Reg>(val));

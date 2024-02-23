@@ -21,7 +21,7 @@ public:
     }
 
     auto *res = m_data.data() + m_offset;
-    m_offset += size + sizeof(ObjectHeader);
+    m_offset += size;
     return res;
   }
 

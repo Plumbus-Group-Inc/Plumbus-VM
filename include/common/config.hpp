@@ -8,9 +8,10 @@ namespace pvm {
 using Int = std::int64_t;
 using Float = double;
 using Bool = bool;
+using Ref = std::uintptr_t;
 
 using Addr = std::uint64_t;
-using Bytecode = std::uint64_t;
+using Bytecode = std::uint32_t;
 
 using Reg = std::uint64_t;
 using RegId = std::uint64_t;

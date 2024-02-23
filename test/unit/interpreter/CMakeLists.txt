@@ -13,3 +13,6 @@ target_include_directories(test-handlers SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/thir
 
 pvm_add_test(test-call call.cpp)
 target_link_libraries(test-call PRIVATE pvm-interpreter)
+
+pvm_add_test(test-arr arr.cpp)
+target_link_libraries(test-arr PRIVATE pvm-interpreter)

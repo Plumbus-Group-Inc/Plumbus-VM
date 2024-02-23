@@ -11,7 +11,7 @@ namespace pvm {
 struct Klass final {
   std::string name{};
   std::size_t size{};
-  std::map<std::string, std::size_t> field2offset{};
+  std::map<std::size_t, std::iter_difference_t<std::uint8_t *>> field2offset{};
 };
 
 using MarkWord = std::uintptr_t;

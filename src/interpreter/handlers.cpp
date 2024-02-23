@@ -1,8 +1,10 @@
 #include <bit>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <istream>
+#include <iterator>
 #include <ostream>
 #include <stdexcept>
 
@@ -17,60 +19,78 @@
 
 namespace pvm {
 
+struct ArrHeader final {
+  ObjectHeader header{};
+  std::uint64_t size{};
+};
+
 void exec_halt_halt([[maybe_unused]] Interpreter::State &state,
                     [[maybe_unused]] InstrHALT instr) {
 }
 
 void exec_imm_integer(Interpreter::State &state, InstrIMM instr) {
   Int data = static_cast<std::int16_t>(instr.data);
-  state.topFrame().rf.writeAcc(data);
+  state.rf().writeAcc(data);
 }
 
 void exec_imm_floating(Interpreter::State &state, InstrIMM instr) {
   Float dataF16 = numeric::float16_t{instr.data};
-  state.topFrame().rf.writeAcc(dataF16);
+  state.rf().writeAcc(dataF16);
 }
 
 void exec_new_array(Interpreter::State &state, InstrNEW instr) {
-  auto size = state.topFrame().rf.readReg(instr.regid);
-  auto *ref = reinterpret_cast<ObjectHeader *>(state.mem.allocate(size * sizeof(Reg)));
+  auto arrSize = state.rf().readReg(instr.regid);
+  auto objSize = state.klasses.at(instr.ttypeid).size + sizeof(ObjectHeader);
 
-  ref->klass = instr.ttypeid;
-  state.topFrame().rf.writeAcc(ref);
+  auto *data = state.mem.allocate(arrSize * objSize);
+  auto *mem = state.mem.allocate(sizeof(ArrHeader) + arrSize * sizeof(Reg));
+
+  auto *refs = reinterpret_cast<Ref *>(std::next(mem, sizeof(ArrHeader)));
+  for (std::size_t i = 0; i < arrSize; ++i) {
+    auto *ptr = reinterpret_cast<ObjectHeader *>(data + i * objSize);
+    ptr->klass = std::bit_cast<std::uintptr_t>(&state.klasses.at(instr.ttypeid));
+    refs[i] = reinterpret_cast<Ref>(ptr);
+  }
+
+  auto *arr = reinterpret_cast<ArrHeader *>(mem);
+  arr->header.klass = std::bit_cast<std::uintptr_t>(&state.klasses.at(instr.ttypeid));
+  arr->size = arrSize;
+
+  state.rf().writeAcc(mem);
 }
 
 void exec_new_object(Interpreter::State &state, InstrNEW instr) {
+  auto objSize = state.klasses.at(instr.ttypeid).size;
 
+  auto *mem = state.mem.allocate(objSize);
+  auto *header = reinterpret_cast<ObjectHeader *>(mem);
+
+  header->klass = std::bit_cast<std::uintptr_t>(&state.klasses.at(instr.ttypeid));
+  state.rf().writeAcc(mem);
 }
 
-// void exec_imm_array(Interpreter::State &state, InstrIMM instr) {
-//   auto a = Array(std::bit_cast<Int>(instr.data));
-//   state.topFrame().rf.writeAcc(a);
-// }
+void exec_array_gep(Interpreter::State &state, InstrARRAY instr) {
+  auto index = state.rf().readReg<std::iter_difference_t<Ref *>>(instr.regid);
+  auto *arr = reinterpret_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
 
-// void exec_array_set(Interpreter::State &state, InstrARRAY instr) {
-//   state.topFrame().rf.readReg(instr.aregid)
-//       .get<Array>()
-//       .at(state.topFrame().rf.readReg(instr.regid).get<Int>()) =
-//       state.topFrame().rf.readAcc();
-// }
+  auto *refs = reinterpret_cast<Ref *>(std::next(arr));
+  state.rf().writeAcc(*std::next(refs, index));
+}
 
-// void exec_array_get(Interpreter::State &state, InstrARRAY instr) {
-//   auto value = state.topFrame().rf.readReg(instr.aregid)
-//                    .get<Array>()
-//                    .at(state.topFrame().rf.readReg(instr.regid).get<Int>());
-//   state.topFrame().rf.writeAcc(value);
-// }
+void exec_array_size(Interpreter::State &state, InstrARRAY instr) {
+  auto *arr = reinterpret_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
+  state.rf().writeAcc(arr->size);
+}
 
 void exec_reg_mov(Interpreter::State &state, InstrREG instr) {
-  auto val = state.topFrame().rf.readAcc();
-  state.topFrame().rf.writeReg(instr.regid, val);
+  auto val = state.rf().readAcc();
+  state.rf().writeReg(instr.regid, val);
 }
 
 void exec_branch_branch(Interpreter::State &state, InstrBRANCH instr) {
-  const auto &rf = state.topFrame().rf;
+  const auto &rf = state.rf();
 
-  if (auto cond = static_cast<Bool>(rf.readReg(instr.regid)); !cond) {
+  if (auto cond = rf.readReg<Bool>(instr.regid); !cond) {
     ++state.pc;
     return;
   }
@@ -79,28 +99,50 @@ void exec_branch_branch(Interpreter::State &state, InstrBRANCH instr) {
 }
 
 void exec_branch_call(Interpreter::State &state, InstrBRANCH instr) {
-  state.stack.emplace_back(state.topFrame().rf, state.pc + 1);
+  state.stack.emplace_back(state.rf(), state.pc + 1);
 
-  const auto &rf = state.topFrame().rf;
-  if (auto cond = static_cast<Bool>(rf.readReg(instr.regid)); !cond) {
+  const auto &rf = state.rf();
+  if (auto cond = rf.readReg<Bool>(instr.regid); !cond) {
     ++state.pc;
     return;
   }
 
-  state.pc += instr.offset;
+  state.pc += static_cast<Addr>(instr.offset);
 }
 
 void exec_branch_ret(Interpreter::State &state, InstrBRANCH instr) {
-  auto retVal = state.topFrame().rf.readReg(instr.regid);
-  auto retPC = state.topFrame().retPC;
+  auto retVal = state.rf().readReg(instr.regid);
+  auto retPC = state.stack.back().retPC;
 
   state.stack.pop_back();
-  state.topFrame().rf.writeAcc(retVal);
+  state.rf().writeAcc(retVal);
   state.pc = retPC;
 }
 
+void exec_obj_get_field(Interpreter::State &state, InstrOBJ_GET instr) {
+  auto *header = state.rf().readReg<ObjectHeader *>(instr.oregid);
+  auto *klass = reinterpret_cast<Klass *>(header->klass);
+
+  auto field = state.rf().readReg<std::size_t>(instr.fregid);
+  auto offset = klass->field2offset[field];
+
+  auto *data = reinterpret_cast<std::uint8_t *>(std::next(header));
+  state.rf().writeAcc(*reinterpret_cast<Reg *>(std::next(data, offset)));
+}
+
+void exec_obj_set_field(Interpreter::State &state, InstrOBJ_SET instr) {
+  auto *header = state.rf().readReg<ObjectHeader *>(instr.oregid);
+  auto *klass = reinterpret_cast<Klass *>(header->klass);
+
+  auto field = state.rf().readReg<std::size_t>(instr.fregid);
+  auto offset = klass->field2offset[field];
+
+  auto *data = reinterpret_cast<std::uint8_t *>(std::next(header));
+  *std::next(data, offset) = state.rf().readReg(instr.dregid);
+}
+
 void exec_unary_write(Interpreter::State &state, InstrUNARY instr) {
-  auto val = state.topFrame().rf.readReg(instr.regid);
+  auto val = state.rf().readReg(instr.regid);
   if (instr.ttypeid == 1) {
     state.ost << std::bit_cast<Int>(val) << std::endl;
   } else if (instr.ttypeid == 2) {
@@ -114,11 +156,11 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 1) {
     Int tmp{};
     state.ist >> tmp;
-    state.topFrame().rf.writeAcc(tmp);
+    state.rf().writeAcc(tmp);
   } else if (instr.ttypeid == 2) {
     Float tmp{};
     state.ist >> tmp;
-    state.topFrame().rf.writeAcc(tmp);
+    state.rf().writeAcc(tmp);
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -126,11 +168,11 @@ void exec_unary_read(Interpreter::State &state, InstrUNARY instr) {
 
 void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 1) {
-    auto tmp = std::bit_cast<Int>(state.topFrame().rf.readReg(instr.regid));
-    state.topFrame().rf.writeAcc(std::abs(tmp));
+    auto tmp = state.rf().readReg<Int>(instr.regid);
+    state.rf().writeAcc(std::abs(tmp));
   } else if (instr.ttypeid == 2) {
-    auto tmp = std::bit_cast<Float>(state.topFrame().rf.readReg(instr.regid));
-    state.topFrame().rf.writeAcc(std::fabs(tmp));
+    auto tmp = state.rf().readReg<Float>(instr.regid);
+    state.rf().writeAcc(std::fabs(tmp));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -138,8 +180,8 @@ void exec_unary_abs(Interpreter::State &state, InstrUNARY instr) {
 
 void exec_unary_sqrt(Interpreter::State &state, InstrUNARY instr) {
   if (instr.ttypeid == 2) {
-    auto tmp = std::bit_cast<Float>(state.topFrame().rf.readReg(instr.regid));
-    state.topFrame().rf.writeAcc(std::sqrt(tmp));
+    auto tmp = state.rf().readReg<Float>(instr.regid);
+    state.rf().writeAcc(std::sqrt(tmp));
   } else {
     throw std::runtime_error{"unknown type id in write instruction"};
   }
@@ -147,9 +189,9 @@ void exec_unary_sqrt(Interpreter::State &state, InstrUNARY instr) {
 
 template <typename In, typename F>
 void exec_binary_template(Interpreter::State &state, InstrBINARY instr, F f) {
-  auto lhs = std::bit_cast<In>(state.topFrame().rf.readReg(instr.regid1));
-  auto rhs = std::bit_cast<In>(state.topFrame().rf.readReg(instr.regid2));
-  state.topFrame().rf.writeAcc(f(lhs, rhs));
+  auto lhs = state.rf().readReg<In>(instr.regid1);
+  auto rhs = state.rf().readReg<In>(instr.regid2);
+  state.rf().writeAcc(f(lhs, rhs));
 }
 
 void exec_binary_less(Interpreter::State &state, InstrBINARY instr) {

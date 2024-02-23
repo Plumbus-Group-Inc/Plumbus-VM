@@ -27,9 +27,7 @@ set(COMMON_WARNINGS -Wall -Wextra -Wpedantic)
 set(GCC_WARNINGS
     -Weffc++
     -Waggressive-loop-optimizations
-    -Wc++0x-compat
-    -Wc++11-compat
-    -Wc++14-compat
+    -Wc++20-compat
     -Wcast-align
     -Wcast-qual
     -Wchar-subscripts

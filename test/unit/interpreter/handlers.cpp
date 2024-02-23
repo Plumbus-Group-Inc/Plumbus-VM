@@ -40,7 +40,7 @@ TEST(Handlers, ImmInt) {
   auto imm = InstrIMM::Builder().data(data).build();
 
   exec_imm_integer(state, imm);
-  auto val = state.topFrame().rf.readAcc();
+  auto val = state.rf().readAcc();
 
   ASSERT_EQ(data, std::bit_cast<Int>(val));
 }
@@ -51,21 +51,21 @@ TEST(Handlers, ImmFloat) {
   auto imm = InstrIMM::Builder().data(data.data_.bits_).build();
 
   exec_imm_floating(state, imm);
-  auto val = state.topFrame().rf.readAcc();
+  auto val = state.rf().readAcc();
 
-  ASSERT_FLOAT_EQ(static_cast<Float>(data), std::bit_cast<Float>(val));
+  ASSERT_DOUBLE_EQ(static_cast<Float>(data), std::bit_cast<Float>(val));
 }
 
 TEST(Handlers, Mov) {
   Int data = 1;
   RegId regid = 3;
   auto state = createState();
-  state.topFrame().rf.writeAcc(std::bit_cast<Reg>(data));
+  state.rf().writeAcc(std::bit_cast<Reg>(data));
 
   auto mov = InstrREG::Builder().regid(regid).build();
 
   exec_reg_mov(state, mov);
-  auto val = state.topFrame().rf.readReg(regid);
+  auto val = state.rf().readReg(regid);
 
   ASSERT_EQ(data, std::bit_cast<Int>(val));
 }
@@ -77,13 +77,13 @@ TEST(Handlers, BinaryAddInt) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
 
   exec_binary_add(state, add);
 
-  ASSERT_EQ(std::bit_cast<Int>(state.topFrame().rf.readAcc()), lhs + rhs);
+  ASSERT_EQ(std::bit_cast<Int>(state.rf().readAcc()), lhs + rhs);
 }
 
 TEST(Handlers, BinaryAddFloat) {
@@ -93,14 +93,14 @@ TEST(Handlers, BinaryAddFloat) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
 
   exec_binary_add(state, add);
-  auto output = std::bit_cast<Float>(state.topFrame().rf.readAcc());
+  auto output = std::bit_cast<Float>(state.rf().readAcc());
 
-  ASSERT_FLOAT_EQ(output, lhs + rhs);
+  ASSERT_DOUBLE_EQ(output, lhs + rhs);
 }
 
 TEST(Handlers, BinarySubInt) {
@@ -110,13 +110,13 @@ TEST(Handlers, BinarySubInt) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
 
   exec_binary_sub(state, add);
 
-  ASSERT_EQ(std::bit_cast<Int>(state.topFrame().rf.readAcc()), lhs - rhs);
+  ASSERT_EQ(std::bit_cast<Int>(state.rf().readAcc()), lhs - rhs);
 }
 
 TEST(Handlers, BinarySubFloat) {
@@ -126,14 +126,14 @@ TEST(Handlers, BinarySubFloat) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
 
   exec_binary_sub(state, add);
-  auto output = std::bit_cast<Float>(state.topFrame().rf.readAcc());
+  auto output = std::bit_cast<Float>(state.rf().readAcc());
 
-  ASSERT_FLOAT_EQ(output, lhs - rhs);
+  ASSERT_DOUBLE_EQ(output, lhs - rhs);
 }
 
 TEST(Handlers, BinaryMulInt) {
@@ -143,13 +143,13 @@ TEST(Handlers, BinaryMulInt) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
 
   exec_binary_mul(state, mul);
 
-  ASSERT_EQ(std::bit_cast<Int>(state.topFrame().rf.readAcc()), lhs * rhs);
+  ASSERT_EQ(std::bit_cast<Int>(state.rf().readAcc()), lhs * rhs);
 }
 
 TEST(Handlers, BinaryMulFloat) {
@@ -159,13 +159,13 @@ TEST(Handlers, BinaryMulFloat) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
 
   exec_binary_mul(state, mul);
 
-  ASSERT_FLOAT_EQ(std::bit_cast<Float>(state.topFrame().rf.readAcc()), lhs * rhs);
+  ASSERT_DOUBLE_EQ(std::bit_cast<Float>(state.rf().readAcc()), lhs * rhs);
 }
 
 TEST(Handlers, BinaryDivlInt) {
@@ -175,13 +175,13 @@ TEST(Handlers, BinaryDivlInt) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
 
   exec_binary_div(state, mul);
 
-  ASSERT_EQ(std::bit_cast<Int>(state.topFrame().rf.readAcc()), lhs / rhs);
+  ASSERT_EQ(std::bit_cast<Int>(state.rf().readAcc()), lhs / rhs);
 }
 
 TEST(Handlers, BinaryDivlFloat) {
@@ -191,13 +191,13 @@ TEST(Handlers, BinaryDivlFloat) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
 
   exec_binary_div(state, mul);
 
-  ASSERT_FLOAT_EQ(std::bit_cast<Float>(state.topFrame().rf.readAcc()), lhs / rhs);
+  ASSERT_DOUBLE_EQ(std::bit_cast<Float>(state.rf().readAcc()), lhs / rhs);
 }
 
 TEST(Handlers, BinaryLessInt) {
@@ -207,13 +207,13 @@ TEST(Handlers, BinaryLessInt) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
 
   exec_binary_less(state, less);
 
-  ASSERT_EQ(static_cast<Bool>(state.topFrame().rf.readAcc()), lhs < rhs);
+  ASSERT_EQ(static_cast<Bool>(state.rf().readAcc()), lhs < rhs);
 }
 
 TEST(Handlers, BinaryLessFloat) {
@@ -223,11 +223,11 @@ TEST(Handlers, BinaryLessFloat) {
   RegId rrid = 3;
 
   auto state = createState();
-  state.topFrame().rf.writeReg(lrid, lhs);
-  state.topFrame().rf.writeReg(rrid, rhs);
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
   auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
 
   exec_binary_less(state, less);
 
-  ASSERT_EQ(static_cast<Bool>(state.topFrame().rf.readAcc()), lhs < rhs);
+  ASSERT_EQ(static_cast<Bool>(state.rf().readAcc()), lhs < rhs);
 }
