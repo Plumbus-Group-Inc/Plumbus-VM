@@ -20,12 +20,14 @@ struct Frame final {
   Addr retPC{};
 };
 
+using FrameStack = std::vector<Frame>;
+
 struct State final {
   Decoder dec;
   Memory mem;
   Code code;
 
-  std::vector<Frame> stack{};
+  FrameStack stack{};
   Addr pc{};
 
   Config config;

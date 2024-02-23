@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include <float16_t/float16_t.hpp>
+#include <unordered_map>
 
 #include "common/config.hpp"
 #include "generated/handlers.hpp"
@@ -192,8 +193,6 @@ void exec_binary_template(State &state, InstrBINARY instr, F f) {
   auto rhs = state.rf().readReg<In>(instr.regid2);
   state.rf().writeAcc(f(lhs, rhs));
 }
-
-/* TODO: Get rid of switches somehow */
 
 void exec_binary_less(State &state, InstrBINARY instr) {
   switch (instr.ttypeid) {

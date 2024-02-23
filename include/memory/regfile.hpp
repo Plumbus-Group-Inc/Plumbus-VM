@@ -2,7 +2,6 @@
 
 #include <array>
 #include <bit>
-#include <cstdint>
 #include <type_traits>
 
 #include "common/config.hpp"

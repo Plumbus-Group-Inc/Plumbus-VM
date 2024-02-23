@@ -20,7 +20,7 @@ auto createState() {
       Decoder{},
       Memory{},
       Code{std::vector<Instr>{}},
-      {{}},
+      FrameStack{{}},
   };
   return state;
 }

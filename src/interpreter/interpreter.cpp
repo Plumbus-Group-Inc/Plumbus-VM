@@ -8,7 +8,7 @@ Interpreter::Interpreter(const Code &code) : Interpreter(code, Config{}) {
 }
 
 Interpreter::Interpreter(const Code &code, const Config &config)
-    : m_state{Decoder{}, Memory{}, Code{code}, {{}}, 0, config} {
+    : m_state{Decoder{}, Memory{}, Code{code}, FrameStack{{}}, 0, config} {
 }
 
 Instr Interpreter::getInstr() {
