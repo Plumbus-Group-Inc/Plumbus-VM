@@ -4,6 +4,7 @@ namespace pvm {
 
 Code::Code(const std::vector<Instr> &data) : m_data(data) {
 }
+
 Code::Code(std::vector<Instr> &&data) : m_data(std::move(data)) {
 }
 

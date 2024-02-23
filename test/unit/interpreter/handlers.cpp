@@ -22,8 +22,11 @@ constexpr std::uint64_t kInt = INT_T;
 constexpr std::uint64_t kFloat = FLOAT_T;
 
 auto createState() {
-  auto state = Interpreter::State{
-      Decoder{}, Memory{}, Code{std::vector<Instr>{}}, std::cout, std::cin, {{}},
+  auto state = State{
+      Decoder{},
+      Memory{},
+      Code{std::vector<Instr>{}},
+      {{}},
   };
   return state;
 }

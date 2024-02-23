@@ -9,6 +9,8 @@ Checks: >
   -fuchsia-default-arguments-calls,
   -readability-identifier-length,
   -altera-struct-pack-align,
+  -misc-non-private-member-variables-in-classes,
+  -performance-avoid-endl,
 
 WarningsAsErrors: ""
 HeaderFilterRegex: ""

@@ -4,15 +4,14 @@
 #include <gtest/gtest.h>
 
 #include "common/config.hpp"
-#include "common/instruction.hpp"
 #include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 
 using namespace pvm;
 
 TEST(Array, GetSet) {
+  constexpr Int kData = 0xD;
   constexpr std::size_t kSize = 10;
-  constexpr std::uint16_t kData = 0xD;
 
   enum Registers : std::size_t {
     K_ONE_REG = 1,

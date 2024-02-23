@@ -4,19 +4,11 @@
 
 namespace pvm {
 
-Interpreter::Interpreter(const Code &code) : Interpreter(code, std::cout, std::cin) {
+Interpreter::Interpreter(const Code &code) : Interpreter(code, Config{}) {
 }
 
-Interpreter::Interpreter(const Code &code, std::ostream &ost)
-    : Interpreter(code, ost, std::cin) {
-}
-
-Interpreter::Interpreter(const Code &code, std::istream &ist)
-    : Interpreter(code, std::cout, ist) {
-}
-
-Interpreter::Interpreter(const Code &code, std::ostream &ost, std::istream &ist)
-    : m_state{Decoder{}, Memory{}, Code{code}, ost, ist, {{}}} {
+Interpreter::Interpreter(const Code &code, const Config &config)
+    : m_state{Decoder{}, Memory{}, Code{code}, {{}}, 0, config} {
 }
 
 Instr Interpreter::getInstr() {
@@ -25,7 +17,7 @@ Instr Interpreter::getInstr() {
   return instr;
 }
 
-const Interpreter::State &Interpreter::getState() const {
+const State &Interpreter::getState() const {
   return m_state;
 }
 

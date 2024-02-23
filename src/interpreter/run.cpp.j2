@@ -10,8 +10,6 @@
 
 namespace pvm {
 
-using State = Interpreter::State;
-
 {% for type in types +%}
 {% set mnem = type.mnemonic %}
 const std::array<std::function<void(State&, Instr{{ mnem | upper }})>, e{{ mnem | upper }}_OP_NUM> {{ mnem }}DispatchTable{

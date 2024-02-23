@@ -22,27 +22,6 @@ struct ObjectHeader final {
   KlassWord klass{};
 };
 
-class ObjectHandler final {
-private:
-  ObjectHeader *m_header;
-
-public:
-  explicit ObjectHandler(ObjectHeader *header) : m_header(header) {
-  }
-
-  MarkWord mark() {
-    return m_header->mark;
-  }
-
-  KlassWord klass() {
-    return m_header->klass;
-  }
-
-  std::uint8_t *data() {
-    return reinterpret_cast<std::uint8_t *>(std::next(m_header));
-  }
-};
-
 } // namespace pvm
 
 #endif // __INCLUDE_OBJECTS_OBJECTS_HH__
