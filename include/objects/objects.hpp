@@ -1,5 +1,4 @@
-#ifndef __INCLUDE_OBJECTS_OBJECTS_HH__
-#define __INCLUDE_OBJECTS_OBJECTS_HH__
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -23,5 +22,3 @@ struct ObjectHeader final {
 };
 
 } // namespace pvm
-
-#endif // __INCLUDE_OBJECTS_OBJECTS_HH__

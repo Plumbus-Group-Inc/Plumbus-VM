@@ -1,7 +1,5 @@
 #include <bit>
-#include <cstddef>
 #include <cstdint>
-#include <sstream>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -11,15 +9,11 @@
 #include "common/config.hpp"
 #include "common/instruction.hpp"
 #include "generated/handlers.hpp"
-#include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 #include "memory/memory.hpp"
 #include "memory/regfile.hpp"
 
 using namespace pvm;
-
-constexpr std::uint64_t kInt = INT_T;
-constexpr std::uint64_t kFloat = FLOAT_T;
 
 auto createState() {
   auto state = State{
@@ -82,7 +76,7 @@ TEST(Handlers, BinaryAddInt) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
+  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(INT_T).build();
 
   exec_binary_add(state, add);
 
@@ -98,7 +92,7 @@ TEST(Handlers, BinaryAddFloat) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
+  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(FLOAT_T).build();
 
   exec_binary_add(state, add);
   auto output = std::bit_cast<Float>(state.rf().readAcc());
@@ -115,7 +109,7 @@ TEST(Handlers, BinarySubInt) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
+  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(INT_T).build();
 
   exec_binary_sub(state, add);
 
@@ -131,7 +125,7 @@ TEST(Handlers, BinarySubFloat) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
+  auto add = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(FLOAT_T).build();
 
   exec_binary_sub(state, add);
   auto output = std::bit_cast<Float>(state.rf().readAcc());
@@ -148,7 +142,7 @@ TEST(Handlers, BinaryMulInt) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
+  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(INT_T).build();
 
   exec_binary_mul(state, mul);
 
@@ -164,7 +158,7 @@ TEST(Handlers, BinaryMulFloat) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
+  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(FLOAT_T).build();
 
   exec_binary_mul(state, mul);
 
@@ -180,7 +174,7 @@ TEST(Handlers, BinaryDivlInt) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
+  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(INT_T).build();
 
   exec_binary_div(state, mul);
 
@@ -196,7 +190,7 @@ TEST(Handlers, BinaryDivlFloat) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
+  auto mul = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(FLOAT_T).build();
 
   exec_binary_div(state, mul);
 
@@ -212,7 +206,7 @@ TEST(Handlers, BinaryLessInt) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kInt).build();
+  auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(INT_T).build();
 
   exec_binary_less(state, less);
 
@@ -228,7 +222,7 @@ TEST(Handlers, BinaryLessFloat) {
   auto state = createState();
   state.rf().writeReg(lrid, lhs);
   state.rf().writeReg(rrid, rhs);
-  auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(kFloat).build();
+  auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(FLOAT_T).build();
 
   exec_binary_less(state, less);
 

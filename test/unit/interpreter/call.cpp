@@ -11,8 +11,6 @@
 using namespace pvm;
 
 TEST(Interpreter, Call) {
-  constexpr std::size_t kInt = INT_T;
-
   // clang-format off
     std::vector<Instr> instrs{
         /* 0 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
@@ -20,7 +18,7 @@ TEST(Interpreter, Call) {
         /* 1 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
         /* 2 */ Instr{.opType = eBINARY, .opID = eBINARY_EQUAL, .instrVar =
-            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(kInt).build()},
+            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(INT_T).build()},
         /* 3 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 4 */ Instr{.opType = eBRANCH, .opID = eBRANCH_CALL,
@@ -36,7 +34,7 @@ TEST(Interpreter, Call) {
         /* 8 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 9 */ Instr{.opType = eBINARY, .opID = eBINARY_EQUAL, .instrVar =
-            InstrBINARY::Builder().regid1(0 + 1).regid2(1 + 1).ttypeid(kInt).build()},
+            InstrBINARY::Builder().regid1(0 + 1).regid2(1 + 1).ttypeid(INT_T).build()},
         /* 10 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(2 + 1).build()},
         /* 11 */ Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar =
@@ -44,7 +42,7 @@ TEST(Interpreter, Call) {
 
         // Wanna save R0 parameter value for future to R2
         /* 12 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
-            InstrBINARY::Builder().ttypeid(kInt).regid1(0 + 1).regid2(1 + 1).build()},
+            InstrBINARY::Builder().ttypeid(INT_T).regid1(0 + 1).regid2(1 + 1).build()},
         /* 13 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(2 + 1).build()},
 
@@ -54,13 +52,13 @@ TEST(Interpreter, Call) {
         /* 15 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 16 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
-            InstrBINARY::Builder().ttypeid(kInt).regid1(0 + 1).regid2(1 + 1).build()},
+            InstrBINARY::Builder().ttypeid(INT_T).regid1(0 + 1).regid2(1 + 1).build()},
         /* 17 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
 
         // Perform recursive call of this function
         /* 18 */ Instr{.opType = eBINARY, .opID = eBINARY_EQUAL, .instrVar =
-            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(kInt).build()},
+            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(INT_T).build()},
         /* 19 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(3 + 1).build()},
         /* 20 */ Instr{.opType = eBRANCH, .opID = eBRANCH_CALL,
@@ -70,7 +68,7 @@ TEST(Interpreter, Call) {
         /* 21 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
         /* 22 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
-            InstrBINARY::Builder().ttypeid(kInt).regid1(0 + 1).regid2(2 + 1).build()},
+            InstrBINARY::Builder().ttypeid(INT_T).regid1(0 + 1).regid2(2 + 1).build()},
         /* 23 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
         /* 24 */ Instr{.opType = eBRANCH, .opID = eBRANCH_RET,

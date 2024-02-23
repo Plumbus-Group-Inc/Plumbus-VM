@@ -1,18 +1,14 @@
-#include <cstddef>
-#include <sstream>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include "common/instruction.hpp"
-#include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 
 using namespace pvm;
 
 TEST(Interpreter, Cycle) {
   constexpr Int kIterNum = 10;
-  constexpr std::size_t kInt = INT_T;
 
   // clang-format off
   std::vector<Instr> instrs{
@@ -31,16 +27,16 @@ TEST(Interpreter, Cycle) {
       Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(1).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(5).build()},
 
-      Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(4).regid2(1).build()},
+      Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar = InstrBINARY::Builder().ttypeid(INT_T).regid1(4).regid2(1).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(4).build()},
 
-      Instr{.opType = eBINARY, .opID = eBINARY_MUL, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(4).regid2(4).build()},
+      Instr{.opType = eBINARY, .opID = eBINARY_MUL, .instrVar = InstrBINARY::Builder().ttypeid(INT_T).regid1(4).regid2(4).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(5).build()},
 
-      Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(1).regid2(2).build()},
+      Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar = InstrBINARY::Builder().ttypeid(INT_T).regid1(1).regid2(2).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(1).build()},
 
-      Instr{.opType = eBINARY, .opID = eBINARY_LESS, .instrVar = InstrBINARY::Builder().ttypeid(kInt).regid1(1).regid2(3).build()},
+      Instr{.opType = eBINARY, .opID = eBINARY_LESS, .instrVar = InstrBINARY::Builder().ttypeid(INT_T).regid1(1).regid2(3).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,       .instrVar = InstrREG::Builder().regid(6).build()},
 
       Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar = InstrBRANCH::Builder().regid(6).offset(std::bit_cast<unsigned>(-8)).build()},
