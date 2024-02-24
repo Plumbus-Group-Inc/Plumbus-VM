@@ -13,8 +13,8 @@ struct Klass final {
   std::map<std::size_t, std::iter_difference_t<std::uint8_t *>> field2offset{};
 };
 
-using MarkWord = std::uintptr_t;
-using KlassWord = std::uintptr_t;
+using MarkWord = std::uint32_t;
+using KlassWord = std::uint32_t;
 
 struct ObjectHeader final {
   MarkWord mark{};
