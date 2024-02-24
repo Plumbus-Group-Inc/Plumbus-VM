@@ -13,7 +13,7 @@ concept RegConv = requires { sizeof(T) == sizeof(Reg) || std::is_convertible_v<T
 
 class RegFile final {
 private:
-  static constexpr std::size_t kRegNum = 256;
+  static constexpr std::size_t kRegNum = 64;
 
   std::array<Reg, kRegNum> m_data{};
 

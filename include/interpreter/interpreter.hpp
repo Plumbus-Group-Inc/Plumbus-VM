@@ -51,8 +51,8 @@ struct State final {
     Klasses m_klasses{
         Klass{"Null", 0},
         Klass{"Int", sizeof(Int), {{0, 0}}},
-        Klass{"Float", sizeof(Float), {{0, 0}}},
         Klass{"Bool", sizeof(Bool), {{0, 0}}},
+        Klass{"Float", sizeof(Float), {{0, 0}}},
     };
 
   public:
