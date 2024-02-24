@@ -196,8 +196,8 @@ void exec_binary_template(State &state, InstrBINARY instr, F f) {
   state.rf().writeAcc(f(lhs, rhs));
 }
 
-#define EXEC_BINARY_MACRO(state, instr, f)                                               \
-  {                                                                                      \
+#define EXEC_BINARY_MACRO(name, f)                                                       \
+  void exec_binary_##name(State &state, InstrBINARY instr) {                             \
     switch ((instr).ttypeid) {                                                           \
     case INT_T:                                                                          \
       exec_binary_template<Int>(state, instr, f<Int>{});                                 \
@@ -210,28 +210,12 @@ void exec_binary_template(State &state, InstrBINARY instr, F f) {
     }                                                                                    \
   }
 
-void exec_binary_less(State &state, InstrBINARY instr) {
-  EXEC_BINARY_MACRO(state, instr, std::less);
-}
+EXEC_BINARY_MACRO(less, std::less)
+EXEC_BINARY_MACRO(equal, std::equal_to)
 
-void exec_binary_equal(State &state, InstrBINARY instr) {
-  EXEC_BINARY_MACRO(state, instr, std::equal_to);
-}
-
-void exec_binary_add(State &state, InstrBINARY instr) {
-  EXEC_BINARY_MACRO(state, instr, std::plus);
-}
-
-void exec_binary_sub(State &state, InstrBINARY instr) {
-  EXEC_BINARY_MACRO(state, instr, std::minus);
-}
-
-void exec_binary_mul(State &state, InstrBINARY instr) {
-  EXEC_BINARY_MACRO(state, instr, std::multiplies);
-}
-
-void exec_binary_div(State &state, InstrBINARY instr) {
-  EXEC_BINARY_MACRO(state, instr, std::divides);
-}
+EXEC_BINARY_MACRO(add, std::plus)
+EXEC_BINARY_MACRO(sub, std::minus)
+EXEC_BINARY_MACRO(div, std::divides)
+EXEC_BINARY_MACRO(mul, std::multiplies)
 
 } // namespace pvm
