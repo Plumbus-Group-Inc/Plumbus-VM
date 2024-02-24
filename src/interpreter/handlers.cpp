@@ -119,7 +119,7 @@ void exec_branch_ret(State &state, InstrBRANCH instr) {
 
 void exec_obj_get_field(State &state, InstrOBJ_GET instr) {
   auto *header = state.rf().readReg<ObjectHeader *>(instr.oregid);
-  auto &klass =  state.klasses[header->klass];
+  auto &klass = state.klasses[header->klass];
 
   auto field = state.rf().readReg<std::size_t>(instr.fregid);
   auto offset = klass.field2offset[field];
@@ -130,7 +130,7 @@ void exec_obj_get_field(State &state, InstrOBJ_GET instr) {
 
 void exec_obj_set_field(State &state, InstrOBJ_SET instr) {
   auto *header = state.rf().readReg<ObjectHeader *>(instr.oregid);
-  auto &klass =  state.klasses[header->klass];
+  auto &klass = state.klasses[header->klass];
 
   auto field = state.rf().readReg<std::size_t>(instr.fregid);
   auto offset = klass.field2offset[field];
@@ -193,82 +193,42 @@ void exec_binary_template(State &state, InstrBINARY instr, F f) {
   state.rf().writeAcc(f(lhs, rhs));
 }
 
-void exec_binary_less(State &state, InstrBINARY instr) {
-  switch (instr.ttypeid) {
-  case INT_T:
-    exec_binary_template<Int>(state, instr, std::less<Int>{});
-    break;
-  case FLOAT_T:
-    exec_binary_template<Float>(state, instr, std::less<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"unknown ttypeid for bin instr"};
+#define EXEC_BINARY_MACRO(state, instr, f)                                               \
+  {                                                                                      \
+    switch ((instr).ttypeid) {                                                           \
+    case INT_T:                                                                          \
+      exec_binary_template<Int>(state, instr, f<Int>{});                                 \
+      break;                                                                             \
+    case FLOAT_T:                                                                        \
+      exec_binary_template<Float>(state, instr, f<Float>{});                             \
+      break;                                                                             \
+    default:                                                                             \
+      throw std::runtime_error{"unknown ttypeid for bin instr"};                         \
+    }                                                                                    \
   }
+
+void exec_binary_less(State &state, InstrBINARY instr) {
+  EXEC_BINARY_MACRO(state, instr, std::less);
 }
 
 void exec_binary_equal(State &state, InstrBINARY instr) {
-  switch (instr.ttypeid) {
-  case INT_T:
-    exec_binary_template<Int>(state, instr, std::equal_to<Int>{});
-    break;
-  case FLOAT_T:
-    exec_binary_template<Float>(state, instr, std::equal_to<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"unknown ttypeid for bin instr"};
-  }
+  EXEC_BINARY_MACRO(state, instr, std::equal_to);
 }
 
 void exec_binary_add(State &state, InstrBINARY instr) {
-  switch (instr.ttypeid) {
-  case INT_T:
-    exec_binary_template<Int>(state, instr, std::plus<Int>{});
-    break;
-  case FLOAT_T:
-    exec_binary_template<Float>(state, instr, std::plus<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"unknown ttypeid for bin instr"};
-  }
+  EXEC_BINARY_MACRO(state, instr, std::plus);
 }
 
 void exec_binary_sub(State &state, InstrBINARY instr) {
-  switch (instr.ttypeid) {
-  case INT_T:
-    exec_binary_template<Int>(state, instr, std::minus<Int>{});
-    break;
-  case FLOAT_T:
-    exec_binary_template<Float>(state, instr, std::minus<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"unknown ttypeid for bin instr"};
-  }
+  EXEC_BINARY_MACRO(state, instr, std::minus);
 }
 
 void exec_binary_mul(State &state, InstrBINARY instr) {
-  switch (instr.ttypeid) {
-  case INT_T:
-    exec_binary_template<Int>(state, instr, std::multiplies<Int>{});
-    break;
-  case FLOAT_T:
-    exec_binary_template<Float>(state, instr, std::multiplies<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"unknown ttypeid for bin instr"};
-  }
+  EXEC_BINARY_MACRO(state, instr, std::multiplies);
 }
 
 void exec_binary_div(State &state, InstrBINARY instr) {
-  switch (instr.ttypeid) {
-  case INT_T:
-    exec_binary_template<Int>(state, instr, std::divides<Int>{});
-    break;
-  case FLOAT_T:
-    exec_binary_template<Float>(state, instr, std::divides<Float>{});
-    break;
-  default:
-    throw std::runtime_error{"unknown ttypeid for bin instr"};
-  }
+  EXEC_BINARY_MACRO(state, instr, std::divides);
 }
 
 } // namespace pvm
