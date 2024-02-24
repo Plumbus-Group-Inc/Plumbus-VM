@@ -16,13 +16,7 @@
 using namespace pvm;
 
 auto createState() {
-  auto state = State{
-      Decoder{},
-      Memory{},
-      Code{std::vector<Instr>{}},
-      FrameStack{{}},
-  };
-  return state;
+  return State::Builder(Code{{}}).build();
 }
 
 TEST(Handlers, Halt) {
@@ -34,7 +28,7 @@ TEST(Handlers, Halt) {
 TEST(Handlers, ImmInt) {
   std::int16_t data = -1;
   auto state = createState();
-  auto imm = InstrIMM::Builder().data(data).build();
+  auto imm = InstrIMM::Builder().data(std::bit_cast<std::uint16_t>(data)).build();
 
   exec_imm_integer(state, imm);
   auto val = state.rf().readAcc();
