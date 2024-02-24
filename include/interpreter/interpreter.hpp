@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <iostream>
+#include <utility>
 
 #include "decoder/decoder.hpp"
 #include "memory/memory.hpp"
@@ -55,7 +56,8 @@ struct State final {
     };
 
   public:
-    explicit Builder(const Code &code) : m_code(code) {}
+    explicit Builder(Code code) : m_code(std::move(code)) {
+    }
     State build();
 
     Builder &decoder(const Decoder &dec);
@@ -86,7 +88,7 @@ public:
   [[nodiscard]] const State &getState() const;
 
 private:
-  Instr getInstr();
+  [[nodiscard]] Instr getInstr() const;
 };
 
 } // namespace pvm

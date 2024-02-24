@@ -1,8 +1,5 @@
-#include <vector>
-
 #include <gtest/gtest.h>
 
-#include "common/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 
 using namespace pvm;

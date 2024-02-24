@@ -9,7 +9,6 @@
 #include <stdexcept>
 
 #include <float16_t/float16_t.hpp>
-#include <unordered_map>
 
 #include "common/config.hpp"
 #include "generated/handlers.hpp"
@@ -44,14 +43,14 @@ void exec_new_array(State &state, InstrNEW instr) {
   auto *data = state.mem.allocate(arrSize * objSize);
   auto *mem = state.mem.allocate(sizeof(ArrHeader) + arrSize * sizeof(Reg));
 
-  auto *refs = reinterpret_cast<Ref *>(std::next(mem, sizeof(ArrHeader)));
+  auto *refs = std::bit_cast<Ref *>(std::next(mem, sizeof(ArrHeader)));
   for (std::size_t i = 0; i < arrSize; ++i) {
-    auto *ptr = reinterpret_cast<ObjectHeader *>(data + i * objSize);
+    auto *ptr = std::bit_cast<ObjectHeader *>(data + i * objSize);
     ptr->klass = std::bit_cast<std::uintptr_t>(&state.klasses.at(instr.ttypeid));
-    refs[i] = reinterpret_cast<Ref>(ptr);
+    refs[i] = std::bit_cast<Ref>(ptr);
   }
 
-  auto *arr = reinterpret_cast<ArrHeader *>(mem);
+  auto *arr = std::bit_cast<ArrHeader *>(mem);
   arr->header.klass = std::bit_cast<std::uintptr_t>(&state.klasses.at(instr.ttypeid));
   arr->size = arrSize;
 
@@ -62,7 +61,7 @@ void exec_new_object(State &state, InstrNEW instr) {
   auto objSize = state.klasses.at(instr.ttypeid).size;
 
   auto *mem = state.mem.allocate(objSize);
-  auto *header = reinterpret_cast<ObjectHeader *>(mem);
+  auto *header = std::bit_cast<ObjectHeader *>(mem);
 
   header->klass = std::bit_cast<std::uintptr_t>(&state.klasses.at(instr.ttypeid));
   state.rf().writeAcc(mem);
@@ -70,14 +69,14 @@ void exec_new_object(State &state, InstrNEW instr) {
 
 void exec_array_gep(State &state, InstrARRAY instr) {
   auto index = state.rf().readReg<std::iter_difference_t<Ref *>>(instr.regid);
-  auto *arr = reinterpret_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
+  auto *arr = std::bit_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
 
-  auto *refs = reinterpret_cast<Ref *>(std::next(arr));
+  auto *refs = std::bit_cast<Ref *>(std::next(arr));
   state.rf().writeAcc(*std::next(refs, index));
 }
 
 void exec_array_size(State &state, InstrARRAY instr) {
-  auto *arr = reinterpret_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
+  auto *arr = std::bit_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
   state.rf().writeAcc(arr->size);
 }
 
@@ -120,24 +119,24 @@ void exec_branch_ret(State &state, InstrBRANCH instr) {
 
 void exec_obj_get_field(State &state, InstrOBJ_GET instr) {
   auto *header = state.rf().readReg<ObjectHeader *>(instr.oregid);
-  auto *klass = reinterpret_cast<Klass *>(header->klass);
+  auto *klass = std::bit_cast<Klass *>(header->klass);
 
   auto field = state.rf().readReg<std::size_t>(instr.fregid);
   auto offset = klass->field2offset[field];
 
-  auto *data = reinterpret_cast<std::uint8_t *>(std::next(header));
-  state.rf().writeAcc(*reinterpret_cast<Reg *>(std::next(data, offset)));
+  auto *data = std::bit_cast<std::uint8_t *>(std::next(header));
+  state.rf().writeAcc(*std::bit_cast<Reg *>(std::next(data, offset)));
 }
 
 void exec_obj_set_field(State &state, InstrOBJ_SET instr) {
   auto *header = state.rf().readReg<ObjectHeader *>(instr.oregid);
-  auto *klass = reinterpret_cast<Klass *>(header->klass);
+  auto *klass = std::bit_cast<Klass *>(header->klass);
 
   auto field = state.rf().readReg<std::size_t>(instr.fregid);
   auto offset = klass->field2offset[field];
 
-  auto *dataUI8 = reinterpret_cast<std::uint8_t *>(std::next(header));
-  auto *dataReg = reinterpret_cast<Reg *>(std::next(dataUI8, offset));
+  auto *dataUI8 = std::bit_cast<std::uint8_t *>(std::next(header));
+  auto *dataReg = std::bit_cast<Reg *>(std::next(dataUI8, offset));
   *dataReg = state.rf().readReg(instr.dregid);
 }
 

@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "interpreter/interpreter.hpp"
 
 namespace pvm {
@@ -58,7 +56,7 @@ Interpreter::Interpreter(const Code &code, const Config &config)
     : m_state{State::Builder(code).config(config)} {
 }
 
-Instr Interpreter::getInstr() {
+Instr Interpreter::getInstr() const {
   auto pc = m_state.pc;
   auto instr = m_state.code.loadInstr(pc);
   return instr;

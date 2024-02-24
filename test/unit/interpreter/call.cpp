@@ -1,11 +1,5 @@
-#include <cstddef>
-#include <sstream>
-#include <vector>
-
 #include <gtest/gtest.h>
 
-#include "common/instruction.hpp"
-#include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 
 using namespace pvm;

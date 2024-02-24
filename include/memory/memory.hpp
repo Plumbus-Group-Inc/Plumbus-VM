@@ -7,7 +7,6 @@
 
 #include "common/config.hpp"
 #include "common/instruction.hpp"
-#include "objects/objects.hpp"
 
 namespace pvm {
 
@@ -26,7 +25,6 @@ public:
   }
 
 private:
-  // TODO: temporary
   static constexpr std::size_t kArenaSize = 2048;
   std::array<std::uint8_t, kArenaSize> m_data{};
   std::size_t m_offset{};
