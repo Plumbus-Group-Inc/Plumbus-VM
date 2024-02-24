@@ -40,37 +40,32 @@ void exec_new_array(State &state, InstrNEW instr) {
   auto arrSize = state.rf().readReg(instr.regid);
   auto objSize = state.klasses.at(instr.ttypeid).size + sizeof(ObjectHeader);
 
-  auto *data = state.mem.allocate(arrSize * objSize);
-  auto *mem = state.mem.allocate(sizeof(ArrHeader) + arrSize * sizeof(Reg));
+  auto *raw = state.mem.allocate(arrSize * objSize);
+  auto *arr = std::bit_cast<ArrHeader *>(
+      state.mem.allocate(sizeof(ArrHeader) + arrSize * sizeof(Reg)));
+  arr->header.klass = static_cast<KlassWord>(instr.ttypeid);
+  arr->size = arrSize;
 
-  auto *refs = std::bit_cast<Ref *>(std::next(mem, sizeof(ArrHeader)));
+  auto *refs = std::bit_cast<Ref *>(std::next(arr));
   for (std::size_t i = 0; i < arrSize; ++i) {
-    auto *ptr = std::bit_cast<ObjectHeader *>(data + i * objSize);
+    auto *ptr = std::bit_cast<ObjectHeader *>(raw + i * objSize);
     ptr->klass = static_cast<KlassWord>(instr.ttypeid);
     refs[i] = std::bit_cast<Ref>(ptr);
   }
 
-  auto *arr = std::bit_cast<ArrHeader *>(mem);
-  arr->header.klass = static_cast<KlassWord>(instr.ttypeid);
-  arr->size = arrSize;
-
-  state.rf().writeAcc(mem);
+  state.rf().writeAcc(arr);
 }
 
 void exec_new_object(State &state, InstrNEW instr) {
-  auto objSize = state.klasses.at(instr.ttypeid).size;
-
-  auto *mem = state.mem.allocate(objSize);
-  auto *header = std::bit_cast<ObjectHeader *>(mem);
-
+  auto objSize = state.klasses.at(instr.ttypeid).size + sizeof(ObjectHeader);
+  auto *header = std::bit_cast<ObjectHeader *>(state.mem.allocate(objSize));
   header->klass = static_cast<KlassWord>(instr.ttypeid);
-  state.rf().writeAcc(mem);
+  state.rf().writeAcc(header);
 }
 
 void exec_array_gep(State &state, InstrARRAY instr) {
   auto index = state.rf().readReg<std::iter_difference_t<Ref *>>(instr.regid);
   auto *arr = std::bit_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
-
   auto *refs = std::bit_cast<Ref *>(std::next(arr));
   state.rf().writeAcc(*std::next(refs, index));
 }
@@ -86,35 +81,28 @@ void exec_reg_mov(State &state, InstrREG instr) {
 }
 
 void exec_branch_branch(State &state, InstrBRANCH instr) {
-  const auto &rf = state.rf();
-
-  if (auto cond = rf.readReg<Bool>(instr.regid); !cond) {
+  if (auto cond = state.rf().readReg<Bool>(instr.regid); !cond) {
     ++state.pc;
-    return;
+  } else {
+    state.pc += static_cast<Addr>(instr.offset);
   }
-
-  state.pc += static_cast<Addr>(instr.offset);
 }
 
 void exec_branch_call(State &state, InstrBRANCH instr) {
   state.stack.emplace_back(state.rf(), state.pc + 1);
-
-  const auto &rf = state.rf();
-  if (auto cond = rf.readReg<Bool>(instr.regid); !cond) {
+  if (auto cond = state.rf().readReg<Bool>(instr.regid); !cond) {
     ++state.pc;
-    return;
+  } else {
+    state.pc += static_cast<Addr>(instr.offset);
   }
-
-  state.pc += static_cast<Addr>(instr.offset);
 }
 
 void exec_branch_ret(State &state, InstrBRANCH instr) {
   auto retVal = state.rf().readReg(instr.regid);
-  auto retPC = state.stack.back().retPC;
+  state.pc = state.stack.back().retPC;
 
   state.stack.pop_back();
   state.rf().writeAcc(retVal);
-  state.pc = retPC;
 }
 
 void exec_obj_get_field(State &state, InstrOBJ_GET instr) {
