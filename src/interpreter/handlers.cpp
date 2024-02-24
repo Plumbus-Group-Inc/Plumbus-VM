@@ -178,7 +178,10 @@ void exec_unary_abs(State &state, InstrUNARY instr) {
 }
 
 void exec_unary_sqrt(State &state, InstrUNARY instr) {
-  if (instr.ttypeid == FLOAT_T) {
+  if (instr.ttypeid == INT_T) {
+    auto tmp = state.rf().readReg<Int>(instr.regid);
+    state.rf().writeAcc<Int>(std::sqrt(tmp));
+  } else if (instr.ttypeid == FLOAT_T) {
     auto tmp = state.rf().readReg<Float>(instr.regid);
     state.rf().writeAcc(std::sqrt(tmp));
   } else {

@@ -61,6 +61,58 @@ TEST(Handlers, Mov) {
   ASSERT_EQ(data, std::bit_cast<Int>(val));
 }
 
+TEST(Handlers, UnaryAbsInt) {
+  Int input = -7;
+  RegId rid = 3;
+
+  auto state = createState();
+  state.rf().writeReg(rid, input);
+  auto abs = InstrUNARY::Builder().regid(rid).ttypeid(INT_T).build();
+
+  exec_unary_abs(state, abs);
+
+  ASSERT_EQ(state.rf().readAcc<Int>(), 7);
+}
+
+TEST(Handlers, UnaryAbsFloat) {
+  Float input = -7;
+  RegId rid = 3;
+
+  auto state = createState();
+  state.rf().writeReg(rid, input);
+  auto abs = InstrUNARY::Builder().regid(rid).ttypeid(FLOAT_T).build();
+
+  exec_unary_abs(state, abs);
+
+  ASSERT_DOUBLE_EQ(state.rf().readAcc<Float>(), 7);
+}
+
+TEST(Handlers, UnarySqrtInt) {
+  Int input = 25;
+  RegId rid = 3;
+
+  auto state = createState();
+  state.rf().writeReg(rid, input);
+  auto abs = InstrUNARY::Builder().regid(rid).ttypeid(INT_T).build();
+
+  exec_unary_sqrt(state, abs);
+
+  ASSERT_EQ(state.rf().readAcc<Int>(), 5);
+}
+
+TEST(Handlers, UnarySqrtFloat) {
+  Float input = 25;
+  RegId rid = 3;
+
+  auto state = createState();
+  state.rf().writeReg(rid, input);
+  auto abs = InstrUNARY::Builder().regid(rid).ttypeid(FLOAT_T).build();
+
+  exec_unary_sqrt(state, abs);
+
+  ASSERT_DOUBLE_EQ(state.rf().readAcc<Float>(), 5);
+}
+
 TEST(Handlers, BinaryAddInt) {
   Int lhs = 1;
   Int rhs = 2;
@@ -221,4 +273,36 @@ TEST(Handlers, BinaryLessFloat) {
   exec_binary_less(state, less);
 
   ASSERT_EQ(static_cast<Bool>(state.rf().readAcc()), lhs < rhs);
+}
+
+TEST(Handlers, BinaryEqualInt) {
+  Int lhs = 1;
+  Int rhs = 2;
+  RegId lrid = 6;
+  RegId rrid = 3;
+
+  auto state = createState();
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
+  auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(INT_T).build();
+
+  exec_binary_equal(state, less);
+
+  ASSERT_EQ(static_cast<Bool>(state.rf().readAcc()), lhs == rhs);
+}
+
+TEST(Handlers, BinaryEqualFloat) {
+  Float lhs = 1;
+  Float rhs = 2;
+  RegId lrid = 6;
+  RegId rrid = 3;
+
+  auto state = createState();
+  state.rf().writeReg(lrid, lhs);
+  state.rf().writeReg(rrid, rhs);
+  auto less = InstrBINARY::Builder().regid1(lrid).regid2(rrid).ttypeid(FLOAT_T).build();
+
+  exec_binary_equal(state, less);
+
+  ASSERT_EQ(static_cast<Bool>(state.rf().readAcc()), lhs == rhs);
 }

@@ -20,6 +20,11 @@ private:
 public:
   [[nodiscard]] Reg readAcc() const;
 
+  template <RegConv T>
+  [[nodiscard]] T readAcc() const {
+    return readReg<T>(0);
+  }
+
   template <typename T>
   void writeAcc(T val) {
     writeReg(0, val);

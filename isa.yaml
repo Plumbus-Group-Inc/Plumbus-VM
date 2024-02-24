@@ -93,10 +93,3 @@ types:
     instrs: [mov]
     fields:
       regid: { type: RegId, from: 10, to: 15 }
-# - &frame
-#   mnemonic: frame
-#   fields:
-#     opid: {from: 5, to: 9}
-#     fregid: {from: 10, to: 14}
-#     regid: {from: 15, to: 19}
-#     unused: {from: 20, to: 23}
