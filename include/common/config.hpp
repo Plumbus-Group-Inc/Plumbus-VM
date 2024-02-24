@@ -7,6 +7,8 @@ namespace pvm {
 using Int = std::int64_t;
 using Float = double;
 using Bool = bool;
+using Char = char;
+
 using Ref = std::uintptr_t;
 
 using Addr = std::uint64_t;
@@ -22,6 +24,7 @@ enum TrivialType : std::uint8_t {
   NULL_T = 0,
   INT_T,
   BOOL_T,
+  CHAR_T,
   FLOAT_T,
 };
 

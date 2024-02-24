@@ -49,15 +49,23 @@ struct State final {
     Config m_config{};
 
     Klasses m_klasses{
-        Klass{"Null", 0},
-        Klass{"Int", sizeof(Int), {{0, 0}}},
-        Klass{"Bool", sizeof(Bool), {{0, 0}}},
-        Klass{"Float", sizeof(Float), {{0, 0}}},
+        Klass{.name = "Null", .size = 0, .field2offset = {}},
+        Klass{.name = "Int",
+              .size = sizeof(Int),
+              .field2offset = {{0, Field{0, sizeof(Int)}}}},
+        Klass{.name = "Bool",
+              .size = sizeof(Bool),
+              .field2offset = {{0, Field{0, sizeof(Bool)}}}},
+        Klass{.name = "Char",
+              .size = sizeof(Char),
+              .field2offset = {{0, Field{0, sizeof(Char)}}}},
+        Klass{.name = "Float",
+              .size = sizeof(Float),
+              .field2offset = {{0, Field{0, sizeof(Float)}}}},
     };
 
   public:
-    explicit Builder(Code code) : m_code(std::move(code)) {
-    }
+    explicit Builder(Code code) : m_code(std::move(code)) {}
     State build();
 
     Builder &decoder(const Decoder &dec);

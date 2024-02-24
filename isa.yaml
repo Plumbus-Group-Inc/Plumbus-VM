@@ -84,8 +84,10 @@ types:
       regid: {type: RegId, from: 20, to: 25}
   - mnemonic: imm
     instrs: [
-        integer,
         floating,
+        integer,
+        bool,
+        char,
       ]
     fields:
       data: { type: std::uint16_t, from: 10, to: 26 }

@@ -10,6 +10,7 @@
 
 #include <float16_t/float16_t.hpp>
 
+#include "common/common.hpp"
 #include "common/config.hpp"
 #include "generated/handlers.hpp"
 #include "generated/instruction.hpp"
@@ -23,8 +24,7 @@ struct ArrHeader final {
   std::uint64_t size{};
 };
 
-void exec_halt_halt([[maybe_unused]] State &state, [[maybe_unused]] InstrHALT instr) {
-}
+void exec_halt_halt([[maybe_unused]] State &state, [[maybe_unused]] InstrHALT instr) {}
 
 void exec_imm_integer(State &state, InstrIMM instr) {
   Int data = static_cast<std::int16_t>(instr.data);
@@ -34,6 +34,16 @@ void exec_imm_integer(State &state, InstrIMM instr) {
 void exec_imm_floating(State &state, InstrIMM instr) {
   Float dataF16 = numeric::float16_t{instr.data};
   state.rf().writeAcc(dataF16);
+}
+
+void exec_imm_bool(State &state, InstrIMM instr) {
+  Bool data = static_cast<Bool>(instr.data);
+  state.rf().writeAcc(data);
+}
+
+void exec_imm_char(State &state, InstrIMM instr) {
+  auto data = static_cast<Char>(instr.data);
+  state.rf().writeAcc(data);
 }
 
 void exec_new_array(State &state, InstrNEW instr) {
@@ -64,7 +74,7 @@ void exec_new_object(State &state, InstrNEW instr) {
 }
 
 void exec_array_gep(State &state, InstrARRAY instr) {
-  auto index = state.rf().readReg<std::iter_difference_t<Ref *>>(instr.regid);
+  auto index = state.rf().readReg<std::ptrdiff_t>(instr.regid);
   auto *arr = std::bit_cast<ArrHeader *>(state.rf().readReg(instr.aregid));
   auto *refs = std::bit_cast<Ref *>(std::next(arr));
   state.rf().writeAcc(*std::next(refs, index));
@@ -110,10 +120,13 @@ void exec_obj_get_field(State &state, InstrOBJ_GET instr) {
   auto &klass = state.klasses[header->klass];
 
   auto field = state.rf().readReg<std::size_t>(instr.fregid);
-  auto offset = klass.field2offset[field];
+  auto [offset, size] = klass.field2offset[field];
 
-  auto *data = std::bit_cast<std::uint8_t *>(std::next(header));
-  state.rf().writeAcc(*std::bit_cast<Reg *>(std::next(data, offset)));
+  auto *dataUI8 = std::bit_cast<std::uint8_t *>(std::next(header));
+  auto *dataReg = std::bit_cast<Reg *>(std::next(dataUI8, offset));
+
+  auto reg = getBits(*dataReg, size * kBitsInByte - 1, 0);
+  state.rf().writeAcc(reg);
 }
 
 void exec_obj_set_field(State &state, InstrOBJ_SET instr) {
@@ -121,11 +134,16 @@ void exec_obj_set_field(State &state, InstrOBJ_SET instr) {
   auto &klass = state.klasses[header->klass];
 
   auto field = state.rf().readReg<std::size_t>(instr.fregid);
-  auto offset = klass.field2offset[field];
+  auto [offset, size] = klass.field2offset[field];
 
   auto *dataUI8 = std::bit_cast<std::uint8_t *>(std::next(header));
-  auto *dataReg = std::bit_cast<Reg *>(std::next(dataUI8, offset));
-  *dataReg = state.rf().readReg(instr.dregid);
+  auto *dataReg = std::next(dataUI8, offset);
+
+  auto reg = state.rf().readReg(instr.dregid);
+  for (std::size_t i = 0; i < size; ++i) {
+    dataReg[i] = static_cast<std::uint8_t>(
+        getBits(reg, (i + 1) * kBitsInByte - 1, i * kBitsInByte));
+  }
 }
 
 void exec_unary_write(State &state, InstrUNARY instr) {

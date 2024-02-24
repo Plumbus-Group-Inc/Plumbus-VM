@@ -7,10 +7,17 @@
 
 namespace pvm {
 
+struct Field final {
+  std::ptrdiff_t offset;
+  std::size_t size;
+};
+
+using Field2Offset = std::map<std::size_t, Field>;
+
 struct Klass final {
   std::string name{};
   std::size_t size{};
-  std::map<std::size_t, std::iter_difference_t<std::uint8_t *>> field2offset{};
+  Field2Offset field2offset{};
 };
 
 using MarkWord = std::uint16_t;

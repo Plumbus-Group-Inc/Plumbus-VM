@@ -39,7 +39,7 @@ TEST(Array, GetSet) {
     /* 07 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(K_DATA_REG).build()},
 
     /* 08 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(kSize).build()},
-    /* 09 */ Instr{.opType = eNEW, .opID = eNEW_ARRAY, .instrVar = InstrNEW::Builder().ttypeid(INT_T).regid(0).build()},
+    /* 09 */ Instr{.opType = eNEW, .opID = eNEW_ARRAY, .instrVar = InstrNEW::Builder().ttypeid(CHAR_T).regid(0).build()},
     /* 10 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(K_ARR_REG).build()},
 
     /* 11 */ Instr{.opType = eARRAY, .opID = eARRAY_GEP, .instrVar = InstrARRAY::Builder().aregid(K_ARR_REG).regid(K_DATA_IDX_REG).build()},

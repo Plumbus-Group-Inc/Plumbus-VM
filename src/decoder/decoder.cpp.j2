@@ -20,7 +20,7 @@ struct DecodeError final : std::runtime_error {
 {% for type in types +%}
 {% set name = type.mnemonic %}
 Instr decode_{{ name }}(Bytecode bytecode) {
-  auto opID = static_cast<std::uint8_t>(getBits<5, 9>(bytecode));
+  auto opID = static_cast<std::uint8_t>(getBitsReverse<5, 9>(bytecode));
   if (opID >= e{{ type.mnemonic | upper }}_OP_NUM) {
     throw DecodeError{"Unknown operation id for {{ type.mnemonic }} type"};
   }
@@ -30,7 +30,7 @@ Instr decode_{{ name }}(Bytecode bytecode) {
     .opID = opID,
     .instrVar = Instr{{ name | upper }} {
     {% for key, val in type.fields.items() %}
-      .{{ key }} = getBits<{{ val.from }}, {{ val.to }}>(bytecode),
+      .{{ key }} = getBitsReverse<{{ val.from }}, {{ val.to }}>(bytecode),
     {% endfor %}
     }
   };
@@ -44,13 +44,13 @@ std::array<std::function<Instr(Bytecode)>, eOPCODE_NUM> decodeDispatchTable{
 };
 
 Instr Decoder::decode(Bytecode bytecode) {
-  auto opType = getBits<0, 4>(bytecode);
+  auto opType = getBitsReverse<0, 4>(bytecode);
   if (opType >= eOPCODE_NUM) {
     throw DecodeError{"Unknown operation type"};
   }
 
   auto instr = decodeDispatchTable[opType](bytecode);
-  instr.opID = getBits<5, 9>(bytecode);
+  instr.opID = getBitsReverse<5, 9>(bytecode);
   return instr;
 }
 
