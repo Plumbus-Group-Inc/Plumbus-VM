@@ -2,14 +2,10 @@
 
 namespace pvm {
 
-Code::Code(const Instrs &data) : m_data(data) {
-}
+Code::Code(const Instrs &data) : m_data(data) {}
 
-Code::Code(Instrs &&data) : m_data(std::move(data)) {
-}
+Code::Code(Instrs &&data) : m_data(std::move(data)) {}
 
-Instr Code::loadInstr(Addr pc) const {
-  return m_data[pc];
-}
+Instr Code::loadInstr(Addr pc) const { return m_data[pc]; }
 
 } // namespace pvm

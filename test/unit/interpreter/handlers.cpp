@@ -15,9 +15,7 @@
 
 using namespace pvm;
 
-auto createState() {
-  return State::Builder(Code{{}}).build();
-}
+auto createState() { return State::Builder(Code{{}}).build(); }
 
 TEST(Handlers, Halt) {
   auto state = createState();
