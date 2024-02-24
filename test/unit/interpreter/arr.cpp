@@ -25,7 +25,7 @@ TEST(Array, GetSet) {
   };
 
   // clang-format off
-  std::vector<Instr> instrs{
+  Instrs instrs{
     /* 00 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(0).build()},
     /* 01 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(K_ZERO_REG).build()},
 

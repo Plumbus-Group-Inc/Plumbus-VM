@@ -32,15 +32,17 @@ private:
   std::size_t m_offset{};
 };
 
+using Instrs = std::vector<Instr>;
+
 class Code final {
 public:
-  explicit Code(const std::vector<Instr> &data);
-  explicit Code(std::vector<Instr> &&data);
+  explicit Code(const Instrs &data);
+  explicit Code(Instrs &&data);
 
   [[nodiscard]] Instr loadInstr(Addr pc) const;
 
 private:
-  std::vector<Instr> m_data{};
+  Instrs m_data{};
 };
 
 } // namespace pvm

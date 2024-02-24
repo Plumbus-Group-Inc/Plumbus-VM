@@ -19,6 +19,7 @@ using Opcode = std::uint8_t;
 using OpId = std::uint64_t;
 
 enum TrivialType : std::uint8_t {
+  NULL_T = 0,
   INT_T,
   BOOL_T,
   FLOAT_T,

@@ -11,7 +11,7 @@ TEST(Interpreter, Cycle) {
   constexpr Int kIterNum = 10;
 
   // clang-format off
-  std::vector<Instr> instrs{
+  Instrs instrs{
       Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar = InstrIMM::Builder().data(0).build()},
       Instr{.opType = eREG, .opID = eREG_MOV,     .instrVar = InstrREG::Builder().regid(1).build()},
 

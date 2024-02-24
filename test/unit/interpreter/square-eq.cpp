@@ -13,7 +13,7 @@ using namespace pvm;
 
 TEST(Interpreter, SquareEquation) {
   // clang-format off
-  std::vector<Instr> instrs{
+  Instrs instrs{
     /* 00 */ Instr{.opType = eUNARY, .opID = eUNARY_READ, .instrVar = InstrUNARY::Builder().ttypeid(FLOAT_T).build()},
     /* 01 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar = InstrREG::Builder().regid(0x1).build()},
 
@@ -118,9 +118,9 @@ TEST(Interpreter, SquareEquation) {
 
   Float x2 = 0;
   ost >> x2;
-  EXPECT_FLOAT_EQ(x2, -2);
+  EXPECT_DOUBLE_EQ(x2, -2);
 
   Float x1 = 0;
   ost >> x1;
-  EXPECT_FLOAT_EQ(x1, -1);
+  EXPECT_DOUBLE_EQ(x1, -1);
 }

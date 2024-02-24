@@ -12,7 +12,7 @@ using namespace pvm;
 
 TEST(Interpreter, Call) {
   // clang-format off
-    std::vector<Instr> instrs{
+    Instrs instrs{
         /* 0 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
             InstrIMM::Builder().data(5).build()},
         /* 1 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
