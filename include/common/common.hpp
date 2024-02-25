@@ -36,7 +36,7 @@ template <std::size_t from, std::size_t to, std::unsigned_integral T>
 constexpr T getBitsReverse(T word) {
   constexpr auto kMSB = sizeofBits<T>() - from - 1;
   constexpr auto kLSB = sizeofBits<T>() - to - 1;
-  return static_cast<T>(getBitsNoShift<kMSB, kLSB>(word) >> kLSB);
+  return getBits<kMSB, kLSB>(word);
 }
 
 struct BitManipError : std::runtime_error {
@@ -72,7 +72,7 @@ template <std::unsigned_integral T>
 T getBitsReverse(T word, std::size_t from, std::size_t to) {
   auto msb = sizeofBits<T>() - from - 1;
   auto lsb = sizeofBits<T>() - to - 1;
-  return static_cast<T>(getBitsNoShift(word, msb, lsb) >> lsb);
+  return getBits(word, msb, lsb);
 }
 
 } // namespace pvm

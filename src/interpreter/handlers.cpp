@@ -3,17 +3,16 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <istream>
 #include <iterator>
-#include <ostream>
 #include <stdexcept>
 
 #include <float16_t/float16_t.hpp>
 
-#include "common/common.hpp"
-#include "common/config.hpp"
 #include "generated/handlers.hpp"
 #include "generated/instruction.hpp"
+
+#include "common/common.hpp"
+#include "common/config.hpp"
 #include "memory/regfile.hpp"
 #include "objects/objects.hpp"
 
@@ -22,6 +21,12 @@ namespace pvm {
 struct ArrHeader final {
   ObjectHeader header{};
   std::uint64_t size{};
+};
+
+class HandlerError final : std::runtime_error {
+public:
+  explicit HandlerError(const char *msg) : std::runtime_error(msg) {}
+  explicit HandlerError(const std::string &msg) : std::runtime_error(msg) {}
 };
 
 void exec_halt_halt([[maybe_unused]] State &state, [[maybe_unused]] InstrHALT instr) {}
@@ -91,28 +96,27 @@ void exec_reg_mov(State &state, InstrREG instr) {
 }
 
 void exec_branch_branch(State &state, InstrBRANCH instr) {
-  if (auto cond = state.rf().readReg<Bool>(instr.regid); !cond) {
-    ++state.pc;
-  } else {
+  if (auto cond = state.rf().readReg<Bool>(instr.regid); cond) {
     state.pc += static_cast<Addr>(instr.offset);
+  } else {
+    ++state.pc;
   }
 }
 
 void exec_branch_call(State &state, InstrBRANCH instr) {
   state.stack.emplace_back(state.rf(), state.pc + 1);
-  if (auto cond = state.rf().readReg<Bool>(instr.regid); !cond) {
-    ++state.pc;
-  } else {
+  if (auto cond = state.rf().readReg<Bool>(instr.regid); cond) {
     state.pc += static_cast<Addr>(instr.offset);
+  } else {
+    ++state.pc;
   }
 }
 
 void exec_branch_ret(State &state, InstrBRANCH instr) {
-  auto retVal = state.rf().readReg(instr.regid);
+  auto r = state.rf().readReg(instr.regid);
   state.pc = state.stack.back().retPC;
-
   state.stack.pop_back();
-  state.rf().writeAcc(retVal);
+  state.rf().writeAcc(r);
 }
 
 void exec_obj_get_field(State &state, InstrOBJ_GET instr) {
@@ -153,7 +157,7 @@ void exec_unary_write(State &state, InstrUNARY instr) {
   } else if (instr.ttypeid == FLOAT_T) {
     state.config.ost.get() << std::bit_cast<Float>(val) << std::endl;
   } else {
-    throw std::runtime_error{"unknown type id in write instruction"};
+    throw HandlerError{"unknown type id in write instruction"};
   }
 }
 
@@ -167,7 +171,7 @@ void exec_unary_read(State &state, InstrUNARY instr) {
     state.config.ist.get() >> tmp;
     state.rf().writeAcc(tmp);
   } else {
-    throw std::runtime_error{"unknown type id in write instruction"};
+    throw HandlerError{"unknown type id in write instruction"};
   }
 }
 
@@ -179,7 +183,7 @@ void exec_unary_abs(State &state, InstrUNARY instr) {
     auto tmp = state.rf().readReg<Float>(instr.regid);
     state.rf().writeAcc(std::fabs(tmp));
   } else {
-    throw std::runtime_error{"unknown type id in write instruction"};
+    throw HandlerError{"unknown type id in write instruction"};
   }
 }
 
@@ -191,7 +195,7 @@ void exec_unary_sqrt(State &state, InstrUNARY instr) {
     auto tmp = state.rf().readReg<Float>(instr.regid);
     state.rf().writeAcc(std::sqrt(tmp));
   } else {
-    throw std::runtime_error{"unknown type id in write instruction"};
+    throw HandlerError{"unknown type id in write instruction"};
   }
 }
 
@@ -212,7 +216,7 @@ void exec_binary_template(State &state, InstrBINARY instr, F f) {
       exec_binary_template<Float>(state, instr, f<Float>{});                             \
       break;                                                                             \
     default:                                                                             \
-      throw std::runtime_error{"unknown ttypeid for bin instr"};                         \
+      throw HandlerError{"unknown ttypeid for bin instr"};                               \
     }                                                                                    \
   }
 
