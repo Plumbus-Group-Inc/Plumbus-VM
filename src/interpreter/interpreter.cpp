@@ -14,7 +14,7 @@ State::Builder &State::Builder::memory(const Memory &mem) {
   return *this;
 }
 
-State::Builder &State::Builder::stack(const FrameStack &stack) {
+State::Builder &State::Builder::stack(const Frames &stack) {
   m_stack = stack;
   return *this;
 }
@@ -36,11 +36,11 @@ State::Builder &State::Builder::klass(const Klass &klass) {
 
 State::State(const Builder &b)
     : klasses(b.m_klasses), config(b.m_config), dec(b.m_dec), mem(b.m_mem),
-      code(b.m_code), stack(b.m_stack), pc(b.m_pc) {}
+      code(b.m_code), callStack(b.m_stack), pc(b.m_pc) {}
 
-RegFile &State::rf() { return stack.back().rf; }
+RegFile &State::rf() { return callStack.back().rf; }
 
-[[nodiscard]] const RegFile &State::rf() const { return stack.back().rf; }
+[[nodiscard]] const RegFile &State::rf() const { return callStack.back().rf; }
 
 Interpreter::Interpreter(const Code &code) : Interpreter(code, Config{}) {}
 

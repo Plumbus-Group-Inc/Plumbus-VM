@@ -16,12 +16,15 @@ struct Config final {
   std::reference_wrapper<std::istream> ist{std::cin};
 };
 
+using Regs = std::vector<Reg>;
+
 struct Frame final {
   RegFile rf{};
   Addr retPC{};
+  Regs stack{};
 };
 
-using FrameStack = std::vector<Frame>;
+using Frames = std::vector<Frame>;
 using Klasses = std::vector<Klass>;
 
 struct State final {
@@ -32,7 +35,7 @@ struct State final {
   Memory mem;
   Code code;
 
-  FrameStack stack;
+  Frames callStack;
   Addr pc;
 
   class Builder final {
@@ -43,7 +46,7 @@ struct State final {
     Memory m_mem{};
     Code m_code;
 
-    FrameStack m_stack{Frame{}};
+    Frames m_stack{Frame{}};
     Addr m_pc{};
 
     Config m_config{};
@@ -71,7 +74,7 @@ struct State final {
     Builder &decoder(const Decoder &dec);
     Builder &memory(const Memory &mem);
 
-    Builder &stack(const FrameStack &stack);
+    Builder &stack(const Frames &stack);
     Builder &entry(Addr pc);
 
     Builder &config(const Config &config);

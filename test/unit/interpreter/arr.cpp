@@ -54,7 +54,7 @@ TEST(Array, GetSet) {
   Code code{std::move(instrs)};
   Interpreter interp{code};
   interp.run();
-  const auto &rf = interp.getState().stack.back().rf;
+  const auto &rf = interp.getState().callStack.back().rf;
 
   ASSERT_EQ(std::bit_cast<Int>(rf.readAcc()), kData);
 }

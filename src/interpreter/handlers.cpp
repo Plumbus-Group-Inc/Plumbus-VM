@@ -104,7 +104,7 @@ void exec_branch_branch(State &state, InstrBRANCH instr) {
 }
 
 void exec_branch_call(State &state, InstrBRANCH instr) {
-  state.stack.emplace_back(state.rf(), state.pc + 1);
+  state.callStack.emplace_back(state.rf(), state.pc + 1); // TODO: pass arguments here
   if (auto cond = state.rf().readReg<Bool>(instr.regid); cond) {
     state.pc += static_cast<Addr>(instr.offset);
   } else {
@@ -114,8 +114,8 @@ void exec_branch_call(State &state, InstrBRANCH instr) {
 
 void exec_branch_ret(State &state, InstrBRANCH instr) {
   auto r = state.rf().readReg(instr.regid);
-  state.pc = state.stack.back().retPC;
-  state.stack.pop_back();
+  state.pc = state.callStack.back().retPC;
+  state.callStack.pop_back();
   state.rf().writeAcc(r);
 }
 
