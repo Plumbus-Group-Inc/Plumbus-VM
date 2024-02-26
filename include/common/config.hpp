@@ -1,21 +1,31 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
 
 namespace pvm {
 
-using Int = std::int32_t;
-using Float = float;
+using Int = std::int64_t;
+using Float = double;
 using Bool = bool;
+using Char = char;
 
-using Addr = std::uint32_t;
-using Bytecode = std::uint64_t;
+using Ref = std::uintptr_t;
 
-using RegId = std::uint8_t;
+using Addr = std::uint64_t;
+using Bytecode = std::uint32_t;
+
+using Reg = std::uint64_t;
+using RegId = std::uint64_t;
+
 using Opcode = std::uint8_t;
-using OpId = std::uint32_t;
+using OpId = std::uint64_t;
 
-constexpr const size_t kRegistersCount = 1ull << (sizeof(RegId) * 8);
+enum TrivialType : std::uint8_t {
+  NULL_T = 0,
+  INT_T,
+  BOOL_T,
+  CHAR_T,
+  FLOAT_T,
+};
 
 } // namespace pvm

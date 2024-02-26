@@ -1,14 +1,12 @@
 #pragma once
 
-#include <cstdint>
-
 #include "common/instruction.hpp"
 
 namespace pvm {
 
 class Decoder final {
 public:
-  Instr decode(std::uint32_t bytecode);
+  Instr decode(Bytecode bytecode);
 };
 
 } // namespace pvm

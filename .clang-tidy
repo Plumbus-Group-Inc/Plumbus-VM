@@ -4,10 +4,15 @@ Checks: >
   clang-analyzer-*,
   clang-diagnostics-*,
   -llvmlibc-*,
-  -modernize-use-trailing-return-type,
-  -llvm-header-guard,
+  -altera-id-dependent-backward-branch,
+  -altera-struct-pack-align,
+  -altera-unroll-loops,
   -fuchsia-default-arguments-calls,
-  -readability-identifier-length
+  -llvm-header-guard,
+  -misc-non-private-member-variables-in-classes,
+  -modernize-use-trailing-return-type,
+  -performance-avoid-endl,
+  -readability-identifier-length,
 
 WarningsAsErrors: ""
 HeaderFilterRegex: ""

@@ -2,21 +2,10 @@
 
 namespace pvm {
 
-[[nodiscard]] std::uint64_t Memory::loadWord(Addr addr) const {
-  return static_cast<std::uint64_t>(m_data[addr].get<Int>());
-}
+Code::Code(const Instrs &data) : m_data(data) {}
 
-void Memory::storeVal(Addr addr, Value val) {
-  m_data[addr] = val;
-}
+Code::Code(Instrs &&data) : m_data(std::move(data)) {}
 
-Code::Code(const std::vector<Instr> &data) : m_data(data) {
-}
-Code::Code(std::vector<Instr> &&data) : m_data(std::move(data)) {
-}
-
-Instr Code::loadInstr(Addr pc) const {
-  return m_data[pc];
-}
+Instr Code::loadInstr(Addr pc) const { return m_data[pc]; }
 
 } // namespace pvm

@@ -1,40 +1,46 @@
 #pragma once
 
-#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
 #include "common/config.hpp"
 #include "common/instruction.hpp"
-#include "common/value.hpp"
 
 namespace pvm {
 
 class Memory final {
 public:
   explicit Memory() = default;
-  explicit Memory(std::vector<Value> const &data) {
-    std::copy(data.begin(), data.end(), m_data.begin());
+
+  std::uint8_t *allocate(std::size_t size) {
+    if (m_offset + size >= m_data.size()) {
+      return nullptr;
+    }
+
+    auto *res = m_data.data() + m_offset;
+    m_offset += size;
+    return res;
   }
 
-  [[nodiscard]] std::uint64_t loadWord(Addr addr) const;
-  void storeVal(Addr addr, Value val);
-
 private:
-  // TODO: temporary
-  std::array<Value, 1024> m_data{};
+  static constexpr std::size_t kArenaSize = 2048;
+  std::array<std::uint8_t, kArenaSize> m_data{};
+  std::size_t m_offset{};
 };
+
+using Instrs = std::vector<Instr>;
 
 class Code final {
 public:
-  explicit Code(const std::vector<Instr> &data);
-  explicit Code(std::vector<Instr> &&data);
+  explicit Code(const Instrs &data);
+  explicit Code(Instrs &&data);
 
   [[nodiscard]] Instr loadInstr(Addr pc) const;
 
 private:
-  std::vector<Instr> m_data{};
+  Instrs m_data{};
 };
 
 } // namespace pvm

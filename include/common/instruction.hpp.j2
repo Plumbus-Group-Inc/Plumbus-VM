@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <variant>
 
+#include "common/common.hpp"
+#include "common/config.hpp"
+
 namespace pvm {
 
 enum OpType : std::uint8_t {
@@ -28,18 +31,18 @@ enum {{ type.mnemonic | capitalize }}OpID : std::uint8_t {
 struct Instr{{ type.mnemonic | upper }} {
   constexpr static OpType kType = e{{ type.mnemonic | upper }};
   {% for field in type.fields.keys() %}
-  std::uint32_t {{ field }};
+  {{type.fields[field].type}} {{ field }};
   {% endfor %}
 
   class Builder final {
   private:
     {% for field in type.fields.keys() %}
-    std::uint32_t m_{{ field }};
+    {{type.fields[field].type}} m_{{ field }};
     {% endfor %}
 
   public:
     {% for field in type.fields.keys() +%}
-    Builder & {{ field }}(std::uint32_t val) {
+    Builder & {{ field }}({{type.fields[field].type}} val) {
       m_{{ field }} = val;
       return *this;
     }

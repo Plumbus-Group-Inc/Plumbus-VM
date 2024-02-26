@@ -10,8 +10,6 @@
 
 namespace pvm {
 
-using State = Interpreter::State;
-
 {% for type in types +%}
 {% set mnem = type.mnemonic %}
 const std::array<std::function<void(State&, Instr{{ mnem | upper }})>, e{{ mnem | upper }}_OP_NUM> {{ mnem }}DispatchTable{
@@ -40,11 +38,11 @@ void exec_{{ mnem | upper }}(State &state, Instr instr) {
   {{ mnem }}DispatchTable[opID](state, typedInstr);
 
   {% if not mnem == 'branch' %}
-  state.rf.incrementPC();
+  ++state.pc;
   {% endif %}
 
   {% if not mnem == 'halt' %}
-  auto pc = state.rf.readPC();
+  auto pc = state.pc;
   auto next = state.code.loadInstr(pc);
   opcodeDispatchTable[next.opType](state, next);
   {% endif %}

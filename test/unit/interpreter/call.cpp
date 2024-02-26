@@ -1,26 +1,18 @@
-#include <cstddef>
-#include <sstream>
-#include <vector>
-
 #include <gtest/gtest.h>
 
-#include "common/instruction.hpp"
-#include "generated/instruction.hpp"
 #include "interpreter/interpreter.hpp"
 
 using namespace pvm;
 
 TEST(Interpreter, Call) {
-  constexpr std::size_t kInt = 1;
-
   // clang-format off
-    std::vector<Instr> instrs{
+    Instrs instrs{
         /* 0 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
             InstrIMM::Builder().data(5).build()},
         /* 1 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
         /* 2 */ Instr{.opType = eBINARY, .opID = eBINARY_EQUAL, .instrVar =
-            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(kInt).build()},
+            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(INT_T).build()},
         /* 3 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 4 */ Instr{.opType = eBRANCH, .opID = eBRANCH_CALL,
@@ -36,7 +28,7 @@ TEST(Interpreter, Call) {
         /* 8 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 9 */ Instr{.opType = eBINARY, .opID = eBINARY_EQUAL, .instrVar =
-            InstrBINARY::Builder().regid1(0 + 1).regid2(1 + 1).ttypeid(kInt).build()},
+            InstrBINARY::Builder().regid1(0 + 1).regid2(1 + 1).ttypeid(INT_T).build()},
         /* 10 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(2 + 1).build()},
         /* 11 */ Instr{.opType = eBRANCH, .opID = eBRANCH_BRANCH, .instrVar =
@@ -44,33 +36,33 @@ TEST(Interpreter, Call) {
 
         // Wanna save R0 parameter value for future to R2
         /* 12 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
-            InstrBINARY::Builder().ttypeid(kInt).regid1(0 + 1).regid2(1 + 1).build()},
+            InstrBINARY::Builder().ttypeid(INT_T).regid1(0 + 1).regid2(1 + 1).build()},
         /* 13 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(2 + 1).build()},
 
         // Wanna decrement R0
         /* 14 */ Instr{.opType = eIMM, .opID = eIMM_INTEGER, .instrVar =
-            InstrIMM::Builder().data(-1).build()},
+            InstrIMM::Builder().data(std::bit_cast<unsigned>(-1)).build()},
         /* 15 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(1 + 1).build()},
         /* 16 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
-            InstrBINARY::Builder().ttypeid(kInt).regid1(0 + 1).regid2(1 + 1).build()},
+            InstrBINARY::Builder().ttypeid(INT_T).regid1(0 + 1).regid2(1 + 1).build()},
         /* 17 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
 
         // Perform recursive call of this function
         /* 18 */ Instr{.opType = eBINARY, .opID = eBINARY_EQUAL, .instrVar =
-            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(kInt).build()},
+            InstrBINARY::Builder().regid1(0 + 1).regid2(0 + 1).ttypeid(INT_T).build()},
         /* 19 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(3 + 1).build()},
         /* 20 */ Instr{.opType = eBRANCH, .opID = eBRANCH_CALL,
-            .instrVar = InstrBRANCH::Builder().regid(3 + 1).offset(-13).build()},
+            .instrVar = InstrBRANCH::Builder().regid(3 + 1).offset(std::bit_cast<unsigned>(-13)).build()},
 
         // Add R0 input value to result
         /* 21 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
         /* 22 */ Instr{.opType = eBINARY, .opID = eBINARY_ADD, .instrVar =
-            InstrBINARY::Builder().ttypeid(kInt).regid1(0 + 1).regid2(2 + 1).build()},
+            InstrBINARY::Builder().ttypeid(INT_T).regid1(0 + 1).regid2(2 + 1).build()},
         /* 23 */ Instr{.opType = eREG, .opID = eREG_MOV, .instrVar =
             InstrREG::Builder().regid(0 + 1).build()},
         /* 24 */ Instr{.opType = eBRANCH, .opID = eBRANCH_RET,
@@ -89,7 +81,7 @@ TEST(Interpreter, Call) {
   Code code{std::move(instrs)};
   Interpreter interp{code};
   interp.run();
-  const auto &rf = interp.getState().rf;
+  const auto &rf = interp.getState().callStack.back().rf;
 
-  ASSERT_EQ(rf.readReg(0).get<Int>(), 15);
+  ASSERT_EQ(std::bit_cast<Int>(rf.readAcc()), 15);
 }

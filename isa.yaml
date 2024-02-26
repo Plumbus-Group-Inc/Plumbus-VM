@@ -5,83 +5,96 @@ types:
   - mnemonic: halt
     instrs: [halt]
     fields:
-      zero: { from: 10, to: 31 }
+      zero: { type: std::uint8_t, from: 10, to: 31 }
   - mnemonic: unary
     instrs: [
-        read,
-        write,
-        abs,
-        # cast,
-        # not,
-        sqrt,
-        # sin,
-        # cos,
-      ]
-    fields:
-      ttypeid: { from: 10, to: 14 }
-      regid: { from: 15, to: 20 }
-  - mnemonic: binary
-    instrs: [
-        add,
-        sub,
-        mul,
-        div,
-        # pow,
-        less,
-        # greater,
-        # lequal,
-        # gequal,
-        equal,
-        # or,
-        # and,
-        # xor,
-        # min,
-        # max,
-      ]
-    fields:
-      ttypeid: { from: 10, to: 14 }
-      regid1: { from: 15, to: 20 }
-      regid2: { from: 21, to: 26 }
-  - mnemonic: array
-    instrs: [
-      get,
-      set,
-    # pop,
-    # insert,
-    # remove,
-    # resize,
-    # create,
+      read,
+      write,
+      abs,
+      # cast,
+      # not,
+      sqrt,
+      # sin,
+      # cos,
     ]
     fields:
-      aregid: { from: 10, to: 15 }
-      regid: { from: 16, to: 21 }
+      ttypeid: { type: std::size_t, from: 10, to: 19 }
+      regid: { type: RegId, from: 20, to: 25 }
+  - mnemonic: binary
+    instrs: [
+      add,
+      sub,
+      mul,
+      div,
+      # pow,
+      less,
+      # greater,
+      # lequal,
+      # gequal,
+      equal,
+      # or,
+      # and,
+      # xor,
+      # min,
+      # max,
+    ]
+    fields:
+      ttypeid: { type: std::size_t, from: 10, to: 19 }
+      regid1: { type: RegId, from: 20, to: 25 }
+      regid2: { type: RegId, from: 26, to: 31 }
+  - mnemonic: array
+    instrs: [
+      gep,
+      size,
+    ]
+    fields:
+      aregid: { type: RegId, from: 10, to: 15 }
+      regid: { type: RegId, from: 16, to: 21 }
   - mnemonic: branch
-    instrs: [branch, call, ret]
+    instrs: [
+      branch,
+      call,
+      ret
+    ]
     fields:
-      regid: { from: 10, to: 15 }
-      offset: { from: 16, to: 31 }
-  - mnemonic: mem
-    instrs: []
-    # load,
-    # store
+      regid: { type: RegId, from: 10, to: 15 }
+      offset: { type: std::int16_t, from: 16, to: 31 }
+  - mnemonic: obj_get
+    instrs: [
+      field
+    ]
     fields:
-      regid: { from: 10, to: 15 }
+      oregid: { type: RegId, from: 10, to: 15 }
+      fregid: { type: RegId, from: 16, to: 21 }
+  - mnemonic: obj_set
+    instrs: [
+      field
+    ]
+    fields:
+      oregid: { type: RegId, from: 10, to: 15 }
+      fregid: { type: RegId, from: 16, to: 21 }
+      dregid: { type: RegId, from: 22, to: 27 }
+  - mnemonic: new
+    instrs: [
+      array,
+      object,
+    ]
+    fields:
+      ttypeid: { type: std::uint8_t, from: 10, to: 19 }
+      regid: {type: RegId, from: 20, to: 25}
   - mnemonic: imm
     instrs: [
-        integer,
-        array,
-        floating,
-      ]
+      floating,
+      integer,
+      bool,
+      char,
+    ]
     fields:
-      data: { from: 10, to: 26 }
+      data: { type: std::uint16_t, from: 10, to: 26 }
   - mnemonic: reg
-    instrs: [mov]
+    instrs: [
+      mov,
+      push
+    ]
     fields:
-      regid: { from: 10, to: 15 }
-# - &frame
-#   mnemonic: frame
-#   fields:
-#     opid: {from: 5, to: 9}
-#     fregid: {from: 10, to: 14}
-#     regid: {from: 15, to: 19}
-#     unused: {from: 20, to: 23}
+      regid: { type: RegId, from: 10, to: 15 }

@@ -10,7 +10,7 @@ add_library(pvm-interpreter STATIC)
 target_sources(pvm-interpreter PRIVATE interpreter.cpp handlers.cpp ${GENERATED_FILE_CPP})
 add_dependencies(pvm-interpreter pvm-interpreter-generated pvm-handlers-generated)
 
-target_include_directories(pvm-interpreter PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
+target_include_directories(pvm-interpreter SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/thirdparty)
 target_link_libraries(pvm-interpreter PRIVATE pvm-lib-settings)
 target_link_libraries(pvm-interpreter PUBLIC pvm-decoder pvm-memory)
 target_compile_options(pvm-interpreter

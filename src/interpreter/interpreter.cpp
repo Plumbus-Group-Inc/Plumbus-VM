@@ -1,32 +1,58 @@
-#include <iostream>
-
 #include "interpreter/interpreter.hpp"
 
 namespace pvm {
 
-Interpreter::Interpreter(const Code &code) : Interpreter(code, std::cout, std::cin) {
+State State::Builder::build() { return State{*this}; }
+
+State::Builder &State::Builder::decoder(const Decoder &dec) {
+  m_dec = dec;
+  return *this;
 }
 
-Interpreter::Interpreter(const Code &code, std::ostream &ost)
-    : Interpreter(code, ost, std::cin) {
+State::Builder &State::Builder::memory(const Memory &mem) {
+  m_mem = mem;
+  return *this;
 }
 
-Interpreter::Interpreter(const Code &code, std::istream &ist)
-    : Interpreter(code, std::cout, ist) {
+State::Builder &State::Builder::stack(const Frames &stack) {
+  m_stack = stack;
+  return *this;
 }
 
-Interpreter::Interpreter(const Code &code, std::ostream &ost, std::istream &ist)
-    : m_state{Decoder{}, RegFile{}, Memory{}, Code{code}, ost, ist} {
+State::Builder &State::Builder::entry(Addr pc) {
+  m_pc = pc;
+  return *this;
 }
 
-Instr Interpreter::getInstr() {
-  auto pc = m_state.rf.readPC();
+State::Builder &State::Builder::config(const Config &config) {
+  m_config = config;
+  return *this;
+}
+
+State::Builder &State::Builder::klass(const Klass &klass) {
+  m_klasses.push_back(klass);
+  return *this;
+}
+
+State::State(const Builder &b)
+    : klasses(b.m_klasses), config(b.m_config), dec(b.m_dec), mem(b.m_mem),
+      code(b.m_code), callStack(b.m_stack), pc(b.m_pc) {}
+
+RegFile &State::rf() { return callStack.back().rf; }
+
+[[nodiscard]] const RegFile &State::rf() const { return callStack.back().rf; }
+
+Interpreter::Interpreter(const Code &code) : Interpreter(code, Config{}) {}
+
+Interpreter::Interpreter(const Code &code, const Config &config)
+    : m_state{State::Builder(code).config(config)} {}
+
+Instr Interpreter::getInstr() const {
+  auto pc = m_state.pc;
   auto instr = m_state.code.loadInstr(pc);
   return instr;
 }
 
-const Interpreter::State &Interpreter::getState() const {
-  return m_state;
-}
+const State &Interpreter::getState() const { return m_state; }
 
 } // namespace pvm

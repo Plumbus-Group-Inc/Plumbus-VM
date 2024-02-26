@@ -8,7 +8,7 @@ macro(pvm_add_test TEST SOURCES)
   set_property(TEST ${TEST} PROPERTY LABELS unit)
 endmacro()
 
-set(DIRS interpreter common)
+set(DIRS interpreter)
 foreach(DIR ${DIRS})
   add_subdirectory(${DIR})
   message(STATUS "Included subdirectory: ${DIR}")
