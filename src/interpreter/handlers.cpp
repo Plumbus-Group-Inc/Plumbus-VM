@@ -95,6 +95,11 @@ void exec_reg_mov(State &state, InstrREG instr) {
   state.rf().writeReg(instr.regid, val);
 }
 
+void exec_reg_push(State &state, InstrREG instr) {
+  auto &calleeStack = state.callStack.back().calleeStack;
+  calleeStack.push_back(state.rf().readReg(instr.regid));
+}
+
 void exec_branch_branch(State &state, InstrBRANCH instr) {
   if (auto cond = state.rf().readReg<Bool>(instr.regid); cond) {
     state.pc += static_cast<Addr>(instr.offset);
@@ -104,7 +109,10 @@ void exec_branch_branch(State &state, InstrBRANCH instr) {
 }
 
 void exec_branch_call(State &state, InstrBRANCH instr) {
-  state.callStack.emplace_back(state.rf(), state.pc + 1); // TODO: pass arguments here
+  auto &calleeStack = state.callStack.back().calleeStack;
+  state.callStack.emplace_back(state.rf(), state.pc + 1, std::move(calleeStack));
+  calleeStack.clear();
+
   if (auto cond = state.rf().readReg<Bool>(instr.regid); cond) {
     state.pc += static_cast<Addr>(instr.offset);
   } else {

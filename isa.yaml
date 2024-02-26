@@ -8,36 +8,36 @@ types:
       zero: { type: std::uint8_t, from: 10, to: 31 }
   - mnemonic: unary
     instrs: [
-        read,
-        write,
-        abs,
-        # cast,
-        # not,
-        sqrt,
-        # sin,
-        # cos,
-      ]
+      read,
+      write,
+      abs,
+      # cast,
+      # not,
+      sqrt,
+      # sin,
+      # cos,
+    ]
     fields:
       ttypeid: { type: std::size_t, from: 10, to: 19 }
       regid: { type: RegId, from: 20, to: 25 }
   - mnemonic: binary
     instrs: [
-        add,
-        sub,
-        mul,
-        div,
-        # pow,
-        less,
-        # greater,
-        # lequal,
-        # gequal,
-        equal,
-        # or,
-        # and,
-        # xor,
-        # min,
-        # max,
-      ]
+      add,
+      sub,
+      mul,
+      div,
+      # pow,
+      less,
+      # greater,
+      # lequal,
+      # gequal,
+      equal,
+      # or,
+      # and,
+      # xor,
+      # min,
+      # max,
+    ]
     fields:
       ttypeid: { type: std::size_t, from: 10, to: 19 }
       regid1: { type: RegId, from: 20, to: 25 }
@@ -84,14 +84,17 @@ types:
       regid: {type: RegId, from: 20, to: 25}
   - mnemonic: imm
     instrs: [
-        floating,
-        integer,
-        bool,
-        char,
-      ]
+      floating,
+      integer,
+      bool,
+      char,
+    ]
     fields:
       data: { type: std::uint16_t, from: 10, to: 26 }
   - mnemonic: reg
-    instrs: [mov]
+    instrs: [
+      mov,
+      push
+    ]
     fields:
       regid: { type: RegId, from: 10, to: 15 }

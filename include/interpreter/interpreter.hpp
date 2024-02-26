@@ -21,7 +21,9 @@ using Regs = std::vector<Reg>;
 struct Frame final {
   RegFile rf{};
   Addr retPC{};
+
   Regs stack{};
+  Regs calleeStack{};
 };
 
 using Frames = std::vector<Frame>;
